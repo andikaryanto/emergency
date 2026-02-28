@@ -30,6 +30,21 @@ export function SignupForm() {
       ) : null}
 
       <form className="auth-form" action={formAction} noValidate>
+        <label htmlFor="name">Nama</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          placeholder="Nama lengkap Anda"
+          aria-invalid={Boolean(state.fieldErrors.name)}
+          aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
+        />
+        {state.fieldErrors.name ? (
+          <p id="name-error" className="field-error">
+            {state.fieldErrors.name}
+          </p>
+        ) : null}
+
         <label htmlFor="email">Email</label>
         <input
           id="email"

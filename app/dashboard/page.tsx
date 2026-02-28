@@ -44,6 +44,8 @@ const tenants = [
 ];
 
 export default function DashboardPage() {
+  const currentUserName = "dr. Amanda Pratama";
+
   return (
     <main className="dashboard-shell">
       <section className="dashboard-layout">
@@ -82,7 +84,7 @@ export default function DashboardPage() {
           <header className="dashboard-header">
             <div>
               <span className="eyebrow">Dashboard User</span>
-              <h1>Kelola tenant klinik Anda dari satu tempat.</h1>
+              <h1>Selamat datang, {currentUserName}.</h1>
               <p>
                 Lihat daftar tenant, cek statusnya, lalu buat tenant baru saat
                 Anda siap menambah klinik atau cabang baru.

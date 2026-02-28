@@ -35,7 +35,7 @@ function normalizeBaseUrl(value: string) {
 export const env = {
   appName: process.env.APP_NAME?.trim() || "Klinik RME",
   appUrl: normalizeBaseUrl(getRequiredEnv("APP_URL")),
-  apiUrl: normalizeBaseUrl(getRequiredEnv("API_URL")),
+  apiBaseUrl: normalizeBaseUrl(getRequiredEnv("API_URL")),
   tenantBaseDomain: getRequiredEnv("TENANT_BASE_DOMAIN"),
   apiTimeoutMs: getPositiveIntegerEnv("API_TIMEOUT_MS", 10_000),
 };

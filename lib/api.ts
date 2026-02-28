@@ -10,7 +10,7 @@ function withTrailingSlash(url: string) {
 
 const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
 
-export const apiPaths = {
+export const apiEndpoints = {
   landlord: {
     user: {
       register: "/api/landlord/user/register",
@@ -18,12 +18,12 @@ export const apiPaths = {
   },
 } as const;
 
-export const apiUrls = {
+export const apiEndpointUrls = {
   landlord: {
     user: {
       register: new URL(
-        normalizePath(apiPaths.landlord.user.register),
-        withTrailingSlash(env.apiUrl),
+        normalizePath(apiEndpoints.landlord.user.register),
+        withTrailingSlash(env.apiBaseUrl),
       ).toString(),
     },
   },

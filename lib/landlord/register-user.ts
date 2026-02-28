@@ -1,6 +1,7 @@
-import { ApiError, apiUrls, requestJson } from "../api";
+import { ApiError, apiEndpointUrls, requestJson } from "../api";
 
 export type RegisterUserRequest = {
+  name: string;
   email: string;
   password: string;
   password_confirmation: string;
@@ -17,7 +18,9 @@ export type RegisterUserResponse = {
 
 export class RegisterUserError extends Error {
   readonly status: number | null;
-  readonly fieldErrors: Partial<Record<"email" | "password" | "confirmPassword", string>>;
+  readonly fieldErrors: Partial<
+    Record<"name" | "email" | "password" | "confirmPassword", string>
+  >;
 
   constructor({
     message,
@@ -26,7 +29,9 @@ export class RegisterUserError extends Error {
   }: {
     message: string;
     status?: number | null;
-    fieldErrors?: Partial<Record<"email" | "password" | "confirmPassword", string>>;
+    fieldErrors?: Partial<
+      Record<"name" | "email" | "password" | "confirmPassword", string>
+    >;
   }) {
     super(message);
     this.name = "RegisterUserError";
@@ -51,6 +56,7 @@ function mapRegisterError(error: ApiError) {
   }
 
   const payload = error.payload as RegisterUserErrorPayload | undefined;
+  const nameError = extractFirstError(payload?.errors?.name);
   const emailError = extractFirstError(payload?.errors?.email);
   const passwordError = extractFirstError(payload?.errors?.password);
   const confirmPasswordError = extractFirstError(
@@ -64,6 +70,7 @@ function mapRegisterError(error: ApiError) {
         : payload?.message ?? "Registrasi gagal. Silakan periksa data Anda.",
     status: error.status,
     fieldErrors: {
+      ...(nameError ? { name: nameError } : {}),
       ...(emailError ? { email: emailError } : {}),
       ...(passwordError ? { password: passwordError } : {}),
       ...(confirmPasswordError
@@ -76,7 +83,7 @@ function mapRegisterError(error: ApiError) {
 export async function registerLandlordUser(payload: RegisterUserRequest) {
   try {
     return await requestJson<RegisterUserResponse, RegisterUserRequest>({
-      url: apiUrls.landlord.user.register,
+      url: apiEndpointUrls.landlord.user.register,
       method: "POST",
       body: payload,
     });

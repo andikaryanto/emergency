@@ -24,14 +24,16 @@ function createErrorState(
 }
 
 function validateRegisterPayload(formData: FormData) {
+  const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  if (!email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword) {
     return {
       success: false as const,
       state: createErrorState("Semua field wajib diisi.", {
+        ...(!name ? { name: "Nama wajib diisi." } : {}),
         ...(!email ? { email: "Email wajib diisi." } : {}),
         ...(!password ? { password: "Password wajib diisi." } : {}),
         ...(!confirmPassword
@@ -71,6 +73,7 @@ function validateRegisterPayload(formData: FormData) {
   return {
     success: true as const,
     payload: {
+      name,
       email,
       password,
       password_confirmation: confirmPassword,
