@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Login Klinik",
   description:
-    "Halaman login untuk admin, kasir, dan dokter agar bisa masuk ke sistem klinik dengan mudah.",
+    "Halaman login untuk masuk ke akun Anda dan melanjutkan pengelolaan tenant klinik.",
   alternates: {
     canonical: "/login",
   },
@@ -15,18 +15,15 @@ export default function LoginPage() {
     <main className="login-shell">
       <section className="login-card">
         <span className="eyebrow">Login Klinik</span>
-        <h1>Masuk ke akun klinik Anda.</h1>
+        <h1>Masuk ke akun Anda.</h1>
         <p>
-          Gunakan akun yang sudah terdaftar untuk mengakses operasional klinik,
-          mulai dari pendaftaran pasien sampai laporan harian.
+          Gunakan akun yang sudah terdaftar untuk masuk ke dashboard, lalu
+          kelola tenant klinik dan operasional harian Anda.
         </p>
 
         <form className="login-form">
-          <label htmlFor="tenant">Nama klinik atau alamat login</label>
-          <input id="tenant" type="text" placeholder="contoh: klinik-sehat" />
-
           <label htmlFor="email">Email</label>
-          <input id="email" type="email" placeholder="admin@klinik.com" />
+          <input id="email" type="email" placeholder="nama@klinikanda.com" />
 
           <label htmlFor="password">Password</label>
           <input id="password" type="password" placeholder="••••••••" />
@@ -34,6 +31,9 @@ export default function LoginPage() {
           <button type="submit">Masuk</button>
         </form>
 
+        <p className="auth-helper">
+          Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
+        </p>
         <Link href="/">Kembali ke halaman utama</Link>
       </section>
     </main>

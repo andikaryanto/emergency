@@ -103,9 +103,9 @@ export default function HomePage() {
             <Link className="ghost-button" href="/login">
               Login
             </Link>
-            <a className="primary-button" href="#harga">
+            <Link className="primary-button" href="/signup">
               Coba Sekarang
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -266,7 +266,7 @@ export default function HomePage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <Link href="/login" className="plan-button">
+              <Link href="/signup" className="plan-button">
                 Pilih Paket
               </Link>
             </article>
@@ -287,9 +287,9 @@ export default function HomePage() {
           <Link href="/login" className="primary-button">
             Login Sekarang
           </Link>
-          <a href="#produk" className="ghost-button ghost-inverse">
-            Lihat Produk
-          </a>
+          <Link href="/signup" className="ghost-button ghost-inverse">
+            Daftar Sekarang
+          </Link>
         </div>
       </section>
     </main>
