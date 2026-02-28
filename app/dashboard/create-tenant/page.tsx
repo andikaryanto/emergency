@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getLandlordAccessToken } from "../../../lib/landlord/auth-session";
 import { CreateTenantForm } from "./create-tenant-form";
 
 export const metadata: Metadata = {
@@ -20,12 +18,6 @@ const createTenantBenefits = [
 ];
 
 export default async function CreateTenantPage() {
-  const accessToken = await getLandlordAccessToken();
-
-  if (!accessToken) {
-    redirect("/login");
-  }
-
   return (
     <main className="auth-shell">
       <section className="auth-card">
