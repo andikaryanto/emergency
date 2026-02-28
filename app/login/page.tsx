@@ -34,6 +34,9 @@ export default function LoginPage() {
         <p className="auth-helper">
           Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
         </p>
+        <p className="auth-helper">
+          Ingin lihat area user? <Link href="/dashboard">Buka dashboard contoh</Link>
+        </p>
         <Link href="/">Kembali ke halaman utama</Link>
       </section>
     </main>

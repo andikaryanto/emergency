@@ -56,6 +56,10 @@ export default function SignupPage() {
           <p className="auth-helper">
             Sudah punya akun? <Link href="/login">Masuk di sini</Link>
           </p>
+          <p className="auth-helper">
+            Sudah penasaran dengan area user?{" "}
+            <Link href="/dashboard">Lihat dashboard tenant</Link>
+          </p>
           <Link href="/">Kembali ke halaman utama</Link>
         </div>
       </section>

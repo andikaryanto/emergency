@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { env } from "../lib/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://klinikku.id";
+  const baseUrl = env.appUrl;
 
   return [
     {
@@ -15,6 +16,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/signup`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/dashboard`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
     },
   ];
 }
