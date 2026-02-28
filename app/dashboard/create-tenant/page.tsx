@@ -5,18 +5,18 @@ import { getLandlordAccessToken } from "../../../lib/landlord/auth-session";
 import { CreateTenantForm } from "./create-tenant-form";
 
 export const metadata: Metadata = {
-  title: "Buat Tenant",
+  title: "Buat Klinik Baru",
   description:
-    "Form untuk membuat tenant baru beserta akun admin tenant pertama.",
+    "Form untuk menyiapkan klinik baru beserta akun admin pertama.",
   alternates: {
     canonical: "/dashboard/create-tenant",
   },
 };
 
 const createTenantBenefits = [
-  "Membuat tenant baru langsung dari akun landlord",
-  "Sekaligus menyiapkan user admin tenant pertama",
-  "Setelah berhasil, tenant akan muncul di dashboard Anda",
+  "Menyiapkan ruang kerja baru untuk klinik Anda",
+  "Sekaligus membuat akun utama yang bisa langsung digunakan",
+  "Setelah selesai, klinik baru akan muncul di dashboard Anda",
 ];
 
 export default async function CreateTenantPage() {
@@ -30,11 +30,11 @@ export default async function CreateTenantPage() {
     <main className="auth-shell">
       <section className="auth-card">
         <div className="auth-copy">
-          <span className="eyebrow">Buat Tenant</span>
-          <h1>Siapkan tenant baru untuk klinik berikutnya.</h1>
+          <span className="eyebrow">Buat Klinik Baru</span>
+          <h1>Siapkan akses untuk klinik atau cabang berikutnya.</h1>
           <p>
-            Isi nama tenant serta akun admin pertama. Data ini akan dikirim ke API
-            landlord menggunakan session login Anda.
+            Isi nama klinik serta akun utama yang akan dipakai untuk login
+            pertama kali. Setelah itu, kami akan menyiapkan klinik baru Anda.
           </p>
 
           <ul className="auth-benefits">
@@ -47,8 +47,8 @@ export default async function CreateTenantPage() {
         <CreateTenantForm />
 
         <p className="auth-helper">
-          Tenant akan dibuat dan dipersiapkan dalam sekitar 5 - 10 menit setelah
-          data dikirim.
+          Klinik baru Anda biasanya siap digunakan dalam sekitar 5 - 10 menit
+          setelah data dikirim.
         </p>
 
         <div className="auth-footer">

@@ -10,7 +10,7 @@ function SubmitButton() {
 
   return (
     <button type="submit" disabled={pending}>
-      {pending ? "Memproses..." : "Buat Tenant"}
+      {pending ? "Menyiapkan..." : "Buat Klinik"}
     </button>
   );
 }
@@ -30,12 +30,12 @@ export function CreateTenantForm() {
       ) : null}
 
       <form className="auth-form" action={formAction} noValidate>
-        <label htmlFor="name">Nama tenant</label>
+        <label htmlFor="name">Nama klinik</label>
         <input
           id="name"
           name="name"
           type="text"
-          placeholder="Contoh: Klinik Test"
+          placeholder="Contoh: Klinik Sehat Sentosa"
           aria-invalid={Boolean(state.fieldErrors.name)}
           aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
         />
@@ -45,12 +45,12 @@ export function CreateTenantForm() {
           </p>
         ) : null}
 
-        <label htmlFor="username">Username admin</label>
+        <label htmlFor="username">Username utama</label>
         <input
           id="username"
           name="username"
           type="text"
-          placeholder="Contoh: admin"
+          placeholder="Contoh: admin.klinik"
           aria-invalid={Boolean(state.fieldErrors.username)}
           aria-describedby={state.fieldErrors.username ? "username-error" : undefined}
         />
@@ -60,12 +60,12 @@ export function CreateTenantForm() {
           </p>
         ) : null}
 
-        <label htmlFor="email">Email admin</label>
+        <label htmlFor="email">Email utama</label>
         <input
           id="email"
           name="email"
           type="email"
-          placeholder="admin@klinikanda.com"
+          placeholder="owner@klinikanda.com"
           aria-invalid={Boolean(state.fieldErrors.email)}
           aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
         />
@@ -75,12 +75,12 @@ export function CreateTenantForm() {
           </p>
         ) : null}
 
-        <label htmlFor="password">Password admin</label>
+        <label htmlFor="password">Password akun utama</label>
         <input
           id="password"
           name="password"
           type="password"
-          placeholder="Minimal 8 karakter"
+          placeholder="Buat password minimal 8 karakter"
           aria-invalid={Boolean(state.fieldErrors.password)}
           aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
         />
