@@ -80,7 +80,7 @@ export async function createLandlordTenant(
 ) {
   try {
     return await requestJson<CreateTenantResponse, CreateTenantRequest>({
-      url: apiEndpointUrls.landlord.tenants,
+      url: apiEndpointUrls.landlord.tenant,
       method: "POST",
       headers,
       body: payload,

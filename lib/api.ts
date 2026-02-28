@@ -12,6 +12,7 @@ const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
 
 export const apiEndpoints = {
   landlord: {
+    tenant: "/api/landlord/tenant",
     tenants: "/api/landlord/tenants",
     user: {
       login: "/api/landlord/user/login",
@@ -22,6 +23,10 @@ export const apiEndpoints = {
 
 export const apiEndpointUrls = {
   landlord: {
+    tenant: new URL(
+      normalizePath(apiEndpoints.landlord.tenant),
+      withTrailingSlash(env.apiBaseUrl),
+    ).toString(),
     tenants: new URL(
       normalizePath(apiEndpoints.landlord.tenants),
       withTrailingSlash(env.apiBaseUrl),
