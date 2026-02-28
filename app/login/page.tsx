@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Login Tenant",
+  title: "Login Klinik",
   description:
-    "Halaman login tenant untuk masuk ke dashboard SaaS klinik berdasarkan tenant dan subdomain masing-masing.",
+    "Halaman login untuk admin, kasir, dan dokter agar bisa masuk ke sistem klinik dengan mudah.",
   alternates: {
     canonical: "/login",
   },
@@ -14,15 +14,15 @@ export default function LoginPage() {
   return (
     <main className="login-shell">
       <section className="login-card">
-        <span className="eyebrow">Login Tenant</span>
-        <h1>Masuk ke dashboard klinik Anda.</h1>
+        <span className="eyebrow">Login Klinik</span>
+        <h1>Masuk ke akun klinik Anda.</h1>
         <p>
-          Halaman ini adalah placeholder awal untuk login utama. Nanti bisa
-          dihubungkan ke form tenant, email, atau pencarian subdomain klinik.
+          Gunakan akun yang sudah terdaftar untuk mengakses operasional klinik,
+          mulai dari pendaftaran pasien sampai laporan harian.
         </p>
 
         <form className="login-form">
-          <label htmlFor="tenant">Tenant atau subdomain</label>
+          <label htmlFor="tenant">Nama klinik atau alamat login</label>
           <input id="tenant" type="text" placeholder="contoh: klinik-sehat" />
 
           <label htmlFor="email">Email</label>
@@ -34,7 +34,7 @@ export default function LoginPage() {
           <button type="submit">Masuk</button>
         </form>
 
-        <Link href="/">Kembali ke landing page</Link>
+        <Link href="/">Kembali ke halaman utama</Link>
       </section>
     </main>
   );

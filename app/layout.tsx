@@ -17,11 +17,11 @@ const siteUrl = "https://klinikku.id";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Klinikku Cloud | SaaS Klinik dengan Tenant Subdomain Sendiri",
-    template: "%s | Klinikku Cloud",
+    default: "Klinik RME | Aplikasi Klinik Online untuk Operasional Harian",
+    template: "%s | Klinik RME",
   },
   description:
-    "Klinikku Cloud adalah aplikasi SaaS klinik yang memungkinkan setiap klinik membuat tenant dan subdomain sendiri untuk operasional harian, manajemen pasien, kasir, jadwal dokter, dan laporan.",
+    "Klinik RME adalah aplikasi klinik online untuk mengelola pasien, antrean, jadwal dokter, kasir, dan laporan harian dengan lebih mudah.",
   keywords: [
     "saas klinik",
     "aplikasi klinik",
@@ -34,19 +34,19 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Klinikku Cloud",
+    title: "Klinik RME",
     description:
-      "Landing page SaaS klinik modern untuk tenant mandiri, subdomain sendiri, dan operasional klinik yang lebih rapi.",
+      "Aplikasi klinik online untuk membantu operasional lebih rapi, cepat, dan mudah dipakai oleh seluruh tim.",
     url: siteUrl,
-    siteName: "Klinikku Cloud",
+    siteName: "Klinik RME",
     locale: "id_ID",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Klinikku Cloud",
+    title: "Klinik RME",
     description:
-      "SaaS klinik dengan tenant mandiri, subdomain sendiri, pricing fleksibel, dan dashboard operasional modern.",
+      "Aplikasi klinik online dengan harga fleksibel dan dashboard yang mudah dipakai untuk operasional harian.",
   },
   robots: {
     index: true,

@@ -2,24 +2,24 @@ import Link from "next/link";
 
 const productHighlights = [
   {
-    title: "Buat tenant instan",
+    title: "Cabang klinik siap dipakai",
     description:
-      "Setiap klinik dapat membuat ruang kerja sendiri dengan subdomain unik untuk operasional yang terpisah dan aman.",
+      "Setiap klinik mendapatkan alamat login sendiri agar operasional lebih rapi, aman, dan mudah diakses oleh tim.",
   },
   {
-    title: "Front office sampai billing",
+    title: "Pelayanan sampai pembayaran",
     description:
-      "Kelola pendaftaran pasien, jadwal dokter, antrean, transaksi, dan histori layanan dalam satu alur kerja.",
+      "Atur pendaftaran pasien, jadwal dokter, antrean, transaksi, dan riwayat layanan dalam satu sistem yang mudah dipakai.",
   },
   {
-    title: "Data real-time",
+    title: "Laporan selalu terpantau",
     description:
-      "Pantau performa cabang, kunjungan pasien, dan pendapatan harian dari dashboard yang ringan dan responsif.",
+      "Pantau jumlah kunjungan pasien, performa layanan, dan pendapatan harian langsung dari dashboard.",
   },
 ];
 
 const features = [
-  "Tenant klinik dengan subdomain sendiri",
+  "Setiap klinik punya alamat login sendiri",
   "Pendaftaran pasien dan antrean digital",
   "Jadwal dokter dan layanan terintegrasi",
   "Kasir, invoice, dan laporan operasional",
@@ -30,12 +30,12 @@ const pricing = [
     name: "Starter",
     price: "Rp299rb",
     suffix: "/bulan",
-    description: "Untuk klinik baru yang butuh tenant mandiri dan operasional dasar.",
+    description: "Untuk klinik baru yang ingin mulai digitalisasi operasional harian.",
     items: [
-      "1 tenant subdomain klinik",
+      "1 alamat login klinik",
       "Manajemen pasien dan antrean",
       "Kasir dan invoice",
-      "Support email",
+      "Bantuan via email",
     ],
     accent: "light",
   },
@@ -43,12 +43,12 @@ const pricing = [
     name: "Growth",
     price: "Rp799rb",
     suffix: "/bulan",
-    description: "Untuk klinik aktif yang perlu workflow lebih lengkap dan insight bisnis.",
+    description: "Untuk klinik berkembang yang butuh kontrol operasional dan laporan lebih lengkap.",
     items: [
-      "Multi-user dan role staff",
+      "Akses untuk banyak staf",
       "Dashboard laporan harian",
-      "Pengaturan layanan dan dokter",
-      "Priority support",
+      "Pengaturan dokter dan layanan",
+      "Bantuan prioritas",
     ],
     accent: "featured",
   },
@@ -64,11 +64,11 @@ export default function HomePage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Klinikku Cloud",
+    name: "Klinik RME",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description:
-      "Aplikasi SaaS klinik dengan tenant dan subdomain mandiri untuk mengelola pasien, jadwal dokter, billing, dan laporan.",
+      "Aplikasi klinik berbasis cloud untuk mengelola pasien, jadwal dokter, pembayaran, dan laporan dalam satu sistem.",
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "IDR",
@@ -89,8 +89,8 @@ export default function HomePage() {
           <div className="brand-mark">
             <span className="brand-logo">+</span>
             <div>
-              <p>Klinikku Cloud</p>
-              <span>SaaS Operasional Klinik</span>
+              <p>Klinik RME</p>
+              <span>Solusi Digital untuk Klinik Modern</span>
             </div>
           </div>
           <nav className="nav-links" aria-label="Navigasi utama">
@@ -111,29 +111,15 @@ export default function HomePage() {
 
         <div className="hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">Platform SaaS Klinik Multi Tenant</span>
+            <span className="eyebrow">Aplikasi Klinik Berbasis Cloud</span>
             <h1>
-              Jual layanan klinik digital dengan tenant dan subdomain yang bisa
-              aktif sendiri.
+              Operasional klinik lebih rapi, cepat, dan nyaman untuk seluruh tim.
             </h1>
             <p>
-              Landing page ini dirancang untuk menjual aplikasi klinik berbasis
-              cloud. Calon pelanggan bisa melihat produk, memahami harga, lalu
-              masuk ke tenant mereka lewat subdomain masing-masing.
+              Kelola pendaftaran pasien, antrean, jadwal dokter, kasir, dan
+              laporan harian dalam satu aplikasi. Setiap klinik juga mendapat
+              alamat login sendiri agar akses lebih mudah dan profesional.
             </p>
-
-            <form className="hero-form">
-              <label className="sr-only" htmlFor="business-email">
-                Email bisnis
-              </label>
-              <input
-                id="business-email"
-                type="email"
-                placeholder="Email bisnis klinik"
-              />
-              <button type="submit">Jadwalkan Demo</button>
-            </form>
-
             <ul className="hero-points" aria-label="Nilai utama produk">
               {features.map((feature) => (
                 <li key={feature}>{feature}</li>
@@ -145,8 +131,8 @@ export default function HomePage() {
             <div className="dashboard-card floating-card">
               <div className="dashboard-top">
                 <div>
-                  <span className="card-label">Tenant aktif</span>
-                  <strong>klinik-sehat.klinikku.id</strong>
+                  <span className="card-label">Akun klinik aktif</span>
+                  <strong>klinik.clinicrme.my.id</strong>
                 </div>
                 <span className="status-pill">Online</span>
               </div>
@@ -182,9 +168,9 @@ export default function HomePage() {
             </div>
 
             <div className="mini-card">
-              <span className="card-label">Akses tenant</span>
-              <strong>login.klinik-sehat.id</strong>
-              <p>Masuk cepat untuk admin, kasir, dan dokter.</p>
+              <span className="card-label">Akses login klinik</span>
+              <strong>klinik.clinicrme.my.id</strong>
+              <p>Masuk lebih cepat untuk admin, kasir, dan dokter.</p>
             </div>
           </div>
         </div>
@@ -193,10 +179,10 @@ export default function HomePage() {
       <section className="feature-panel" id="produk">
         <div className="section-heading">
           <span className="eyebrow">Produk</span>
-          <h2>Satu platform klinik untuk onboarding tenant hingga operasional harian.</h2>
+          <h2>Satu aplikasi untuk melayani pasien dan menjalankan operasional klinik setiap hari.</h2>
           <p>
-            Cocok untuk model SaaS klinik yang ingin scale tanpa membingungkan
-            pengguna baru saat registrasi tenant.
+            Dirancang agar mudah dipahami pemilik klinik, staf administrasi,
+            kasir, dan dokter sejak hari pertama penggunaan.
           </p>
         </div>
 
@@ -213,8 +199,8 @@ export default function HomePage() {
 
       <section className="stats-section" id="fitur">
         <div className="stats-copy">
-          <span className="eyebrow">Kenapa cocok untuk klinik</span>
-          <h2>Desain onboarding jelas, dashboard rapi, dan siap dipakai sebagai mesin penjualan SaaS.</h2>
+          <span className="eyebrow">Kenapa pilih Klinik RME</span>
+          <h2>Tampilan mudah dipahami, alur kerja jelas, dan membantu klinik bekerja lebih efisien.</h2>
         </div>
         <div className="stats-grid">
           {stats.map((stat) => (
@@ -228,25 +214,25 @@ export default function HomePage() {
 
       <section className="workflow-section">
         <div className="section-heading inverted">
-          <span className="eyebrow">Alur Produk</span>
-          <h2>Dari daftar tenant sampai login ke subdomain, semua terasa sederhana.</h2>
+          <span className="eyebrow">Cara Mulai</span>
+          <h2>Dari pilih paket sampai mulai melayani pasien, semuanya dibuat sederhana.</h2>
         </div>
 
         <div className="workflow-grid">
           <article className="workflow-card">
             <span>1</span>
             <h3>Pilih paket</h3>
-            <p>Calon pelanggan melihat paket layanan dan memilih kebutuhan kliniknya.</p>
+            <p>Pilih paket sesuai kebutuhan operasional dan skala klinik Anda.</p>
           </article>
           <article className="workflow-card">
             <span>2</span>
-            <h3>Buat tenant</h3>
-            <p>Sistem menyiapkan tenant dan subdomain untuk klinik yang baru bergabung.</p>
+            <h3>Aktifkan akun klinik</h3>
+            <p>Klinik Anda akan mendapatkan akses login sendiri yang siap digunakan oleh tim.</p>
           </article>
           <article className="workflow-card">
             <span>3</span>
-            <h3>Masuk dan operasikan</h3>
-            <p>Tim klinik login ke subdomain masing-masing lalu mulai mengelola layanan.</p>
+            <h3>Mulai operasional</h3>
+            <p>Tim Anda bisa langsung mengelola pasien, antrean, dokter, dan pembayaran dalam satu aplikasi.</p>
           </article>
         </div>
       </section>
@@ -254,10 +240,10 @@ export default function HomePage() {
       <section className="pricing-section" id="harga">
         <div className="section-heading centered">
           <span className="eyebrow">Harga</span>
-          <h2>Paket simpel untuk mulai jual aplikasi klinik Anda.</h2>
+          <h2>Pilih paket yang sesuai untuk kebutuhan klinik Anda.</h2>
           <p>
-            Struktur harga dibuat jelas agar visitor cepat paham lalu lanjut ke
-            demo atau login.
+            Harga transparan, fitur jelas, dan mudah dipilih sesuai tahap
+            pertumbuhan klinik Anda.
           </p>
         </div>
 
@@ -290,11 +276,11 @@ export default function HomePage() {
 
       <section className="cta-section" id="login">
         <div>
-          <span className="eyebrow">Login Tenant</span>
-          <h2>Sudah punya tenant? Masuk ke dashboard klinik Anda sekarang.</h2>
+          <span className="eyebrow">Login Klinik</span>
+          <h2>Sudah terdaftar? Masuk ke akun klinik Anda sekarang.</h2>
           <p>
-            Section ini bisa nanti dihubungkan ke halaman login utama atau form
-            pencarian subdomain tenant.
+            Tim admin, kasir, dan dokter bisa masuk ke sistem klinik untuk
+            melanjutkan operasional harian.
           </p>
         </div>
         <div className="cta-actions">
