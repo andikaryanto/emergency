@@ -79,10 +79,10 @@ export async function getLandlordAuthorizationHeader() {
   const token = await getLandlordAccessToken();
 
   if (!token) {
-    return {};
+    return {} as HeadersInit;
   }
 
   return {
     Authorization: `Bearer ${token}`,
-  };
+  } satisfies HeadersInit;
 }

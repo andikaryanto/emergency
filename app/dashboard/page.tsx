@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getLandlordAccessToken, getLandlordAuthUser } from "../../lib/landlord/auth-session";
+import {
+  getLandlordAccessToken,
+  getLandlordAuthorizationHeader,
+  getLandlordAuthUser,
+} from "../../lib/landlord/auth-session";
+import {
+  ListLandlordTenantsError,
+  type ListLandlordTenantsResponse,
+  listLandlordTenants,
+} from "../../lib/landlord/list-tenants";
 
 export const metadata: Metadata = {
   title: "Dashboard Tenant",
@@ -11,45 +20,56 @@ export const metadata: Metadata = {
   },
 };
 
-const tenantStats = [
-  { label: "Total tenant", value: "3" },
-  { label: "Tenant aktif", value: "2" },
-  { label: "Perlu tindakan", value: "1" },
-];
+function formatTenantDate(value: string) {
+  const date = new Date(value.replace(" ", "T"));
 
-const tenants = [
-  {
-    name: "Klinik Sehat Sentosa",
-    url: "sehatsentosa.clinicrme.my.id",
-    plan: "Growth",
-    status: "Aktif",
-    users: "12 user",
-    updatedAt: "Diperbarui 2 jam lalu",
-  },
-  {
-    name: "Klinik Medika Keluarga",
-    url: "medikakeluarga.clinicrme.my.id",
-    plan: "Starter",
-    status: "Aktif",
-    users: "5 user",
-    updatedAt: "Diperbarui kemarin",
-  },
-  {
-    name: "Klinik Griya Ibu Anak",
-    url: "griyaibuanak.clinicrme.my.id",
-    plan: "Starter",
-    status: "Menunggu aktivasi",
-    users: "Belum ada user",
-    updatedAt: "Baru dibuat",
-  },
-];
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
 
 export default async function DashboardPage() {
-  const [currentUser, accessToken] = await Promise.all([
+  const [currentUser, accessToken, authorizationHeader] = await Promise.all([
     getLandlordAuthUser(),
     getLandlordAccessToken(),
+    getLandlordAuthorizationHeader(),
   ]);
   const currentUserName = currentUser?.name ?? "dr. Amanda Pratama";
+  let tenantErrorMessage: string | null = null;
+  let tenantData: ListLandlordTenantsResponse = {
+    tenants: [],
+    paging: {
+      page: 1,
+      limit: 10,
+      totalData: 0,
+      isLastPage: true,
+    },
+  };
+
+  if (accessToken) {
+    try {
+      tenantData = await listLandlordTenants(authorizationHeader);
+    } catch (error) {
+      tenantErrorMessage =
+        error instanceof ListLandlordTenantsError
+          ? error.message
+          : "Tenant tidak dapat dimuat saat ini.";
+    }
+  }
+
+  const tenantStats = [
+    { label: "Total tenant", value: String(tenantData.paging.totalData) },
+    { label: "Tenant halaman ini", value: String(tenantData.tenants.length) },
+    { label: "Halaman API", value: String(tenantData.paging.page) },
+  ];
 
   return (
     <main className="dashboard-shell">
@@ -128,49 +148,55 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <div className="tenant-list">
-              {tenants.map((tenant) => (
-                <article key={tenant.url} className="tenant-card">
-                  <div className="tenant-card-head">
-                    <div>
-                      <h3>{tenant.name}</h3>
-                      <a href={`https://${tenant.url}`}>{tenant.url}</a>
+            {!accessToken ? (
+              <div className="dashboard-feedback">
+                Login diperlukan untuk mengambil daftar tenant dari API.
+              </div>
+            ) : tenantErrorMessage ? (
+              <div className="dashboard-feedback">{tenantErrorMessage}</div>
+            ) : tenantData.tenants.length === 0 ? (
+              <div className="dashboard-feedback">
+                Belum ada tenant yang terdaftar untuk akun ini.
+              </div>
+            ) : (
+              <div className="tenant-list">
+                {tenantData.tenants.map((tenant) => (
+                  <article key={tenant.id} className="tenant-card">
+                    <div className="tenant-card-head">
+                      <div>
+                        <h3>{tenant.name}</h3>
+                        <a href={`https://${tenant.domain}`}>{tenant.domain}</a>
+                      </div>
+                      <span className="tenant-status active">Aktif</span>
                     </div>
-                    <span
-                      className={`tenant-status ${
-                        tenant.status === "Aktif" ? "active" : "pending"
-                      }`}
-                    >
-                      {tenant.status}
-                    </span>
-                  </div>
 
-                  <div className="tenant-meta">
-                    <div>
-                      <span>Paket</span>
-                      <strong>{tenant.plan}</strong>
+                    <div className="tenant-meta">
+                      <div>
+                        <span>ID Tenant</span>
+                        <strong>{tenant.id}</strong>
+                      </div>
+                      <div>
+                        <span>Dibuat</span>
+                        <strong>{formatTenantDate(tenant.createdAt)}</strong>
+                      </div>
+                      <div>
+                        <span>Diperbarui</span>
+                        <strong>{formatTenantDate(tenant.updatedAt)}</strong>
+                      </div>
                     </div>
-                    <div>
-                      <span>Pengguna</span>
-                      <strong>{tenant.users}</strong>
-                    </div>
-                    <div>
-                      <span>Status terakhir</span>
-                      <strong>{tenant.updatedAt}</strong>
-                    </div>
-                  </div>
 
-                  <div className="tenant-actions">
-                    <a href={`https://${tenant.url}`} className="ghost-button">
-                      Buka Tenant
-                    </a>
-                    <button type="button" className="tenant-text-action">
-                      Kelola Tenant
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
+                    <div className="tenant-actions">
+                      <a href={`https://${tenant.domain}`} className="ghost-button">
+                        Buka Tenant
+                      </a>
+                      <button type="button" className="tenant-text-action">
+                        Kelola Tenant
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="create-tenant-panel" id="create-tenant">
