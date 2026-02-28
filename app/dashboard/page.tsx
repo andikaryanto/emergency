@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { logoutUserAction } from "./actions";
 import {
   getLandlordAccessToken,
   getLandlordAuthorizationHeader,
@@ -12,9 +13,9 @@ import {
 } from "../../lib/landlord/list-tenants";
 
 export const metadata: Metadata = {
-  title: "Dashboard Tenant",
+  title: "Dashboard Klinik",
   description:
-    "Halaman user untuk melihat daftar tenant klinik, status tenant, dan memulai pembuatan tenant baru.",
+    "Halaman untuk melihat daftar klinik Anda, memantau statusnya, dan menyiapkan klinik baru.",
   alternates: {
     canonical: "/dashboard",
   },
@@ -74,9 +75,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   const tenantStats = [
-    { label: "Total tenant", value: String(tenantData.paging.totalData) },
-    { label: "Tenant halaman ini", value: String(tenantData.tenants.length) },
-    { label: "Halaman API", value: String(tenantData.paging.page) },
+    { label: "Total klinik", value: String(tenantData.paging.totalData) },
+    { label: "Klinik di halaman ini", value: String(tenantData.tenants.length) },
+    { label: "Halaman daftar", value: String(tenantData.paging.page) },
   ];
 
   return (
@@ -93,23 +94,31 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           <nav className="dashboard-nav" aria-label="Navigasi dashboard">
             <a className="dashboard-link active" href="#tenant-list">
-              Tenant Saya
+              Klinik Saya
             </a>
             <a className="dashboard-link" href="#overview">
               Ringkasan
             </a>
             <a className="dashboard-link" href="#create-tenant">
-              Buat Tenant
+              Buat Klinik
             </a>
           </nav>
 
+          {accessToken ? (
+            <form action={logoutUserAction} className="dashboard-sidebar-action">
+              <button type="submit" className="ghost-button dashboard-logout-button">
+                Logout
+              </button>
+            </form>
+          ) : null}
+
           <div className="dashboard-note">
             <span className="card-label">Status akun</span>
-            <strong>{accessToken ? "Login aktif" : "Siap membuat tenant baru"}</strong>
+            <strong>{accessToken ? "Anda sudah masuk" : "Siap menambahkan klinik baru"}</strong>
             <p>
               {accessToken
-                ? "Token login tersimpan dan siap dipakai untuk request API dari dashboard."
-                : "Setelah akun aktif, Anda bisa membuat tenant untuk setiap klinik atau cabang yang Anda kelola."}
+                ? "Akun Anda aktif dan siap digunakan untuk mengelola klinik yang Anda miliki."
+                : "Setelah masuk, Anda bisa menambahkan klinik atau cabang baru kapan saja."}
             </p>
           </div>
         </aside>
@@ -117,25 +126,25 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <section className="dashboard-main">
           <header className="dashboard-header">
             <div>
-              <span className="eyebrow">Dashboard User</span>
+              <span className="eyebrow">Dashboard Klinik</span>
               <h1>Selamat datang, {currentUserName}.</h1>
               <p>
-                Lihat daftar tenant, cek statusnya, lalu buat tenant baru saat
-                Anda siap menambah klinik atau cabang baru.
+                Lihat daftar klinik Anda, cek alamat aksesnya, lalu tambahkan
+                klinik baru saat Anda siap memperluas operasional.
               </p>
               {isCreated ? (
                 <p className="auth-message auth-message-success dashboard-message">
-                  Tenant berhasil dibuat dan daftar tenant telah diperbarui.
+                  Klinik baru berhasil dibuat dan daftar Anda sudah diperbarui.
                 </p>
               ) : null}
             </div>
 
             <div className="dashboard-header-actions">
               <Link href="/" className="ghost-button">
-                Kembali ke landing page
+                Kembali ke halaman utama
               </Link>
               <Link href="/dashboard/create-tenant" className="primary-button">
-                Buat Tenant Baru
+                Buat Klinik Baru
               </Link>
             </div>
           </header>
@@ -152,24 +161,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <section className="tenant-section" id="tenant-list">
             <div className="tenant-section-head">
               <div>
-                <span className="eyebrow">Tenant Saya</span>
-                <h2>Daftar tenant yang sudah Anda miliki.</h2>
+                <span className="eyebrow">Klinik Saya</span>
+                <h2>Daftar klinik yang sudah Anda miliki.</h2>
               </div>
               <p>
-                Gunakan halaman ini untuk memantau tenant aktif, melihat domain
-                login, dan mengecek tenant yang masih menunggu aktivasi.
+                Gunakan halaman ini untuk melihat klinik yang sudah aktif,
+                membuka alamat aksesnya, dan memantau pembaruan terakhir.
               </p>
             </div>
 
             {!accessToken ? (
               <div className="dashboard-feedback">
-                Login diperlukan untuk mengambil daftar tenant dari API.
+                Silakan login untuk melihat daftar klinik Anda.
               </div>
             ) : tenantErrorMessage ? (
               <div className="dashboard-feedback">{tenantErrorMessage}</div>
             ) : tenantData.tenants.length === 0 ? (
               <div className="dashboard-feedback">
-                Belum ada tenant yang terdaftar untuk akun ini.
+                Belum ada klinik yang terdaftar di akun Anda.
               </div>
             ) : (
               <div className="tenant-list">
@@ -185,7 +194,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
                     <div className="tenant-meta">
                       <div>
-                        <span>ID Tenant</span>
+                        <span>ID Klinik</span>
                         <strong>{tenant.id}</strong>
                       </div>
                       <div>
@@ -200,10 +209,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
                     <div className="tenant-actions">
                       <a href={`https://${tenant.domain}`} className="ghost-button">
-                        Buka Tenant
+                        Buka Klinik
                       </a>
                       <button type="button" className="tenant-text-action">
-                        Kelola Tenant
+                        Kelola Klinik
                       </button>
                     </div>
                   </article>
@@ -214,21 +223,21 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
           <section className="create-tenant-panel" id="create-tenant">
             <div>
-              <span className="eyebrow">Buat Tenant Baru</span>
-              <h2>Siapkan tenant baru untuk klinik berikutnya.</h2>
+              <span className="eyebrow">Buat Klinik Baru</span>
+              <h2>Siapkan akses untuk klinik atau cabang berikutnya.</h2>
               <p>
-                Nanti halaman ini bisa diarahkan ke form pembuatan tenant.
-                Untuk sekarang, ini menjadi titik masuk yang jelas untuk user.
+                Tambahkan klinik baru beserta akun utamanya dalam satu alur yang
+                sederhana.
               </p>
             </div>
 
             <div className="create-tenant-actions">
               <Link href="/dashboard/create-tenant" className="primary-button">
-                Mulai Buat Tenant
+                Mulai Buat Klinik
               </Link>
               <p>
-                Form tenant berisi nama tenant, username admin, email admin, dan
-                password admin awal.
+                Anda hanya perlu menyiapkan nama klinik, username utama, email,
+                dan password akun pertamanya.
               </p>
             </div>
           </section>
