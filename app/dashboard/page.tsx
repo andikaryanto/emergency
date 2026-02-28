@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   },
 };
 
+type DashboardPageProps = {
+  searchParams?: Promise<{
+    created?: string;
+  }>;
+};
+
 function formatTenantDate(value: string) {
   const date = new Date(value.replace(" ", "T"));
 
@@ -36,7 +42,9 @@ function formatTenantDate(value: string) {
   }).format(date);
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const params = await searchParams;
+  const isCreated = params?.created === "1";
   const [currentUser, accessToken, authorizationHeader] = await Promise.all([
     getLandlordAuthUser(),
     getLandlordAccessToken(),
@@ -115,15 +123,20 @@ export default async function DashboardPage() {
                 Lihat daftar tenant, cek statusnya, lalu buat tenant baru saat
                 Anda siap menambah klinik atau cabang baru.
               </p>
+              {isCreated ? (
+                <p className="auth-message auth-message-success dashboard-message">
+                  Tenant berhasil dibuat dan daftar tenant telah diperbarui.
+                </p>
+              ) : null}
             </div>
 
             <div className="dashboard-header-actions">
               <Link href="/" className="ghost-button">
                 Kembali ke landing page
               </Link>
-              <a href="#create-tenant" className="primary-button">
+              <Link href="/dashboard/create-tenant" className="primary-button">
                 Buat Tenant Baru
-              </a>
+              </Link>
             </div>
           </header>
 
@@ -210,10 +223,13 @@ export default async function DashboardPage() {
             </div>
 
             <div className="create-tenant-actions">
-              <button type="button" className="primary-button">
+              <Link href="/dashboard/create-tenant" className="primary-button">
                 Mulai Buat Tenant
-              </button>
-              <p>Contoh alur berikutnya: nama klinik, alamat tenant, dan paket.</p>
+              </Link>
+              <p>
+                Form tenant berisi nama tenant, username admin, email admin, dan
+                password admin awal.
+              </p>
             </div>
           </section>
         </section>

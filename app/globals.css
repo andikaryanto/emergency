@@ -803,6 +803,10 @@ input {
   max-width: 58ch;
 }
 
+.dashboard-message {
+  max-width: 58ch;
+}
+
 .dashboard-header-actions {
   display: flex;
   gap: 12px;
