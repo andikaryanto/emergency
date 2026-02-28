@@ -655,6 +655,42 @@ input {
   margin: 0;
 }
 
+.auth-message {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.auth-message-error {
+  color: #8a1c1c;
+  background: rgba(255, 228, 228, 0.92);
+  border: 1px solid rgba(197, 76, 76, 0.18);
+}
+
+.auth-message-success {
+  color: #0b5e53;
+  background: rgba(219, 244, 237, 0.92);
+  border: 1px solid rgba(12, 139, 107, 0.18);
+}
+
+.field-error {
+  margin: -4px 0 0;
+  color: #8a1c1c;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.auth-form input[aria-invalid="true"] {
+  border-color: rgba(197, 76, 76, 0.5);
+  background: rgba(255, 244, 244, 0.95);
+}
+
+.auth-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .auth-helper a {
   color: var(--primary-deep);
   font-weight: 800;

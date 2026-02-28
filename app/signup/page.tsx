@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SignupForm } from "./signup-form";
 
 export const metadata: Metadata = {
   title: "Buat Akun",
@@ -35,22 +36,7 @@ export default function SignupPage() {
           </ul>
         </div>
 
-        <form className="auth-form">
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" placeholder="nama@klinikanda.com" />
-
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" placeholder="Minimal 8 karakter" />
-
-          <label htmlFor="confirm-password">Konfirmasi password</label>
-          <input
-            id="confirm-password"
-            type="password"
-            placeholder="Ulangi password Anda"
-          />
-
-          <button type="submit">Buat Akun</button>
-        </form>
+        <SignupForm />
 
         <div className="auth-footer">
           <p className="auth-helper">

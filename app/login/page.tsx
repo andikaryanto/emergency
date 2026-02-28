@@ -10,7 +10,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    registered?: string;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const isRegistered = params?.registered === "1";
+
   return (
     <main className="login-shell">
       <section className="login-card">
@@ -20,6 +29,12 @@ export default function LoginPage() {
           Gunakan akun yang sudah terdaftar untuk masuk ke dashboard, lalu
           kelola tenant klinik dan operasional harian Anda.
         </p>
+
+        {isRegistered ? (
+          <p className="auth-message auth-message-success">
+            Akun berhasil dibuat. Silakan login untuk melanjutkan.
+          </p>
+        ) : null}
 
         <form className="login-form">
           <label htmlFor="email">Email</label>
