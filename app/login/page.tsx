@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -18,6 +20,12 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const accessToken = await getLandlordAccessToken();
+
+  if (accessToken) {
+    redirect("/dashboard");
+  }
+
   const params = await searchParams;
   const isRegistered = params?.registered === "1";
 

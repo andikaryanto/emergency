@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
 import { SignupForm } from "./signup-form";
 
 export const metadata: Metadata = {
@@ -17,7 +19,13 @@ const signupBenefits = [
   "Satu akun untuk mulai mengatur operasional klinik Anda",
 ];
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const accessToken = await getLandlordAccessToken();
+
+  if (accessToken) {
+    redirect("/dashboard");
+  }
+
   return (
     <main className="auth-shell">
       <section className="auth-card">
