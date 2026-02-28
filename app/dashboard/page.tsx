@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getLandlordAccessToken, getLandlordAuthUser } from "../../lib/landlord/auth-session";
 
 export const metadata: Metadata = {
   title: "Dashboard Tenant",
@@ -43,8 +44,12 @@ const tenants = [
   },
 ];
 
-export default function DashboardPage() {
-  const currentUserName = "dr. Amanda Pratama";
+export default async function DashboardPage() {
+  const [currentUser, accessToken] = await Promise.all([
+    getLandlordAuthUser(),
+    getLandlordAccessToken(),
+  ]);
+  const currentUserName = currentUser?.name ?? "dr. Amanda Pratama";
 
   return (
     <main className="dashboard-shell">
@@ -72,10 +77,11 @@ export default function DashboardPage() {
 
           <div className="dashboard-note">
             <span className="card-label">Status akun</span>
-            <strong>Siap membuat tenant baru</strong>
+            <strong>{accessToken ? "Login aktif" : "Siap membuat tenant baru"}</strong>
             <p>
-              Setelah akun aktif, Anda bisa membuat tenant untuk setiap klinik
-              atau cabang yang Anda kelola.
+              {accessToken
+                ? "Token login tersimpan dan siap dipakai untuk request API dari dashboard."
+                : "Setelah akun aktif, Anda bisa membuat tenant untuk setiap klinik atau cabang yang Anda kelola."}
             </p>
           </div>
         </aside>

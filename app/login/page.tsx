@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Login Klinik",
@@ -21,14 +22,16 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const isRegistered = params?.registered === "1";
 
   return (
-    <main className="login-shell">
-      <section className="login-card">
-        <span className="eyebrow">Login Klinik</span>
-        <h1>Masuk ke akun Anda.</h1>
-        <p>
-          Gunakan akun yang sudah terdaftar untuk masuk ke dashboard, lalu
-          kelola tenant klinik dan operasional harian Anda.
-        </p>
+    <main className="auth-shell">
+      <section className="auth-card">
+        <div className="auth-copy">
+          <span className="eyebrow">Login Klinik</span>
+          <h1>Masuk ke akun Anda.</h1>
+          <p>
+            Gunakan akun yang sudah terdaftar untuk masuk ke dashboard, lalu
+            kelola tenant klinik dan operasional harian Anda.
+          </p>
+        </div>
 
         {isRegistered ? (
           <p className="auth-message auth-message-success">
@@ -36,23 +39,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </p>
         ) : null}
 
-        <form className="login-form">
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" placeholder="nama@klinikanda.com" />
+        <LoginForm />
 
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" placeholder="••••••••" />
-
-          <button type="submit">Masuk</button>
-        </form>
-
-        <p className="auth-helper">
-          Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
-        </p>
-        <p className="auth-helper">
-          Ingin lihat area user? <Link href="/dashboard">Buka dashboard contoh</Link>
-        </p>
-        <Link href="/">Kembali ke halaman utama</Link>
+        <div className="auth-footer">
+          <p className="auth-helper">
+            Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
+          </p>
+          <p className="auth-helper">
+            Ingin lihat area user? <Link href="/dashboard">Buka dashboard contoh</Link>
+          </p>
+          <Link href="/">Kembali ke halaman utama</Link>
+        </div>
       </section>
     </main>
   );
