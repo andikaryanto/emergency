@@ -925,12 +925,25 @@ input {
   border-radius: 28px;
 }
 
+.tenant-card-demo {
+  border: 1px solid rgba(215, 243, 106, 0.52);
+  box-shadow: 0 18px 42px rgba(24, 62, 48, 0.12);
+}
+
 .tenant-card-head,
 .tenant-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.tenant-status-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .tenant-card-head h3 {
@@ -961,6 +974,16 @@ input {
   background: rgba(255, 214, 102, 0.3);
 }
 
+.tenant-status.inactive {
+  color: #8a1c1c;
+  background: rgba(255, 228, 228, 0.92);
+}
+
+.tenant-status.demo {
+  color: #5d4a00;
+  background: rgba(215, 243, 106, 0.34);
+}
+
 .tenant-meta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -971,6 +994,22 @@ input {
 .tenant-meta strong {
   display: block;
   margin-top: 8px;
+}
+
+.tenant-inline-notice {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 244, 214, 0.78);
+  border: 1px solid rgba(255, 214, 102, 0.36);
+  color: #6d5600;
+  line-height: 1.7;
+}
+
+.tenant-inline-notice-demo {
+  background: rgba(215, 243, 106, 0.18);
+  border-color: rgba(140, 170, 40, 0.22);
+  color: #405000;
 }
 
 .tenant-text-action {
