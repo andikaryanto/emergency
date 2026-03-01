@@ -176,6 +176,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="dashboard-notice landing-notice" aria-label="Informasi promo">
+        <div>
+          <span className="eyebrow">Info Penting</span>
+          <h2>Coba gratis 7 hari untuk mulai lebih tenang.</h2>
+          <p>
+            Gunakan masa coba gratis ini untuk menyiapkan klinik Anda,
+            mencoba alur kerja harian, dan memastikan tim Anda nyaman sebelum
+            melanjutkan ke tahap berikutnya.
+          </p>
+        </div>
+        <p className="dashboard-notice-copy">
+          Anda bisa mulai tanpa komitmen awal, lalu lanjutkan saat sudah yakin
+          sistem ini cocok untuk kebutuhan klinik Anda.
+        </p>
+      </section>
+
       <section className="feature-panel" id="produk">
         <div className="section-heading">
           <span className="eyebrow">Produk</span>
