@@ -15,6 +15,7 @@ export const apiEndpoints = {
     tenant: "/api/landlord/tenant",
     tenants: "/api/landlord/tenants",
     user: {
+      forgotPassword: "/api/landlord/user/forgot-password",
       login: "/api/landlord/user/login",
       register: "/api/landlord/user/register",
     },
@@ -32,6 +33,10 @@ export const apiEndpointUrls = {
       withTrailingSlash(env.apiBaseUrl),
     ).toString(),
     user: {
+      forgotPassword: new URL(
+        normalizePath(apiEndpoints.landlord.user.forgotPassword),
+        withTrailingSlash(env.apiBaseUrl),
+      ).toString(),
       login: new URL(
         normalizePath(apiEndpoints.landlord.user.login),
         withTrailingSlash(env.apiBaseUrl),
