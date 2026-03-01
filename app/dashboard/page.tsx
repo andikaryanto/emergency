@@ -149,6 +149,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div>
           </header>
 
+          <section className="dashboard-notice" aria-label="Informasi akun">
+            <div>
+              <span className="eyebrow">Info Penting</span>
+              <h2>Coba gratis 7 hari sudah aktif.</h2>
+              <p>
+                Gunakan masa coba gratis ini untuk menyiapkan klinik Anda,
+                mencoba alur kerja, dan memastikan tim Anda nyaman sebelum
+                melanjutkan ke tahap berikutnya.
+              </p>
+            </div>
+            <p className="dashboard-notice-copy">
+              Pastikan data klinik dan akun utama sudah benar agar proses
+              penggunaan berjalan lancar selama masa percobaan.
+            </p>
+          </section>
+
           <section className="dashboard-overview" id="overview">
             {tenantStats.map((item) => (
               <article key={item.label} className="dashboard-stat">

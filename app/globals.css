@@ -828,6 +828,49 @@ input {
   margin: 28px 0 18px;
 }
 
+.dashboard-notice {
+  margin-top: 28px;
+  padding: 24px 26px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  background:
+    linear-gradient(135deg, rgba(15, 47, 56, 0.92) 0%, rgba(11, 94, 83, 0.9) 100%),
+    radial-gradient(circle at top right, rgba(215, 243, 106, 0.18), transparent 30%);
+  color: white;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dashboard-notice .eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.dashboard-notice h2 {
+  margin: 16px 0 10px;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.dashboard-notice p {
+  margin: 0;
+  color: rgba(239, 248, 246, 0.84);
+  line-height: 1.7;
+}
+
+.dashboard-notice-copy {
+  max-width: 34ch;
+}
+
+.landing-notice {
+  margin: 0 0 26px;
+}
+
 .dashboard-stat {
   padding: 22px;
   border-radius: 24px;
@@ -1000,6 +1043,7 @@ input {
   }
 
   .dashboard-header,
+  .dashboard-notice,
   .tenant-section-head,
   .create-tenant-panel {
     flex-direction: column;

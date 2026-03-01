@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 type LoginPageProps = {
   searchParams?: Promise<{
     registered?: string;
+    reset?: string;
   }>;
 };
 
@@ -28,6 +29,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   const params = await searchParams;
   const isRegistered = params?.registered === "1";
+  const isReset = params?.reset === "1";
 
   return (
     <main className="auth-shell">
@@ -47,14 +49,20 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </p>
         ) : null}
 
+        {isReset ? (
+          <p className="auth-message auth-message-success">
+            Password berhasil diperbarui. Silakan login dengan password baru Anda.
+          </p>
+        ) : null}
+
         <LoginForm />
 
         <div className="auth-footer">
           <p className="auth-helper">
-            Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
+            Lupa password? <Link href="/forgot-password">Atur ulang di sini</Link>
           </p>
           <p className="auth-helper">
-            Ingin lihat area user? <Link href="/dashboard">Buka dashboard contoh</Link>
+            Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
           </p>
           <Link href="/">Kembali ke halaman utama</Link>
         </div>
