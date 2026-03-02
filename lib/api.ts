@@ -18,7 +18,9 @@ export const apiEndpoints = {
       forgotPassword: "/api/landlord/user/forgot-password",
       login: "/api/landlord/user/login",
       register: "/api/landlord/user/register",
+      resendVerificationEmail: "/api/landlord/user/resend-verification-email",
       resetPassword: "/api/landlord/user/reset-password",
+      verifyEmail: "/api/landlord/user/verify-email",
       validateResetToken: "/api/landlord/user/validate-reset-token",
     },
   },
@@ -47,8 +49,16 @@ export const apiEndpointUrls = {
         normalizePath(apiEndpoints.landlord.user.register),
         withTrailingSlash(env.apiBaseUrl),
       ).toString(),
+      resendVerificationEmail: new URL(
+        normalizePath(apiEndpoints.landlord.user.resendVerificationEmail),
+        withTrailingSlash(env.apiBaseUrl),
+      ).toString(),
       resetPassword: new URL(
         normalizePath(apiEndpoints.landlord.user.resetPassword),
+        withTrailingSlash(env.apiBaseUrl),
+      ).toString(),
+      verifyEmail: new URL(
+        normalizePath(apiEndpoints.landlord.user.verifyEmail),
         withTrailingSlash(env.apiBaseUrl),
       ).toString(),
       validateResetToken: new URL(
