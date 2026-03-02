@@ -27,8 +27,12 @@ type DashboardPageProps = {
   }>;
 };
 
+function parseApiDate(value: string) {
+  return new Date(value.replace(" ", "T"));
+}
+
 function formatTenantDate(value: string) {
-  const date = new Date(value.replace(" ", "T"));
+  const date = parseApiDate(value);
 
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -41,6 +45,66 @@ function formatTenantDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function getClinicStatusLabel(tenant: ListLandlordTenantsResponse["tenants"][number]) {
+  if (!tenant.isProcessComplete) {
+    return {
+      label: "Sedang diproses",
+      className: "pending",
+    } as const;
+  }
+
+  if (tenant.disabledAt) {
+    return {
+      label: "Tidak aktif",
+      className: "inactive",
+    } as const;
+  }
+
+  if (tenant.isActive) {
+    return {
+      label: "Aktif",
+      className: "active",
+    } as const;
+  }
+
+  return {
+    label: "Menunggu aktivasi",
+    className: "pending",
+  } as const;
+}
+
+function getDemoExpiryNotice(tenant: ListLandlordTenantsResponse["tenants"][number]) {
+  if (!tenant.isDemo) {
+    return null;
+  }
+
+  const createdAt = parseApiDate(tenant.createdAt);
+
+  if (Number.isNaN(createdAt.getTime())) {
+    return "Masa coba gratis sedang berjalan. Lanjutkan ke paket berbayar agar akses klinik tetap aktif.";
+  }
+
+  const trialEndDate = tenant.trialEndsAt
+    ? parseApiDate(tenant.trialEndsAt)
+    : new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  if (Number.isNaN(trialEndDate.getTime())) {
+    return "Masa coba gratis sedang berjalan. Lanjutkan ke paket berbayar agar akses klinik tetap aktif.";
+  }
+
+  const remainingDays = Math.ceil(
+    (trialEndDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+  );
+
+  if (remainingDays <= 2) {
+    return remainingDays > 0
+      ? `Masa coba gratis hampir berakhir. Segera lanjutkan paket berbayar dalam ${remainingDays} hari agar klinik tetap aktif.`
+      : "Masa coba gratis sudah mendekati batas akhir. Segera lanjutkan paket berbayar agar klinik tidak dinonaktifkan.";
+  }
+
+  return "Mode demo aktif. Gunakan masa coba gratis 7 hari ini untuk mencoba alur kerja klinik Anda.";
 }
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
@@ -199,13 +263,25 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             ) : (
               <div className="tenant-list">
                 {tenantData.tenants.map((tenant) => (
-                  <article key={tenant.id} className="tenant-card">
+                  <article
+                    key={tenant.id}
+                    className={`tenant-card ${tenant.isDemo ? "tenant-card-demo" : ""}`}
+                  >
                     <div className="tenant-card-head">
                       <div>
                         <h3>{tenant.name}</h3>
                         <a href={`https://${tenant.domain}`}>{tenant.domain}</a>
                       </div>
-                      <span className="tenant-status active">Aktif</span>
+                      <div className="tenant-status-group">
+                        {tenant.isDemo ? (
+                          <span className="tenant-status demo">Demo</span>
+                        ) : null}
+                        <span
+                          className={`tenant-status ${getClinicStatusLabel(tenant).className}`}
+                        >
+                          {getClinicStatusLabel(tenant).label}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="tenant-meta">
@@ -222,6 +298,19 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         <strong>{formatTenantDate(tenant.updatedAt)}</strong>
                       </div>
                     </div>
+
+                    {!tenant.isProcessComplete ? (
+                      <p className="tenant-inline-notice">
+                        Klinik sedang diproses. Kami akan menyelesaikan penyiapan akses
+                        secepatnya.
+                      </p>
+                    ) : null}
+
+                    {tenant.isDemo ? (
+                      <p className="tenant-inline-notice tenant-inline-notice-demo">
+                        {getDemoExpiryNotice(tenant)}
+                      </p>
+                    ) : null}
 
                     <div className="tenant-actions">
                       <a href={`https://${tenant.domain}`} className="ghost-button">

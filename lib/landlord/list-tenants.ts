@@ -7,6 +7,12 @@ type ListTenantsApiResponse = {
       id?: number;
       name?: string;
       domain?: string;
+      is_demo?: boolean;
+      is_active?: boolean;
+      is_process_complete?: boolean;
+      trial_ends_at?: string | null;
+      paid_at?: string | null;
+      disabled_at?: string | null;
       created_at?: string;
       updated_at?: string;
     }>;
@@ -23,6 +29,12 @@ export type LandlordTenant = {
   id: number;
   name: string;
   domain: string;
+  isDemo: boolean;
+  isActive: boolean;
+  isProcessComplete: boolean;
+  trialEndsAt: string | null;
+  paidAt: string | null;
+  disabledAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -67,6 +79,14 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
         id: tenant.id,
         name: tenant.name,
         domain: tenant.domain,
+        isDemo: Boolean(tenant.is_demo),
+        isActive: Boolean(tenant.is_active),
+        isProcessComplete: Boolean(tenant.is_process_complete),
+        trialEndsAt:
+          typeof tenant.trial_ends_at === "string" ? tenant.trial_ends_at : null,
+        paidAt: typeof tenant.paid_at === "string" ? tenant.paid_at : null,
+        disabledAt:
+          typeof tenant.disabled_at === "string" ? tenant.disabled_at : null,
         createdAt: tenant.created_at,
         updatedAt: tenant.updated_at,
       },
