@@ -59,6 +59,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <div className="auth-footer">
           <p className="auth-helper">
+            Belum dapat email verifikasi?{" "}
+            <Link href="/resend-verification">Kirim ulang di sini</Link>
+          </p>
+          <p className="auth-helper">
             Lupa password? <Link href="/forgot-password">Atur ulang di sini</Link>
           </p>
           <p className="auth-helper">
