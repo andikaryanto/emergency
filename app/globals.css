@@ -22,6 +22,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(215, 243, 106, 0.55), transparent 28%),
     radial-gradient(circle at 85% 15%, rgba(12, 139, 107, 0.12), transparent 22%),
@@ -558,7 +559,7 @@ input {
 
 .auth-shell,
 .login-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -955,6 +956,8 @@ input {
 .tenant-card-head a {
   color: var(--primary-deep);
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .tenant-status {
@@ -1010,6 +1013,11 @@ input {
   background: rgba(215, 243, 106, 0.18);
   border-color: rgba(140, 170, 40, 0.22);
   color: #405000;
+}
+
+.auth-footer a,
+.tenant-actions a {
+  overflow-wrap: anywhere;
 }
 
 .tenant-text-action {
@@ -1128,6 +1136,7 @@ input {
   .pricing-section,
   .workflow-section,
   .cta-section,
+  .auth-card,
   .dashboard-main,
   .dashboard-sidebar,
   .tenant-card,
@@ -1161,5 +1170,35 @@ input {
   .price-line {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .dashboard-notice-copy {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-shell,
+  .login-shell,
+  .dashboard-shell {
+    padding: 14px;
+  }
+
+  .auth-card h1,
+  .login-card h1 {
+    font-size: clamp(1.8rem, 10vw, 2.6rem);
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .primary-button,
+  .ghost-button,
+  .plan-button,
+  .hero-form button {
+    width: 100%;
   }
 }
