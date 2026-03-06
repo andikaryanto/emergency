@@ -64,6 +64,7 @@ input {
 }
 
 .nav-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -132,6 +133,54 @@ input {
 
 .nav-actions {
   align-items: center;
+}
+
+.mobile-menu-root {
+  display: none;
+}
+
+.mobile-menu-button {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mobile-menu-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 12px);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  z-index: 30;
+}
+
+.mobile-menu-links {
+  display: grid;
+  gap: 10px;
+}
+
+.mobile-menu-links a {
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(16, 38, 31, 0.06);
+}
+
+.mobile-menu-actions {
+  display: grid;
+  gap: 10px;
 }
 
 .primary-button,
@@ -1121,14 +1170,26 @@ input {
   }
 
   .nav-actions,
+  .nav-links,
   .cta-actions {
     width: 100%;
+  }
+
+  .nav-links,
+  .nav-actions {
+    display: none;
+  }
+
+  .mobile-menu-root {
+    display: flex;
+    margin-left: auto;
   }
 
   .primary-button,
   .ghost-button,
   .plan-button,
-  .hero-form button {
+  .hero-form button,
+  .mobile-menu-button {
     text-align: center;
   }
 
