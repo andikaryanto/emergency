@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileHeaderMenu } from "./mobile-header-menu";
 
 const productHighlights = [
   {
@@ -107,6 +108,7 @@ export default function HomePage() {
               Coba Sekarang
             </Link>
           </div>
+          <MobileHeaderMenu />
         </div>
 
         <div className="hero-grid">
