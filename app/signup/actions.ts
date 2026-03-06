@@ -6,7 +6,6 @@ import {
   registerLandlordUser,
 } from "../../lib/landlord/register-user";
 import {
-  initialRegisterActionState,
   type RegisterActionState,
 } from "./form-state";
 
