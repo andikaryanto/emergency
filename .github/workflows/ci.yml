@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - staging
+      - main
+      - master
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: ${{ vars.APP_NAME || 'Klinik RME' }}
+      APP_URL: ${{ secrets.APP_URL }}
+      API_URL: ${{ secrets.API_URL }}
+      TENANT_BASE_DOMAIN: ${{ secrets.TENANT_BASE_DOMAIN }}
+      API_TIMEOUT_MS: ${{ vars.API_TIMEOUT_MS || '10000' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
