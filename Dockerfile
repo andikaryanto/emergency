@@ -39,6 +39,7 @@ ENV APP_ENV=${APP_ENV}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN mkdir -p public
 
 RUN if [ -f package-lock.json ]; then \
       npm run build; \
