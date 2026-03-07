@@ -6,10 +6,10 @@ WORKDIR /app
 COPY package.json ./
 COPY yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
-RUN if [ -f yarn.lock ]; then \
-      corepack enable && yarn install --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then \
+RUN if [ -f package-lock.json ]; then \
       npm ci; \
+    elif [ -f yarn.lock ]; then \
+      corepack enable && yarn install --frozen-lockfile; \
     elif [ -f pnpm-lock.yaml ]; then \
       corepack enable && pnpm install --frozen-lockfile; \
     else \
@@ -24,10 +24,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN if [ -f yarn.lock ]; then \
-      corepack enable && yarn build; \
-    elif [ -f package-lock.json ]; then \
+RUN if [ -f package-lock.json ]; then \
       npm run build; \
+    elif [ -f yarn.lock ]; then \
+      corepack enable && yarn build; \
     elif [ -f pnpm-lock.yaml ]; then \
       corepack enable && pnpm build; \
     else \
