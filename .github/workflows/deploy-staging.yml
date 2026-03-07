@@ -114,6 +114,7 @@ jobs:
         with:
           repository: ${{ vars.INFRA_REPO }}
           token: ${{ steps.app_token.outputs.token }}
+          ref: staging
           path: infra-ops
 
       - name: Start SSH Agent
@@ -141,4 +142,5 @@ jobs:
           else
             echo "LANDING_IMAGE=${LANDING_IMAGE_FROM_BUILD}" >> /tmp/staging.env
           fi
-          bash infra-ops/infra/scripts/31_deploy_landing.sh /tmp/staging.env
+          grep '^LANDING_IMAGE=' /tmp/staging.env
+          LANDING_IMAGE="${LANDING_IMAGE_FROM_BUILD}" bash infra-ops/infra/scripts/31_deploy_landing.sh /tmp/staging.env
