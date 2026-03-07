@@ -1,0 +1,135 @@
+name: Deploy Staging Landing
+
+on:
+  push:
+    branches:
+      - staging
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging-landing
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Landing Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Run Lint
+        run: yarn lint
+
+      - name: Run Test (if exists)
+        run: yarn test --if-present
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: qa
+    permissions:
+      contents: read
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      landing_image: ${{ steps.meta.outputs.landing_image }}
+    steps:
+      - name: Checkout Landing Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Prepare Image Metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMAGE_TAG="${GITHUB_SHA}"
+          LANDING_IMAGE="andiaryanto11/app-emergency:${IMAGE_TAG}"
+          LANDING_IMAGE_LATEST="andiaryanto11/app-emergency:latest"
+          echo "image_tag=${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "landing_image=${LANDING_IMAGE}" >> "${GITHUB_OUTPUT}"
+          echo "LANDING_IMAGE=${LANDING_IMAGE}" >> "${GITHUB_ENV}"
+          echo "LANDING_IMAGE_LATEST=${LANDING_IMAGE_LATEST}" >> "${GITHUB_ENV}"
+
+      - name: Build and Push Landing Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.LANDING_IMAGE }}
+            ${{ env.LANDING_IMAGE_LATEST }}
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    permissions:
+      contents: read
+    steps:
+      - name: Resolve Infra Repo Owner/Name
+        id: infra_repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPO="${{ vars.INFRA_REPO }}"
+          echo "owner=${REPO%%/*}" >> "$GITHUB_OUTPUT"
+          echo "name=${REPO##*/}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub App Token (Infra Repo)
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          owner: ${{ steps.infra_repo.outputs.owner }}
+          repositories: ${{ steps.infra_repo.outputs.name }}
+
+      - name: Checkout Infra Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.INFRA_REPO }}
+          token: ${{ steps.app_token.outputs.token }}
+          path: infra-ops
+
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+
+      - name: Add Staging Host to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          source infra-ops/infra/servers/staging.env
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${SERVER_SSH_PORT}" "${SERVER_HOST}" >> ~/.ssh/known_hosts
+
+      - name: Deploy Landing to Staging
+        shell: bash
+        env:
+          LANDING_IMAGE_FROM_BUILD: ${{ needs.build-and-push.outputs.landing_image }}
+        run: |
+          set -euo pipefail
+          cp infra-ops/infra/servers/staging.env /tmp/staging.env
+          sed -i "s|^LANDING_IMAGE=.*|LANDING_IMAGE=${LANDING_IMAGE_FROM_BUILD}|" /tmp/staging.env
+          bash infra-ops/infra/scripts/31_deploy_landing.sh /tmp/staging.env
