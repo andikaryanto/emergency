@@ -132,9 +132,10 @@ jobs:
       - name: Deploy Landing to Staging
         shell: bash
         env:
-          LANDING_IMAGE_FROM_BUILD: ${{ needs.build-and-push.outputs.landing_image }}
+          LANDING_IMAGE_FROM_BUILD: andiaryanto11/app-emergency:${{ github.sha }}
         run: |
           set -euo pipefail
+          test -n "${LANDING_IMAGE_FROM_BUILD}"
           cp infra-ops/infra/servers/staging.env /tmp/staging.env
           if grep -q '^LANDING_IMAGE=' /tmp/staging.env; then
             sed -i "s|^LANDING_IMAGE=.*|LANDING_IMAGE=${LANDING_IMAGE_FROM_BUILD}|" /tmp/staging.env
