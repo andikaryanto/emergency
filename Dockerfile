@@ -2,6 +2,7 @@
 FROM node:20-alpine AS deps
 
 WORKDIR /app
+RUN apk add --no-cache libc6-compat
 
 COPY package.json ./
 COPY yarn.lock* package-lock.json* pnpm-lock.yaml* ./
@@ -20,6 +21,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+RUN apk add --no-cache libc6-compat
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -41,7 +43,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-
+RUN apk add --no-cache libc6-compat
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 COPY --from=builder /app/public ./public
