@@ -266,7 +266,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </div>
             ) : (
               <div className="tenant-list">
-                {tenantData.tenants.map((tenant) => (
+                {tenantData.tenants.map((tenant) => {
+                  const clinicStatus = getClinicStatusLabel(tenant);
+                  const shouldHideInactiveStatusForDemo =
+                    tenant.isDemo && clinicStatus.className === "inactive";
+
+                  return (
                   <article
                     key={tenant.id}
                     className={`tenant-card ${tenant.isDemo ? "tenant-card-demo" : ""}`}
@@ -280,11 +285,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         {tenant.isDemo ? (
                           <span className="tenant-status demo">Demo</span>
                         ) : null}
-                        <span
-                          className={`tenant-status ${getClinicStatusLabel(tenant).className}`}
-                        >
-                          {getClinicStatusLabel(tenant).label}
-                        </span>
+                        {!shouldHideInactiveStatusForDemo ? (
+                          <span className={`tenant-status ${clinicStatus.className}`}>
+                            {clinicStatus.label}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
 
@@ -329,7 +334,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       </button>
                     </div>
                   </article>
-                ))}
+                  );
+                })}
               </div>
             )}
           </section>
