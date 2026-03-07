@@ -107,6 +107,10 @@ function getDemoExpiryNotice(tenant: ListLandlordTenantsResponse["tenants"][numb
   return "Mode demo aktif. Gunakan masa coba gratis 7 hari ini untuk mencoba alur kerja klinik Anda.";
 }
 
+function formatPricingLabel(pricing: ListLandlordTenantsResponse["tenants"][number]["pricing"]) {
+  return pricing ?? "-";
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
   const isCreated = params?.created === "1";
@@ -288,6 +292,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       <div>
                         <span>ID Klinik</span>
                         <strong>{tenant.id}</strong>
+                      </div>
+                      <div>
+                        <span>Paket</span>
+                        <strong>{formatPricingLabel(tenant.pricing)}</strong>
                       </div>
                       <div>
                         <span>Dibuat</span>

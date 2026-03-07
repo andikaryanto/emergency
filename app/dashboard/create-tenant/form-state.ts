@@ -2,7 +2,7 @@ export type CreateTenantActionState = {
   status: "idle" | "error";
   message: string | null;
   fieldErrors: Partial<
-    Record<"name" | "username" | "email" | "password", string>
+    Record<"name" | "username" | "email" | "password" | "pricingId", string>
   >;
 };
 
