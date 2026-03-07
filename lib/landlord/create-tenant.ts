@@ -5,6 +5,8 @@ export type CreateTenantRequest = {
   username: string;
   email: string;
   password: string;
+  pricing_id: 1 | 2;
+  pricing: "Basic" | "Advance";
 };
 
 type CreateTenantErrorPayload = {
@@ -19,7 +21,7 @@ type CreateTenantResponse = {
 export class CreateTenantError extends Error {
   readonly status: number | null;
   readonly fieldErrors: Partial<
-    Record<"name" | "username" | "email" | "password", string>
+    Record<"name" | "username" | "email" | "password" | "pricingId", string>
   >;
 
   constructor({
@@ -30,7 +32,7 @@ export class CreateTenantError extends Error {
     message: string;
     status?: number | null;
     fieldErrors?: Partial<
-      Record<"name" | "username" | "email" | "password", string>
+      Record<"name" | "username" | "email" | "password" | "pricingId", string>
     >;
   }) {
     super(message);
@@ -60,6 +62,9 @@ function mapCreateTenantError(error: ApiError) {
   const usernameError = extractFirstError(payload?.errors?.username);
   const emailError = extractFirstError(payload?.errors?.email);
   const passwordError = extractFirstError(payload?.errors?.password);
+  const pricingIdError =
+    extractFirstError(payload?.errors?.pricing_id) ??
+    extractFirstError(payload?.errors?.pricingId);
 
   return new CreateTenantError({
     message:
@@ -70,6 +75,7 @@ function mapCreateTenantError(error: ApiError) {
       ...(usernameError ? { username: usernameError } : {}),
       ...(emailError ? { email: emailError } : {}),
       ...(passwordError ? { password: passwordError } : {}),
+      ...(pricingIdError ? { pricingId: pricingIdError } : {}),
     },
   });
 }

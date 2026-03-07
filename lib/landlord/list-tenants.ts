@@ -7,6 +7,7 @@ type ListTenantsApiResponse = {
       id?: number;
       name?: string;
       domain?: string;
+      pricing?: string;
       is_demo?: boolean;
       is_active?: boolean;
       is_process_complete?: boolean;
@@ -29,6 +30,7 @@ export type LandlordTenant = {
   id: number;
   name: string;
   domain: string;
+  pricing: "Basic" | "Advance" | null;
   isDemo: boolean;
   isActive: boolean;
   isProcessComplete: boolean;
@@ -74,11 +76,20 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
       return [];
     }
 
+    const normalizedPricing =
+      typeof tenant.pricing === "string" &&
+      (tenant.pricing.toLowerCase() === "basic" ||
+        tenant.pricing.toLowerCase() === "advance")
+        ? (tenant.pricing.charAt(0).toUpperCase() +
+            tenant.pricing.slice(1).toLowerCase()) as "Basic" | "Advance"
+        : null;
+
     return [
       {
         id: tenant.id,
         name: tenant.name,
         domain: tenant.domain,
+        pricing: normalizedPricing,
         isDemo: Boolean(tenant.is_demo),
         isActive: Boolean(tenant.is_active),
         isProcessComplete: Boolean(tenant.is_process_complete),

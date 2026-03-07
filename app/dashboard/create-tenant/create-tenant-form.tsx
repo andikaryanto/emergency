@@ -111,6 +111,35 @@ export function CreateTenantForm() {
       ) : null}
 
       <form className="auth-form" action={formAction} noValidate>
+        <label>Pilih paket harga</label>
+        <div
+          className="pricing-choice-grid"
+          role="radiogroup"
+          aria-label="Pilih paket harga"
+          aria-invalid={Boolean(state.fieldErrors.pricingId)}
+          aria-describedby={state.fieldErrors.pricingId ? "pricing-id-error" : undefined}
+        >
+          <label className="pricing-choice-card">
+            <input type="radio" name="pricing_id" value="1" defaultChecked />
+            <div>
+              <strong>Basic</strong>
+              <p>Rp199K/bulan. Cocok untuk mulai digitalisasi operasional.</p>
+            </div>
+          </label>
+          <label className="pricing-choice-card">
+            <input type="radio" name="pricing_id" value="2" />
+            <div>
+              <strong>Advance</strong>
+              <p>Rp299K/bulan. Untuk fitur analitik dan operasional lanjutan.</p>
+            </div>
+          </label>
+        </div>
+        {state.fieldErrors.pricingId ? (
+          <p id="pricing-id-error" className="field-error">
+            {state.fieldErrors.pricingId}
+          </p>
+        ) : null}
+
         <label htmlFor="name">Nama klinik</label>
         <input
           id="name"

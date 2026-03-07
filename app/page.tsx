@@ -28,27 +28,33 @@ const features = [
 
 const pricing = [
   {
-    name: "Starter",
-    price: "Rp299rb",
+    name: "Basic",
+    price: "Rp199K",
     suffix: "/bulan",
-    description: "Untuk klinik baru yang ingin mulai digitalisasi operasional harian.",
+    description: "Pilihan hemat untuk klinik yang ingin mulai digitalisasi operasional harian.",
     items: [
       "1 alamat login klinik",
       "Manajemen pasien dan antrean",
       "Kasir dan invoice",
+      "Laporan operasional dasar",
       "Bantuan via email",
     ],
     accent: "light",
   },
   {
-    name: "Growth",
-    price: "Rp799rb",
+    name: "Advance",
+    price: "Rp299K",
     suffix: "/bulan",
-    description: "Untuk klinik berkembang yang butuh kontrol operasional dan laporan lebih lengkap.",
+    description: "Paket unggulan untuk klinik yang butuh operasional lengkap, analitik, dan kontrol bisnis lebih kuat.",
     items: [
       "Akses untuk banyak staf",
-      "Dashboard laporan harian",
+      "Dashboard laporan harian lengkap",
       "Pengaturan dokter dan layanan",
+      "Modul laboratorium",
+      "Analisis time visit rate pasien",
+      "Perhitungan insentif praktisioner",
+      "Rekap billing dalam format Excel",
+      "Rekap jumlah kunjungan pasien (Excel)",
       "Bantuan prioritas",
     ],
     accent: "featured",
@@ -73,8 +79,8 @@ export default function HomePage() {
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "IDR",
-      lowPrice: "299000",
-      highPrice: "799000",
+      lowPrice: "199000",
+      highPrice: "299000",
     },
   };
 
@@ -258,10 +264,10 @@ export default function HomePage() {
       <section className="pricing-section" id="harga">
         <div className="section-heading centered">
           <span className="eyebrow">Harga</span>
-          <h2>Pilih paket yang sesuai untuk kebutuhan klinik Anda.</h2>
+          <h2>Dua paket jelas, mudah dipilih, dan siap dipakai sesuai tahap klinik Anda.</h2>
           <p>
-            Harga transparan, fitur jelas, dan mudah dipilih sesuai tahap
-            pertumbuhan klinik Anda.
+            Mulai dari Basic, lalu naik ke Advance saat butuh fitur analitik,
+            laboratorium, dan rekap bisnis yang lebih dalam.
           </p>
         </div>
 
@@ -272,6 +278,7 @@ export default function HomePage() {
               className={`pricing-card ${plan.accent === "featured" ? "featured" : ""}`}
             >
               <div>
+                {plan.accent === "featured" ? <span className="eyebrow">Paling Populer</span> : null}
                 <h3>{plan.name}</h3>
                 <p>{plan.description}</p>
               </div>
@@ -285,7 +292,7 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link href="/signup" className="plan-button">
-                Pilih Paket
+                {plan.accent === "featured" ? "Pilih Advance" : "Pilih Basic"}
               </Link>
             </article>
           ))}

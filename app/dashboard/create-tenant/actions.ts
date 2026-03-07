@@ -35,8 +35,14 @@ function validateCreateTenantPayload(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const pricingIdRaw = String(formData.get("pricing_id") ?? "").trim();
+  const pricingIdNumber = Number(pricingIdRaw);
+  const pricingId =
+    pricingIdNumber === 1 || pricingIdNumber === 2
+      ? (pricingIdNumber as 1 | 2)
+      : null;
 
-  if (!name || !username || !email || !password) {
+  if (!name || !username || !email || !password || !pricingIdRaw) {
     return {
       success: false as const,
       state: createErrorState("Semua field wajib diisi.", {
@@ -44,9 +50,21 @@ function validateCreateTenantPayload(formData: FormData) {
         ...(!username ? { username: "Username admin wajib diisi." } : {}),
         ...(!email ? { email: "Email admin wajib diisi." } : {}),
         ...(!password ? { password: "Password admin wajib diisi." } : {}),
+        ...(!pricingIdRaw ? { pricingId: "Pilih paket harga terlebih dahulu." } : {}),
       }),
     };
   }
+
+  if (!pricingId) {
+    return {
+      success: false as const,
+      state: createErrorState("Pilihan paket harga tidak valid.", {
+        pricingId: "Pilih paket Basic atau Advance yang tersedia.",
+      }),
+    };
+  }
+
+  const pricing: "Basic" | "Advance" = pricingId === 1 ? "Basic" : "Advance";
 
   if (!NAME_PATTERN.test(name)) {
     return {
@@ -127,6 +145,8 @@ function validateCreateTenantPayload(formData: FormData) {
       username,
       email,
       password,
+      pricing_id: pricingId,
+      pricing,
     },
   };
 }

@@ -755,6 +755,40 @@ input {
   background: rgba(255, 244, 244, 0.95);
 }
 
+.pricing-choice-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.pricing-choice-card {
+  border: 1px solid rgba(16, 38, 31, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.pricing-choice-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pricing-choice-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.pricing-choice-card:has(input:checked) {
+  border-color: rgba(12, 139, 107, 0.48);
+  background: rgba(232, 249, 244, 0.85);
+  box-shadow: 0 8px 22px rgba(12, 139, 107, 0.12);
+}
+
 .auth-form button:disabled {
   cursor: not-allowed;
   opacity: 0.72;
@@ -1057,7 +1091,7 @@ input {
 
 .tenant-meta {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin: 22px 0;
 }
