@@ -13,6 +13,11 @@ import { type CreateTenantActionState } from "./form-state";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USERNAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
+const USERNAME_NO_SPACE_PATTERN = /^\S+$/;
+const NAME_PATTERN = /^[a-z0-9]+$/;
+const PASSWORD_NO_SPACE_PATTERN = /^\S+$/;
+const PASSWORD_HAS_NUMBER_PATTERN = /\d/;
+const PASSWORD_HAS_SPECIAL_CHAR_PATTERN = /[^A-Za-z0-9]/;
 
 function createErrorState(
   message: string,
@@ -43,7 +48,25 @@ function validateCreateTenantPayload(formData: FormData) {
     };
   }
 
+  if (!NAME_PATTERN.test(name)) {
+    return {
+      success: false as const,
+      state: createErrorState("Format nama klinik tidak valid.", {
+        name: "Gunakan huruf kecil dan angka saja, tanpa spasi atau karakter spesial.",
+      }),
+    };
+  }
+
   if (!USERNAME_PATTERN.test(username)) {
+    if (!USERNAME_NO_SPACE_PATTERN.test(username)) {
+      return {
+        success: false as const,
+        state: createErrorState("Username tidak boleh mengandung spasi.", {
+          username: "Gunakan username tanpa spasi.",
+        }),
+      };
+    }
+
     return {
       success: false as const,
       state: createErrorState("Format username tidak valid.", {
@@ -66,6 +89,33 @@ function validateCreateTenantPayload(formData: FormData) {
       success: false as const,
       state: createErrorState("Password minimal 8 karakter.", {
         password: "Gunakan minimal 8 karakter.",
+      }),
+    };
+  }
+
+  if (!PASSWORD_NO_SPACE_PATTERN.test(password)) {
+    return {
+      success: false as const,
+      state: createErrorState("Password tidak boleh mengandung spasi.", {
+        password: "Hapus spasi pada password Anda.",
+      }),
+    };
+  }
+
+  if (!PASSWORD_HAS_NUMBER_PATTERN.test(password)) {
+    return {
+      success: false as const,
+      state: createErrorState("Password harus mengandung angka.", {
+        password: "Tambahkan minimal 1 angka.",
+      }),
+    };
+  }
+
+  if (!PASSWORD_HAS_SPECIAL_CHAR_PATTERN.test(password)) {
+    return {
+      success: false as const,
+      state: createErrorState("Password harus mengandung karakter spesial.", {
+        password: "Tambahkan minimal 1 karakter selain huruf dan angka.",
       }),
     };
   }
