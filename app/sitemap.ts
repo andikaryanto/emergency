@@ -2,6 +2,10 @@ import type { MetadataRoute } from "next";
 import { env } from "../lib/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (env.appEnv === "staging") {
+    return [];
+  }
+
   const baseUrl = env.appUrl;
 
   return [

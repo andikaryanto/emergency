@@ -34,6 +34,7 @@ function normalizeBaseUrl(value: string) {
 
 export const env = {
   appName: process.env.APP_NAME?.trim() || "Klinik RME",
+  appEnv: process.env.APP_ENV?.trim().toLowerCase() || "production",
   appUrl: normalizeBaseUrl(getRequiredEnv("APP_URL")),
   apiBaseUrl: normalizeBaseUrl(getRequiredEnv("API_URL")),
   tenantBaseDomain: getRequiredEnv("TENANT_BASE_DOMAIN"),

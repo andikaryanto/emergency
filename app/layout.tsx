@@ -14,6 +14,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const siteUrl = env.appUrl;
+const isStaging = env.appEnv === "staging";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -50,8 +51,8 @@ export const metadata: Metadata = {
       "Aplikasi klinik online dengan harga fleksibel dan dashboard yang mudah dipakai untuk operasional harian.",
   },
   robots: {
-    index: true,
-    follow: true,
+    index: !isStaging,
+    follow: !isStaging,
   },
   category: "technology",
 };

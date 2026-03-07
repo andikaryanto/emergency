@@ -2,11 +2,13 @@ import type { MetadataRoute } from "next";
 import { env } from "../lib/env";
 
 export default function robots(): MetadataRoute.Robots {
+  const isStaging = env.appEnv === "staging";
+
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
+      ...(isStaging ? { disallow: "/" } : { allow: "/" }),
     },
-    sitemap: `${env.appUrl}/sitemap.xml`,
+    ...(isStaging ? {} : { sitemap: `${env.appUrl}/sitemap.xml` }),
   };
 }
