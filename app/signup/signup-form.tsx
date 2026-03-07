@@ -69,6 +69,9 @@ export function SignupForm() {
           aria-invalid={Boolean(state.fieldErrors.password)}
           aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
         />
+        <p className="field-hint">
+          Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
+        </p>
         {state.fieldErrors.password ? (
           <p id="password-error" className="field-error">
             {state.fieldErrors.password}

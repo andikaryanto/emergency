@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createTenantAction } from "./actions";
 import { initialCreateTenantActionState } from "./form-state";
@@ -20,6 +20,87 @@ export function CreateTenantForm() {
     createTenantAction,
     initialCreateTenantActionState,
   );
+  const [tenantName, setTenantName] = useState("");
+  const [nameAvailability, setNameAvailability] = useState<
+    "idle" | "checking" | "available" | "unavailable" | "error"
+  >("idle");
+  const [nameAvailabilityMessage, setNameAvailabilityMessage] = useState("");
+  const checkedNameRef = useRef("");
+  const latestRequestIdRef = useRef(0);
+
+  async function checkTenantNameAvailability(rawName: string, force = false) {
+    const name = rawName.trim();
+
+    if (!name) {
+      setNameAvailability("idle");
+      setNameAvailabilityMessage("");
+      checkedNameRef.current = "";
+      return;
+    }
+
+    if (!force && name === checkedNameRef.current) {
+      return;
+    }
+
+    const requestId = latestRequestIdRef.current + 1;
+    latestRequestIdRef.current = requestId;
+    checkedNameRef.current = name;
+    setNameAvailability("checking");
+    setNameAvailabilityMessage("Memeriksa ketersediaan nama klinik...");
+
+    try {
+      const response = await fetch(
+        `/api/landlord/tenant-name-availability?name=${encodeURIComponent(name)}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
+
+      const payload = (await response.json()) as {
+        available?: boolean;
+        message?: string;
+      };
+
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
+      if (payload.available) {
+        setNameAvailability("available");
+        setNameAvailabilityMessage(payload.message ?? "Nama klinik tersedia.");
+        return;
+      }
+
+      setNameAvailability("unavailable");
+      setNameAvailabilityMessage(payload.message ?? "Nama klinik belum tersedia.");
+    } catch {
+      if (requestId !== latestRequestIdRef.current) {
+        return;
+      }
+
+      setNameAvailability("error");
+      setNameAvailabilityMessage(
+        "Nama klinik belum bisa diperiksa. Silakan coba lagi.",
+      );
+    }
+  }
+
+  useEffect(() => {
+    const name = tenantName.trim();
+
+    if (!name) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      void checkTenantNameAvailability(name);
+    }, 600);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [tenantName]);
 
   return (
     <>
@@ -35,10 +116,46 @@ export function CreateTenantForm() {
           id="name"
           name="name"
           type="text"
-          placeholder="Contoh: Klinik Sehat Sentosa"
+          placeholder="Contoh: sejahtera"
+          onChange={(event) => {
+            const value = event.currentTarget.value.trim();
+            setTenantName(event.currentTarget.value);
+
+            if (!value) {
+              setNameAvailability("idle");
+              setNameAvailabilityMessage("");
+              checkedNameRef.current = "";
+              return;
+            }
+
+            if (value !== checkedNameRef.current && nameAvailability !== "idle") {
+              setNameAvailability("idle");
+              setNameAvailabilityMessage("");
+            }
+          }}
+          onBlur={(event) => {
+            void checkTenantNameAvailability(event.currentTarget.value, true);
+          }}
           aria-invalid={Boolean(state.fieldErrors.name)}
           aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
         />
+        <p className="field-hint">
+          Gunakan huruf kecil dan angka saja tanpa spasi atau karakter spesial.
+        </p>
+        {nameAvailability !== "idle" ? (
+          <p
+            className={`field-hint ${
+              nameAvailability === "available"
+                ? "field-hint-success"
+                : nameAvailability === "checking"
+                  ? "field-hint-neutral"
+                  : "field-hint-error"
+            }`}
+            role={nameAvailability === "error" ? "alert" : "status"}
+          >
+            {nameAvailabilityMessage}
+          </p>
+        ) : null}
         {state.fieldErrors.name ? (
           <p id="name-error" className="field-error">
             {state.fieldErrors.name}
@@ -54,6 +171,9 @@ export function CreateTenantForm() {
           aria-invalid={Boolean(state.fieldErrors.username)}
           aria-describedby={state.fieldErrors.username ? "username-error" : undefined}
         />
+        <p className="field-hint">
+          Gunakan username tanpa spasi.
+        </p>
         {state.fieldErrors.username ? (
           <p id="username-error" className="field-error">
             {state.fieldErrors.username}
@@ -84,6 +204,9 @@ export function CreateTenantForm() {
           aria-invalid={Boolean(state.fieldErrors.password)}
           aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
         />
+        <p className="field-hint">
+          Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
+        </p>
         {state.fieldErrors.password ? (
           <p id="password-error" className="field-error">
             {state.fieldErrors.password}
