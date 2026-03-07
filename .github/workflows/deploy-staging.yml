@@ -114,7 +114,6 @@ jobs:
         with:
           repository: ${{ vars.INFRA_REPO }}
           token: ${{ steps.app_token.outputs.token }}
-          ref: staging
           path: infra-ops
 
       - name: Start SSH Agent
