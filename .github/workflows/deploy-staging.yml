@@ -34,7 +34,7 @@ jobs:
       - name: Run Test (if exists)
         run: npm test --if-present
 
-  build-and-push:
+  build_and_push:
     runs-on: ubuntu-latest
     needs: qa
     permissions:
@@ -87,7 +87,7 @@ jobs:
 
   deploy-staging:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build_and_push
     permissions:
       contents: read
     steps:
@@ -132,9 +132,10 @@ jobs:
       - name: Deploy Landing to Staging
         shell: bash
         env:
-          LANDING_IMAGE_FROM_BUILD: ${{ needs.build-and-push.outputs.landing_image }}
+          LANDING_IMAGE_FROM_BUILD: ${{ needs.build_and_push.outputs.landing_image }}
         run: |
           set -euo pipefail
+          test -n "${LANDING_IMAGE_FROM_BUILD}"
           cp infra-ops/infra/servers/staging.env /tmp/staging.env
           if grep -q '^LANDING_IMAGE=' /tmp/staging.env; then
             sed -i "s|^LANDING_IMAGE=.*|LANDING_IMAGE=${LANDING_IMAGE_FROM_BUILD}|" /tmp/staging.env
