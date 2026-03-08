@@ -24,6 +24,26 @@ function getPositiveIntegerEnv(name: string, fallback: number) {
   return parsedValue;
 }
 
+function getBooleanEnv(name: string, fallback: boolean) {
+  const rawValue = process.env[name];
+
+  if (!rawValue) {
+    return fallback;
+  }
+
+  const normalizedValue = rawValue.trim().toLowerCase();
+
+  if (["1", "true", "yes", "on"].includes(normalizedValue)) {
+    return true;
+  }
+
+  if (["0", "false", "no", "off"].includes(normalizedValue)) {
+    return false;
+  }
+
+  throw new Error(`Environment variable ${name} must be a boolean value.`);
+}
+
 function normalizeBaseUrl(value: string) {
   if (value.startsWith("http://") || value.startsWith("https://")) {
     return value;
@@ -39,4 +59,8 @@ export const env = {
   apiBaseUrl: normalizeBaseUrl(getRequiredEnv("API_URL")),
   tenantBaseDomain: getRequiredEnv("TENANT_BASE_DOMAIN"),
   apiTimeoutMs: getPositiveIntegerEnv("API_TIMEOUT_MS", 10_000),
+  apiDebugLog: getBooleanEnv(
+    "API_DEBUG_LOG",
+    (process.env.APP_ENV?.trim().toLowerCase() || "production") !== "production",
+  ),
 };

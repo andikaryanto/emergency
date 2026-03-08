@@ -9,6 +9,8 @@ function withTrailingSlash(url: string) {
 }
 
 const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
+const ENABLE_API_DEBUG_LOG = env.apiDebugLog;
+let requestSequence = 0;
 
 export const apiEndpoints = {
   landlord: {
@@ -81,6 +83,74 @@ type ApiErrorCode =
   | "INVALID_RESPONSE";
 
 type JsonRecord = Record<string, unknown>;
+
+function isSensitiveLogKey(key: string) {
+  const normalizedKey = key.trim().toLowerCase();
+
+  return (
+    normalizedKey.includes("password") ||
+    normalizedKey.includes("authorization") ||
+    normalizedKey.includes("token") ||
+    normalizedKey.includes("cookie")
+  );
+}
+
+function sanitizeForLog(value: unknown, visited = new WeakSet<object>()): unknown {
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return value.length > 600 ? `${value.slice(0, 600)}...[truncated]` : value;
+  }
+
+  if (typeof value !== "object") {
+    return value;
+  }
+
+  if (visited.has(value)) {
+    return "[Circular]";
+  }
+
+  visited.add(value);
+
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeForLog(item, visited));
+  }
+
+  const output: Record<string, unknown> = {};
+
+  for (const [key, itemValue] of Object.entries(value)) {
+    output[key] = isSensitiveLogKey(key)
+      ? "[REDACTED]"
+      : sanitizeForLog(itemValue, visited);
+  }
+
+  return output;
+}
+
+function sanitizeHeadersForLog(headers: HeadersInit | undefined) {
+  if (!headers) {
+    return undefined;
+  }
+
+  const normalized = new Headers(headers);
+  const output: Record<string, string> = {};
+
+  for (const [key, value] of normalized.entries()) {
+    output[key] = isSensitiveLogKey(key) ? "[REDACTED]" : value;
+  }
+
+  return output;
+}
+
+function logApiEvent(label: string, meta: Record<string, unknown>) {
+  if (!ENABLE_API_DEBUG_LOG) {
+    return;
+  }
+
+  console.info(`[api] ${label}`, sanitizeForLog(meta));
+}
 
 export class ApiError extends Error {
   readonly code: ApiErrorCode;
@@ -162,27 +232,49 @@ export async function requestJson<TResponse, TBody extends JsonRecord | undefine
   timeoutMs?: number;
 }) {
   const { signal, clear } = createTimeoutSignal(timeoutMs);
+  const requestId = `req_${Date.now()}_${++requestSequence}`;
+  const startedAt = Date.now();
+  const requestHeaders: HeadersInit = {
+    Accept: "application/json",
+    ...(body ? { "Content-Type": "application/json" } : {}),
+    ...headers,
+  };
+
+  logApiEvent("request", {
+    requestId,
+    method,
+    url,
+    timeoutMs,
+    headers: sanitizeHeadersForLog(requestHeaders),
+    body,
+  });
 
   try {
     const response = await fetch(url, {
       method,
-      headers: {
-        Accept: "application/json",
-        ...(body ? { "Content-Type": "application/json" } : {}),
-        ...headers,
-      },
+      headers: requestHeaders,
       cache: "no-store",
       signal,
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
 
     const payload = await parseResponsePayload(response);
+    const durationMs = Date.now() - startedAt;
 
     if (!response.ok) {
       const message =
         isJsonRecord(payload) && typeof payload.message === "string"
           ? payload.message
           : `API request gagal dengan status ${response.status}.`;
+
+      logApiEvent("response_error", {
+        requestId,
+        method,
+        url,
+        status: response.status,
+        durationMs,
+        payload,
+      });
 
       throw new ApiError({
         message,
@@ -192,18 +284,51 @@ export async function requestJson<TResponse, TBody extends JsonRecord | undefine
       });
     }
 
+    logApiEvent("response_ok", {
+      requestId,
+      method,
+      url,
+      status: response.status,
+      durationMs,
+      payload,
+    });
+
     return payload as TResponse;
   } catch (error) {
     if (error instanceof ApiError) {
+      logApiEvent("exception", {
+        requestId,
+        method,
+        url,
+        code: error.code,
+        status: error.status,
+        durationMs: Date.now() - startedAt,
+        message: error.message,
+        payload: error.payload,
+      });
       throw error;
     }
 
     if (error instanceof Error && error.name === "AbortError") {
+      logApiEvent("timeout", {
+        requestId,
+        method,
+        url,
+        durationMs: Date.now() - startedAt,
+      });
       throw new ApiError({
         message: "Request ke API melebihi batas waktu.",
         code: "TIMEOUT_ERROR",
       });
     }
+
+    logApiEvent("network_error", {
+      requestId,
+      method,
+      url,
+      durationMs: Date.now() - startedAt,
+      message: error instanceof Error ? error.message : "Unknown network error",
+    });
 
     throw new ApiError({
       message: "Tidak dapat terhubung ke API.",
