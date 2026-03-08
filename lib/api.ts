@@ -152,6 +152,36 @@ function logApiEvent(label: string, meta: Record<string, unknown>) {
   console.info(`[api] ${label}`, sanitizeForLog(meta));
 }
 
+function toErrorLogMeta(error: unknown) {
+  if (!(error instanceof Error)) {
+    return { message: "Unknown network error", raw: String(error) };
+  }
+
+  const base: Record<string, unknown> = {
+    name: error.name,
+    message: error.message,
+  };
+
+  const errorWithCause = error as Error & { cause?: unknown };
+  const cause = errorWithCause.cause;
+
+  if (cause && typeof cause === "object") {
+    const causeRecord = cause as Record<string, unknown>;
+    base.cause = {
+      name: causeRecord.name,
+      message: causeRecord.message,
+      code: causeRecord.code,
+      errno: causeRecord.errno,
+      syscall: causeRecord.syscall,
+      hostname: causeRecord.hostname,
+      address: causeRecord.address,
+      port: causeRecord.port,
+    };
+  }
+
+  return base;
+}
+
 export class ApiError extends Error {
   readonly code: ApiErrorCode;
   readonly status: number | null;
@@ -327,7 +357,7 @@ export async function requestJson<TResponse, TBody extends JsonRecord | undefine
       method,
       url,
       durationMs: Date.now() - startedAt,
-      message: error instanceof Error ? error.message : "Unknown network error",
+      error: toErrorLogMeta(error),
     });
 
     throw new ApiError({
