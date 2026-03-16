@@ -130,7 +130,14 @@ export function CreateTenantForm() {
             <input type="radio" name="pricing_id" value="2" />
             <div>
               <strong>Advance</strong>
-              <p>Rp299K/bulan. Untuk fitur analitik dan operasional lanjutan.</p>
+              <p>Rp249K/bulan. Untuk fitur analitik dan operasional lanjutan.</p>
+            </div>
+          </label>
+          <label className="pricing-choice-card">
+            <input type="radio" name="pricing_id" value="3" />
+            <div>
+              <strong>Pro</strong>
+              <p>Rp299K/bulan. Semua fitur Advance plus integrasi Satu Sehat dan BPJS.</p>
             </div>
           </label>
         </div>

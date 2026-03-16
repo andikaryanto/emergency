@@ -5,8 +5,8 @@ export type CreateTenantRequest = {
   username: string;
   email: string;
   password: string;
-  pricing_id: 1 | 2;
-  pricing: "Basic" | "Advance";
+  pricing_id: 1 | 2 | 3;
+  pricing: "Basic" | "Advance" | "Pro";
 };
 
 type CreateTenantErrorPayload = {

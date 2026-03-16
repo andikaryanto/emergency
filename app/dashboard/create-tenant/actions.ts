@@ -38,8 +38,8 @@ function validateCreateTenantPayload(formData: FormData) {
   const pricingIdRaw = String(formData.get("pricing_id") ?? "").trim();
   const pricingIdNumber = Number(pricingIdRaw);
   const pricingId =
-    pricingIdNumber === 1 || pricingIdNumber === 2
-      ? (pricingIdNumber as 1 | 2)
+    pricingIdNumber === 1 || pricingIdNumber === 2 || pricingIdNumber === 3
+      ? (pricingIdNumber as 1 | 2 | 3)
       : null;
 
   if (!name || !username || !email || !password || !pricingIdRaw) {
@@ -59,12 +59,13 @@ function validateCreateTenantPayload(formData: FormData) {
     return {
       success: false as const,
       state: createErrorState("Pilihan paket harga tidak valid.", {
-        pricingId: "Pilih paket Basic atau Advance yang tersedia.",
+        pricingId: "Pilih paket Basic, Advance, atau Pro yang tersedia.",
       }),
     };
   }
 
-  const pricing: "Basic" | "Advance" = pricingId === 1 ? "Basic" : "Advance";
+  const pricing: "Basic" | "Advance" | "Pro" =
+    pricingId === 1 ? "Basic" : pricingId === 2 ? "Advance" : "Pro";
 
   if (!NAME_PATTERN.test(name)) {
     return {

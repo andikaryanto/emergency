@@ -43,7 +43,7 @@ const pricing = [
   },
   {
     name: "Advance",
-    price: "Rp299K",
+    price: "Rp249K",
     suffix: "/bulan",
     description: "Paket unggulan untuk klinik yang butuh operasional lengkap, analitik, dan kontrol bisnis lebih kuat.",
     items: [
@@ -55,6 +55,26 @@ const pricing = [
       "Perhitungan insentif praktisioner",
       "Rekap billing dalam format Excel",
       "Rekap jumlah kunjungan pasien (Excel)",
+      "Bantuan prioritas",
+    ],
+    accent: "light",
+  },
+  {
+    name: "Pro",
+    price: "Rp299K",
+    suffix: "/bulan",
+    description: "Paket lengkap untuk klinik yang butuh semua fitur Advance ditambah integrasi layanan kesehatan nasional.",
+    items: [
+      "Akses untuk banyak staf",
+      "Dashboard laporan harian lengkap",
+      "Pengaturan dokter dan layanan",
+      "Modul laboratorium",
+      "Analisis time visit rate pasien",
+      "Perhitungan insentif praktisioner",
+      "Rekap billing dalam format Excel",
+      "Rekap jumlah kunjungan pasien (Excel)",
+      "Integrasi Satu Sehat",
+      "Integrasi BPJS",
       "Bantuan prioritas",
     ],
     accent: "featured",
@@ -264,10 +284,10 @@ export default function HomePage() {
       <section className="pricing-section" id="harga">
         <div className="section-heading centered">
           <span className="eyebrow">Harga</span>
-          <h2>Dua paket jelas, mudah dipilih, dan siap dipakai sesuai tahap klinik Anda.</h2>
+          <h2>Tiga paket jelas, mudah dipilih, dan siap dipakai sesuai tahap klinik Anda.</h2>
           <p>
-            Mulai dari Basic, lalu naik ke Advance saat butuh fitur analitik,
-            laboratorium, dan rekap bisnis yang lebih dalam.
+            Mulai dari Basic, lanjut ke Advance untuk operasional yang lebih lengkap,
+            lalu pilih Pro saat klinik Anda membutuhkan integrasi Satu Sehat dan BPJS.
           </p>
         </div>
 
@@ -292,7 +312,7 @@ export default function HomePage() {
                 ))}
               </ul>
               <Link href="/signup" className="plan-button">
-                {plan.accent === "featured" ? "Pilih Advance" : "Pilih Basic"}
+                {"Pilih " + plan.name}
               </Link>
             </article>
           ))}
