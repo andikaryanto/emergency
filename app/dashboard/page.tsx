@@ -111,6 +111,16 @@ function formatPricingLabel(pricing: ListLandlordTenantsResponse["tenants"][numb
   return pricing ?? "-";
 }
 
+function getDemoPricingNotice(tenant: ListLandlordTenantsResponse["tenants"][number]) {
+  if (!tenant.isDemo) {
+    return null;
+  }
+
+  const selectedPricing = formatPricingLabel(tenant.pricing);
+
+  return `Selama masa demo, paket yang aktif adalah Basic. Paket ${selectedPricing} akan aktif setelah klinik diaktivasi atau pembayaran selesai.`;
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
   const isCreated = params?.created === "1";
@@ -301,6 +311,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       <div>
                         <span>Paket</span>
                         <strong>{formatPricingLabel(tenant.pricing)}</strong>
+                        {tenant.isDemo ? (
+                          <p className="field-hint">{getDemoPricingNotice(tenant)}</p>
+                        ) : null}
                       </div>
                       <div>
                         <span>Dibuat</span>
