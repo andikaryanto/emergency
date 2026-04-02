@@ -5,6 +5,8 @@ export type CreateTenantRequest = {
   username: string;
   email: string;
   password: string;
+  pricing_id: number;
+  pricing: "Basic" | "Advance" | "Pro";
   subscription_pricing_plan_id: number;
 };
 
