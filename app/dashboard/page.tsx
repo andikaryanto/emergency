@@ -206,6 +206,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <a className="dashboard-link" href="#create-tenant">
               Buat Klinik
             </a>
+            <Link className="dashboard-link" href="/dashboard/payment-profile">
+              Profil Pembayaran
+            </Link>
             {isAdmin ? (
               <Link className="dashboard-link" href="/admin/subscription-invoices">
                 Invoice Langganan

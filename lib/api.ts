@@ -14,6 +14,8 @@ let requestSequence = 0;
 
 export const apiEndpoints = {
   landlord: {
+    paymentProfile: "/api/landlord/user/payment-profile",
+    paymentProfiles: "/api/landlord/user/payment-profiles",
     subscriptionPricings: "/api/landlord/subscription-pricings",
     subscriptionInvoices: "/api/landlord/admin/subscription-invoices",
     tenant: "/api/landlord/tenant",
@@ -33,6 +35,14 @@ export const apiEndpoints = {
 
 export const apiEndpointUrls = {
   landlord: {
+    paymentProfile: new URL(
+      normalizePath(apiEndpoints.landlord.paymentProfile),
+      withTrailingSlash(env.apiBaseUrl),
+    ).toString(),
+    paymentProfiles: new URL(
+      normalizePath(apiEndpoints.landlord.paymentProfiles),
+      withTrailingSlash(env.apiBaseUrl),
+    ).toString(),
     subscriptionPricings: new URL(
       normalizePath(apiEndpoints.landlord.subscriptionPricings),
       withTrailingSlash(env.apiBaseUrl),
