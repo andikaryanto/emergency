@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { MobileHeaderMenu } from "./mobile-header-menu";
 
@@ -87,21 +88,89 @@ const stats = [
   { value: "1 panel", label: "untuk admin, kasir, dan dokter" },
 ];
 
+const faqs = [
+  {
+    question: "Apa itu Klinik RME?",
+    answer:
+      "Klinik RME adalah aplikasi klinik berbasis cloud untuk membantu klinik mengelola pendaftaran pasien, antrean, jadwal dokter, kasir, laporan, dan rekam medis elektronik dalam satu sistem.",
+  },
+  {
+    question: "Siapa yang cocok menggunakan aplikasi ini?",
+    answer:
+      "Aplikasi ini cocok untuk klinik umum, klinik pratama, klinik dengan banyak staf, maupun klinik yang ingin merapikan operasional harian tanpa proses manual yang tersebar.",
+  },
+  {
+    question: "Apakah setiap klinik mendapat akses login sendiri?",
+    answer:
+      "Ya. Setiap klinik mendapatkan alamat login sendiri agar akses untuk admin, kasir, dan dokter lebih rapi, aman, dan mudah dikelola.",
+  },
+  {
+    question: "Fitur apa saja yang tersedia di software klinik ini?",
+    answer:
+      "Fitur utama mencakup pendaftaran pasien, antrean digital, jadwal dokter, kasir, invoice, laporan operasional, hingga paket tertentu yang mendukung integrasi Satu Sehat.",
+  },
+];
+
+export const metadata: Metadata = {
+  title: "Aplikasi Klinik Online dan Rekam Medis Elektronik untuk Operasional Harian",
+  description:
+    "Klinik RME adalah aplikasi klinik online untuk pendaftaran pasien, antrean, jadwal dokter, kasir, laporan, dan rekam medis elektronik dalam satu sistem yang mudah dipakai.",
+  keywords: [
+    "aplikasi klinik online",
+    "software klinik",
+    "sistem manajemen klinik",
+    "rekam medis elektronik klinik",
+    "aplikasi pendaftaran pasien",
+    "aplikasi antrean klinik",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Aplikasi Klinik Online untuk Operasional dan Rekam Medis Elektronik",
+    description:
+      "Kelola pasien, antrean, dokter, kasir, laporan, dan rekam medis elektronik klinik dalam satu aplikasi berbasis cloud.",
+    url: "/",
+    type: "website",
+    locale: "id_ID",
+  },
+  twitter: {
+    title: "Aplikasi Klinik Online untuk Operasional Harian",
+    description:
+      "Software klinik berbasis cloud untuk operasional klinik, antrean pasien, jadwal dokter, kasir, dan laporan.",
+  },
+};
+
 export default function HomePage() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "Klinik RME",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    description:
-      "Aplikasi klinik berbasis cloud untuk mengelola pasien, jadwal dokter, pembayaran, dan laporan dalam satu sistem.",
-    offers: {
-      "@type": "AggregateOffer",
-      priceCurrency: "IDR",
-      lowPrice: "199000",
-      highPrice: "299000",
-    },
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        name: "Klinik RME",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        description:
+          "Aplikasi klinik berbasis cloud untuk mengelola pasien, antrean, jadwal dokter, pembayaran, laporan, dan rekam medis elektronik dalam satu sistem.",
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "IDR",
+          lowPrice: "199000",
+          highPrice: "299000",
+        },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
   };
 
   return (
@@ -124,6 +193,7 @@ export default function HomePage() {
             <a href="#produk">Produk</a>
             <a href="#fitur">Fitur</a>
             <a href="#harga">Harga</a>
+            <a href="#faq">FAQ</a>
             <Link href="/login">Login</Link>
           </nav>
           <div className="nav-actions">
@@ -141,12 +211,13 @@ export default function HomePage() {
           <div className="hero-copy">
             <span className="eyebrow">Aplikasi Klinik Berbasis Cloud</span>
             <h1>
-              Operasional klinik lebih rapi, cepat, dan nyaman untuk seluruh tim.
+              Aplikasi klinik online untuk operasional, antrean pasien, dan rekam medis elektronik.
             </h1>
             <p>
-              Kelola pendaftaran pasien, antrean, jadwal dokter, kasir, dan
-              laporan harian dalam satu aplikasi. Setiap klinik juga mendapat
-              alamat login sendiri agar akses lebih mudah dan profesional.
+              Kelola pendaftaran pasien, antrean, jadwal dokter, kasir, laporan
+              harian, dan rekam medis elektronik dalam satu software klinik yang
+              mudah dipakai. Setiap klinik juga mendapat alamat login sendiri
+              agar akses lebih profesional dan rapi untuk seluruh tim.
             </p>
             <ul className="hero-points" aria-label="Nilai utama produk">
               {features.map((feature) => (
@@ -314,6 +385,26 @@ export default function HomePage() {
               <Link href="/signup" className="plan-button">
                 {"Pilih " + plan.name}
               </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="feature-panel" id="faq" aria-labelledby="faq-heading">
+        <div className="section-heading">
+          <span className="eyebrow">FAQ</span>
+          <h2 id="faq-heading">Pertanyaan yang sering dicari sebelum memilih aplikasi klinik.</h2>
+          <p>
+            Bagian ini membantu calon pengguna memahami fungsi software klinik,
+            kecocokan penggunaan, dan fitur utama yang tersedia.
+          </p>
+        </div>
+
+        <div className="highlight-grid">
+          {faqs.map((faq) => (
+            <article key={faq.question} className="info-card">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
             </article>
           ))}
         </div>
