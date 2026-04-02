@@ -21,6 +21,7 @@ type LoginUserApiResponse = {
         name?: string;
         email?: string;
         is_active?: boolean;
+        role?: string;
       };
     };
   };
@@ -34,6 +35,7 @@ export type LoginUserResponse = {
     name: string;
     email: string;
     isActive: boolean;
+    role: string | null;
   };
 };
 
@@ -115,6 +117,7 @@ function normalizeLoginResponse(payload: LoginUserApiResponse) {
       name: user.name,
       email: user.email,
       isActive: Boolean(user.is_active),
+      role: typeof user.role === "string" ? user.role : null,
     },
   } satisfies LoginUserResponse;
 }

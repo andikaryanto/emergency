@@ -5,6 +5,7 @@ import {
   getLandlordAccessToken,
   getLandlordAuthorizationHeader,
   getLandlordAuthUser,
+  isLandlordAdmin,
 } from "../../lib/landlord/auth-session";
 import {
   ListLandlordTenantsError,
@@ -150,6 +151,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     getLandlordAuthorizationHeader(),
   ]);
   const currentUserName = currentUser?.name ?? "dr. Amanda Pratama";
+  const isAdmin = isLandlordAdmin(currentUser);
   let tenantErrorMessage: string | null = null;
   let tenantData: ListLandlordTenantsResponse = {
     tenants: [],
@@ -200,6 +202,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <a className="dashboard-link" href="#create-tenant">
               Buat Klinik
             </a>
+            {isAdmin ? (
+              <Link className="dashboard-link" href="/admin/subscription-invoices">
+                Invoice Langganan
+              </Link>
+            ) : null}
           </nav>
 
           {accessToken ? (
