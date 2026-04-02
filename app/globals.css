@@ -1316,3 +1316,55 @@ input {
     width: 100%;
   }
 }
+
+.pricing-group-card {
+  border: 1px solid rgba(16, 38, 31, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.pricing-group-head {
+  margin-bottom: 10px;
+}
+
+.pricing-group-head strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pricing-group-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.pricing-group-options {
+  display: grid;
+  gap: 8px;
+}
+
+.pricing-choice-option {
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(248, 250, 249, 0.9);
+}
+
+.pricing-choice-copy {
+  flex: 1;
+}
+
+.pricing-choice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pricing-choice-price {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+}

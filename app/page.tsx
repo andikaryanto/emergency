@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  listSubscriptionPricings,
+  type SubscriptionPricing,
+} from "../lib/landlord/list-subscription-pricings";
 import { MobileHeaderMenu } from "./mobile-header-menu";
 
 const productHighlights = [
@@ -27,11 +31,15 @@ const features = [
   "Kasir, invoice, dan laporan operasional",
 ];
 
-const pricing = [
+const pricingContent: Record<
+  "Basic" | "Advance" | "Pro",
   {
-    name: "Basic",
-    price: "Rp199K",
-    suffix: "/bulan",
+    description: string;
+    items: string[];
+    accent: "light" | "featured";
+  }
+> = {
+  Basic: {
     description: "Pilihan hemat untuk klinik yang ingin mulai digitalisasi operasional harian.",
     items: [
       "1 alamat login klinik",
@@ -42,11 +50,9 @@ const pricing = [
     ],
     accent: "light",
   },
-  {
-    name: "Advance",
-    price: "Rp249K",
-    suffix: "/bulan",
-    description: "Paket unggulan untuk klinik yang butuh operasional lengkap, analitik, dan kontrol bisnis lebih kuat.",
+  Advance: {
+    description:
+      "Paket unggulan untuk klinik yang butuh operasional lengkap, analitik, dan kontrol bisnis lebih kuat.",
     items: [
       "Akses untuk banyak staf",
       "Dashboard laporan harian lengkap",
@@ -60,11 +66,9 @@ const pricing = [
     ],
     accent: "light",
   },
-  {
-    name: "Pro",
-    price: "Rp299K",
-    suffix: "/bulan",
-    description: "Paket lengkap untuk klinik yang butuh semua fitur Advance ditambah integrasi layanan kesehatan nasional.",
+  Pro: {
+    description:
+      "Paket lengkap untuk klinik yang butuh semua fitur Advance ditambah integrasi layanan kesehatan nasional.",
     items: [
       "Akses untuk banyak staf",
       "Dashboard laporan harian lengkap",
@@ -75,10 +79,30 @@ const pricing = [
       "Rekap billing dalam format Excel",
       "Rekap jumlah kunjungan pasien (Excel)",
       "Integrasi Satu Sehat",
-      // "Integrasi BPJS",
       "Bantuan prioritas",
     ],
     accent: "featured",
+  },
+};
+
+const pricingFallback = [
+  {
+    name: "Basic" as const,
+    monthlyAmount: 199000,
+    yearlyAmount: 2299000,
+    ...pricingContent.Basic,
+  },
+  {
+    name: "Advance" as const,
+    monthlyAmount: 249000,
+    yearlyAmount: 2899000,
+    ...pricingContent.Advance,
+  },
+  {
+    name: "Pro" as const,
+    monthlyAmount: 299000,
+    yearlyAmount: 3499000,
+    ...pricingContent.Pro,
   },
 ];
 
@@ -141,7 +165,44 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+function formatRupiah(amount: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function mapPricingForDisplay(pricings: SubscriptionPricing[]) {
+  const items = pricings
+    .filter((pricing) => pricing.isActive)
+    .map((pricing) => {
+      const monthlyPlan = pricing.subscription_pricing_plans.find(
+        (plan) => plan.isActive && plan.billingCycle === "monthly",
+      );
+      const yearlyPlan = pricing.subscription_pricing_plans.find(
+        (plan) => plan.isActive && plan.billingCycle === "yearly",
+      );
+
+      return {
+        name: pricing.name,
+        monthlyAmount: monthlyPlan?.amount ?? 0,
+        yearlyAmount: yearlyPlan?.amount ?? 0,
+        ...pricingContent[pricing.name],
+      };
+    })
+    .filter((pricing) => pricing.monthlyAmount > 0 || pricing.yearlyAmount > 0);
+
+  return items.length > 0 ? items : pricingFallback;
+}
+
+export default async function HomePage() {
+  const subscriptionPricings = await listSubscriptionPricings();
+  const pricing = mapPricingForDisplay(subscriptionPricings);
+  const monthlyAmounts = pricing.map((plan) => plan.monthlyAmount).filter((amount) => amount > 0);
+  const lowPrice = monthlyAmounts.length > 0 ? String(Math.min(...monthlyAmounts)) : "199000";
+  const highPrice = monthlyAmounts.length > 0 ? String(Math.max(...monthlyAmounts)) : "299000";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -155,8 +216,8 @@ export default function HomePage() {
         offers: {
           "@type": "AggregateOffer",
           priceCurrency: "IDR",
-          lowPrice: "199000",
-          highPrice: "299000",
+          lowPrice,
+          highPrice,
         },
       },
       {
@@ -374,8 +435,12 @@ export default function HomePage() {
                 <p>{plan.description}</p>
               </div>
               <div className="price-line">
-                <strong>{plan.price}</strong>
-                <span>{plan.suffix}</span>
+                <strong>{formatRupiah(plan.monthlyAmount)}</strong>
+                <span>/bulan</span>
+              </div>
+              <div className="price-line">
+                <strong>{formatRupiah(plan.yearlyAmount)}</strong>
+                <span>/tahun</span>
               </div>
               <ul>
                 {plan.items.map((item) => (

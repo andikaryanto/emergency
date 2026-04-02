@@ -35,14 +35,12 @@ function validateCreateTenantPayload(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const pricingIdRaw = String(formData.get("pricing_id") ?? "").trim();
-  const pricingIdNumber = Number(pricingIdRaw);
-  const pricingId =
-    pricingIdNumber === 1 || pricingIdNumber === 2 || pricingIdNumber === 3
-      ? (pricingIdNumber as 1 | 2 | 3)
-      : null;
+  const subscriptionPricingPlanIdRaw = String(
+    formData.get("subscription_pricing_plan_id") ?? "",
+  ).trim();
+  const subscriptionPricingPlanId = Number(subscriptionPricingPlanIdRaw);
 
-  if (!name || !username || !email || !password || !pricingIdRaw) {
+  if (!name || !username || !email || !password || !subscriptionPricingPlanIdRaw) {
     return {
       success: false as const,
       state: createErrorState("Semua field wajib diisi.", {
@@ -50,22 +48,21 @@ function validateCreateTenantPayload(formData: FormData) {
         ...(!username ? { username: "Username admin wajib diisi." } : {}),
         ...(!email ? { email: "Email admin wajib diisi." } : {}),
         ...(!password ? { password: "Password admin wajib diisi." } : {}),
-        ...(!pricingIdRaw ? { pricingId: "Pilih paket harga terlebih dahulu." } : {}),
+        ...(!subscriptionPricingPlanIdRaw
+          ? { subscriptionPricingPlanId: "Pilih paket langganan terlebih dahulu." }
+          : {}),
       }),
     };
   }
 
-  if (!pricingId) {
+  if (!Number.isInteger(subscriptionPricingPlanId) || subscriptionPricingPlanId <= 0) {
     return {
       success: false as const,
-      state: createErrorState("Pilihan paket harga tidak valid.", {
-        pricingId: "Pilih paket Basic, Advance, atau Pro yang tersedia.",
+      state: createErrorState("Pilihan paket langganan tidak valid.", {
+        subscriptionPricingPlanId: "Pilih opsi Basic, Advance, atau Pro yang tersedia.",
       }),
     };
   }
-
-  const pricing: "Basic" | "Advance" | "Pro" =
-    pricingId === 1 ? "Basic" : pricingId === 2 ? "Advance" : "Pro";
 
   if (!NAME_PATTERN.test(name)) {
     return {
@@ -146,8 +143,7 @@ function validateCreateTenantPayload(formData: FormData) {
       username,
       email,
       password,
-      pricing_id: pricingId,
-      pricing,
+      subscription_pricing_plan_id: subscriptionPricingPlanId,
     },
   };
 }

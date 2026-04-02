@@ -5,8 +5,7 @@ export type CreateTenantRequest = {
   username: string;
   email: string;
   password: string;
-  pricing_id: 1 | 2 | 3;
-  pricing: "Basic" | "Advance" | "Pro";
+  subscription_pricing_plan_id: number;
 };
 
 type CreateTenantErrorPayload = {
@@ -21,7 +20,7 @@ type CreateTenantResponse = {
 export class CreateTenantError extends Error {
   readonly status: number | null;
   readonly fieldErrors: Partial<
-    Record<"name" | "username" | "email" | "password" | "pricingId", string>
+    Record<"name" | "username" | "email" | "password" | "subscriptionPricingPlanId", string>
   >;
 
   constructor({
@@ -32,7 +31,7 @@ export class CreateTenantError extends Error {
     message: string;
     status?: number | null;
     fieldErrors?: Partial<
-      Record<"name" | "username" | "email" | "password" | "pricingId", string>
+      Record<"name" | "username" | "email" | "password" | "subscriptionPricingPlanId", string>
     >;
   }) {
     super(message);
@@ -62,7 +61,9 @@ function mapCreateTenantError(error: ApiError) {
   const usernameError = extractFirstError(payload?.errors?.username);
   const emailError = extractFirstError(payload?.errors?.email);
   const passwordError = extractFirstError(payload?.errors?.password);
-  const pricingIdError =
+  const subscriptionPricingPlanIdError =
+    extractFirstError(payload?.errors?.subscription_pricing_plan_id) ??
+    extractFirstError(payload?.errors?.subscriptionPricingPlanId) ??
     extractFirstError(payload?.errors?.pricing_id) ??
     extractFirstError(payload?.errors?.pricingId);
 
@@ -75,7 +76,9 @@ function mapCreateTenantError(error: ApiError) {
       ...(usernameError ? { username: usernameError } : {}),
       ...(emailError ? { email: emailError } : {}),
       ...(passwordError ? { password: passwordError } : {}),
-      ...(pricingIdError ? { pricingId: pricingIdError } : {}),
+      ...(subscriptionPricingPlanIdError
+        ? { subscriptionPricingPlanId: subscriptionPricingPlanIdError }
+        : {}),
     },
   });
 }

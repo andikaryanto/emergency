@@ -2,8 +2,27 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { type SubscriptionPricing } from "../../../lib/landlord/list-subscription-pricings";
 import { createTenantAction } from "./actions";
 import { initialCreateTenantActionState } from "./form-state";
+
+const pricingDescriptions: Record<"Basic" | "Advance" | "Pro", string> = {
+  Basic: "Cocok untuk mulai digitalisasi operasional.",
+  Advance: "Untuk fitur analitik dan operasional lanjutan.",
+  Pro: "Semua fitur Advance plus integrasi Satu Sehat.",
+};
+
+function formatRupiah(amount: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function billingCycleLabel(billingCycle: "monthly" | "yearly") {
+  return billingCycle === "monthly" ? "Bulanan" : "Tahunan";
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -15,7 +34,11 @@ function SubmitButton() {
   );
 }
 
-export function CreateTenantForm() {
+export function CreateTenantForm({
+  pricings,
+}: {
+  pricings: SubscriptionPricing[];
+}) {
   const [state, formAction] = useActionState(
     createTenantAction,
     initialCreateTenantActionState,
@@ -102,6 +125,8 @@ export function CreateTenantForm() {
     };
   }, [tenantName]);
 
+  const firstPlanId = pricings[0]?.subscription_pricing_plans[0]?.id;
+
   return (
     <>
       {state.message ? (
@@ -111,42 +136,6 @@ export function CreateTenantForm() {
       ) : null}
 
       <form className="auth-form" action={formAction} noValidate>
-        <label>Pilih paket harga</label>
-        <div
-          className="pricing-choice-grid"
-          role="radiogroup"
-          aria-label="Pilih paket harga"
-          aria-invalid={Boolean(state.fieldErrors.pricingId)}
-          aria-describedby={state.fieldErrors.pricingId ? "pricing-id-error" : undefined}
-        >
-          <label className="pricing-choice-card">
-            <input type="radio" name="pricing_id" value="1" defaultChecked />
-            <div>
-              <strong>Basic</strong>
-              <p>Rp199K/bulan. Cocok untuk mulai digitalisasi operasional.</p>
-            </div>
-          </label>
-          <label className="pricing-choice-card">
-            <input type="radio" name="pricing_id" value="2" />
-            <div>
-              <strong>Advance</strong>
-              <p>Rp249K/bulan. Untuk fitur analitik dan operasional lanjutan.</p>
-            </div>
-          </label>
-          <label className="pricing-choice-card">
-            <input type="radio" name="pricing_id" value="3" />
-            <div>
-              <strong>Pro</strong>
-              <p>Rp299K/bulan. Semua fitur Advance plus integrasi Satu Sehat.</p>
-            </div>
-          </label>
-        </div>
-        {state.fieldErrors.pricingId ? (
-          <p id="pricing-id-error" className="field-error">
-            {state.fieldErrors.pricingId}
-          </p>
-        ) : null}
-
         <label htmlFor="name">Nama klinik</label>
         <input
           id="name"
@@ -207,9 +196,7 @@ export function CreateTenantForm() {
           aria-invalid={Boolean(state.fieldErrors.username)}
           aria-describedby={state.fieldErrors.username ? "username-error" : undefined}
         />
-        <p className="field-hint">
-          Gunakan username tanpa spasi.
-        </p>
+        <p className="field-hint">Gunakan username tanpa spasi.</p>
         {state.fieldErrors.username ? (
           <p id="username-error" className="field-error">
             {state.fieldErrors.username}
@@ -246,6 +233,53 @@ export function CreateTenantForm() {
         {state.fieldErrors.password ? (
           <p id="password-error" className="field-error">
             {state.fieldErrors.password}
+          </p>
+        ) : null}
+
+        <label>Pilih paket langganan</label>
+        <div
+          className="pricing-choice-grid"
+          role="radiogroup"
+          aria-label="Pilih paket langganan"
+          aria-invalid={Boolean(state.fieldErrors.subscriptionPricingPlanId)}
+          aria-describedby={
+            state.fieldErrors.subscriptionPricingPlanId
+              ? "subscription-pricing-plan-id-error"
+              : undefined
+          }
+        >
+          {pricings.map((pricing) => (
+            <section className="pricing-group-card" key={pricing.id}>
+              <div className="pricing-group-head">
+                <strong>{pricing.name}</strong>
+                <p>{pricingDescriptions[pricing.name]}</p>
+              </div>
+
+              <div className="pricing-group-options">
+                {pricing.subscription_pricing_plans.map((plan) => (
+                  <label className="pricing-choice-card pricing-choice-option" key={plan.id}>
+                    <input
+                      type="radio"
+                      name="subscription_pricing_plan_id"
+                      value={String(plan.id)}
+                      defaultChecked={plan.id === firstPlanId}
+                    />
+                    <div className="pricing-choice-copy">
+                      <div className="pricing-choice-row">
+                        <strong>{billingCycleLabel(plan.billingCycle)}</strong>
+                        <span className="pricing-choice-price">{formatRupiah(plan.amount)}</span>
+                      </div>
+                      <p>{plan.billingCycle === "monthly" ? "Bayar per bulan" : "Bayar per tahun"}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+        {state.fieldErrors.subscriptionPricingPlanId ? (
+          <p id="subscription-pricing-plan-id-error" className="field-error">
+            {state.fieldErrors.subscriptionPricingPlanId}
           </p>
         ) : null}
 
