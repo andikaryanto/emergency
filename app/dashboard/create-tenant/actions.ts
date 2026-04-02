@@ -9,6 +9,7 @@ import {
   CreateTenantError,
   createLandlordTenant,
 } from "../../../lib/landlord/create-tenant";
+import { listSubscriptionPricings } from "../../../lib/landlord/list-subscription-pricings";
 import { type CreateTenantActionState } from "./form-state";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,19 +31,45 @@ function createErrorState(
   };
 }
 
-function validateCreateTenantPayload(formData: FormData) {
+async function resolvePricingSelection(subscriptionPricingPlanId: number) {
+  const pricings = await listSubscriptionPricings();
+  const matchedPricing = pricings.find((pricing) =>
+    pricing.subscription_pricing_plans.some((plan) => plan.id === subscriptionPricingPlanId),
+  );
+
+  if (matchedPricing) {
+    return {
+      pricing_id: matchedPricing.id,
+      pricing: matchedPricing.name,
+    };
+  }
+
+  if (subscriptionPricingPlanId === 1 || subscriptionPricingPlanId === 2) {
+    return { pricing_id: 1, pricing: "Basic" as const };
+  }
+
+  if (subscriptionPricingPlanId === 3 || subscriptionPricingPlanId === 4) {
+    return { pricing_id: 2, pricing: "Advance" as const };
+  }
+
+  if (subscriptionPricingPlanId === 5 || subscriptionPricingPlanId === 6) {
+    return { pricing_id: 3, pricing: "Pro" as const };
+  }
+
+  return null;
+}
+
+async function validateCreateTenantPayload(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const username = String(formData.get("username") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const pricingIdRaw = String(formData.get("pricing_id") ?? "").trim();
-  const pricingIdNumber = Number(pricingIdRaw);
-  const pricingId =
-    pricingIdNumber === 1 || pricingIdNumber === 2 || pricingIdNumber === 3
-      ? (pricingIdNumber as 1 | 2 | 3)
-      : null;
+  const subscriptionPricingPlanIdRaw = String(
+    formData.get("subscription_pricing_plan_id") ?? "",
+  ).trim();
+  const subscriptionPricingPlanId = Number(subscriptionPricingPlanIdRaw);
 
-  if (!name || !username || !email || !password || !pricingIdRaw) {
+  if (!name || !username || !email || !password || !subscriptionPricingPlanIdRaw) {
     return {
       success: false as const,
       state: createErrorState("Semua field wajib diisi.", {
@@ -50,22 +77,21 @@ function validateCreateTenantPayload(formData: FormData) {
         ...(!username ? { username: "Username admin wajib diisi." } : {}),
         ...(!email ? { email: "Email admin wajib diisi." } : {}),
         ...(!password ? { password: "Password admin wajib diisi." } : {}),
-        ...(!pricingIdRaw ? { pricingId: "Pilih paket harga terlebih dahulu." } : {}),
+        ...(!subscriptionPricingPlanIdRaw
+          ? { subscriptionPricingPlanId: "Pilih paket langganan terlebih dahulu." }
+          : {}),
       }),
     };
   }
 
-  if (!pricingId) {
+  if (!Number.isInteger(subscriptionPricingPlanId) || subscriptionPricingPlanId <= 0) {
     return {
       success: false as const,
-      state: createErrorState("Pilihan paket harga tidak valid.", {
-        pricingId: "Pilih paket Basic, Advance, atau Pro yang tersedia.",
+      state: createErrorState("Pilihan paket langganan tidak valid.", {
+        subscriptionPricingPlanId: "Pilih opsi Basic, Advance, atau Pro yang tersedia.",
       }),
     };
   }
-
-  const pricing: "Basic" | "Advance" | "Pro" =
-    pricingId === 1 ? "Basic" : pricingId === 2 ? "Advance" : "Pro";
 
   if (!NAME_PATTERN.test(name)) {
     return {
@@ -139,6 +165,17 @@ function validateCreateTenantPayload(formData: FormData) {
     };
   }
 
+  const pricingSelection = await resolvePricingSelection(subscriptionPricingPlanId);
+
+  if (!pricingSelection) {
+    return {
+      success: false as const,
+      state: createErrorState("Pilihan paket langganan tidak ditemukan.", {
+        subscriptionPricingPlanId: "Pilih paket langganan yang tersedia lalu coba lagi.",
+      }),
+    };
+  }
+
   return {
     success: true as const,
     payload: {
@@ -146,8 +183,9 @@ function validateCreateTenantPayload(formData: FormData) {
       username,
       email,
       password,
-      pricing_id: pricingId,
-      pricing,
+      pricing_id: pricingSelection.pricing_id,
+      pricing: pricingSelection.pricing,
+      subscription_pricing_plan_id: subscriptionPricingPlanId,
     },
   };
 }
@@ -162,7 +200,7 @@ export async function createTenantAction(
     redirect("/login");
   }
 
-  const validation = validateCreateTenantPayload(formData);
+  const validation = await validateCreateTenantPayload(formData);
 
   if (!validation.success) {
     return validation.state;

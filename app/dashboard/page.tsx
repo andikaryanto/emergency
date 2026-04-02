@@ -107,8 +107,28 @@ function getDemoExpiryNotice(tenant: ListLandlordTenantsResponse["tenants"][numb
   return "Mode demo aktif. Gunakan masa coba gratis 7 hari ini untuk mencoba alur kerja klinik Anda.";
 }
 
-function formatPricingLabel(pricing: ListLandlordTenantsResponse["tenants"][number]["pricing"]) {
-  return pricing ?? "-";
+function formatBillingCycleLabel(
+  billingCycle: ListLandlordTenantsResponse["tenants"][number]["billingCycle"],
+) {
+  if (billingCycle === "monthly") {
+    return "Bulanan";
+  }
+
+  if (billingCycle === "yearly") {
+    return "Tahunan";
+  }
+
+  return null;
+}
+
+function formatPricingLabel(tenant: ListLandlordTenantsResponse["tenants"][number]) {
+  if (!tenant.pricing) {
+    return "-";
+  }
+
+  const billingCycleLabel = formatBillingCycleLabel(tenant.billingCycle);
+
+  return billingCycleLabel ? `${tenant.pricing} - ${billingCycleLabel}` : tenant.pricing;
 }
 
 function getDemoPricingNotice(tenant: ListLandlordTenantsResponse["tenants"][number]) {
@@ -116,7 +136,7 @@ function getDemoPricingNotice(tenant: ListLandlordTenantsResponse["tenants"][num
     return null;
   }
 
-  const selectedPricing = formatPricingLabel(tenant.pricing);
+  const selectedPricing = formatPricingLabel(tenant);
 
   return `Selama masa demo, paket yang aktif adalah Basic. Paket ${selectedPricing} akan aktif setelah klinik diaktivasi atau pembayaran selesai.`;
 }
@@ -282,71 +302,71 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     tenant.isDemo && clinicStatus.className === "inactive";
 
                   return (
-                  <article
-                    key={tenant.id}
-                    className={`tenant-card ${tenant.isDemo ? "tenant-card-demo" : ""}`}
-                  >
-                    <div className="tenant-card-head">
-                      <div>
-                        <h3>{tenant.name}</h3>
-                        <a href={`https://${tenant.domain}`}>{tenant.domain}</a>
+                    <article
+                      key={tenant.id}
+                      className={`tenant-card ${tenant.isDemo ? "tenant-card-demo" : ""}`}
+                    >
+                      <div className="tenant-card-head">
+                        <div>
+                          <h3>{tenant.name}</h3>
+                          <a href={`https://${tenant.domain}`}>{tenant.domain}</a>
+                        </div>
+                        <div className="tenant-status-group">
+                          {tenant.isDemo ? (
+                            <span className="tenant-status demo">Demo</span>
+                          ) : null}
+                          {!shouldHideInactiveStatusForDemo ? (
+                            <span className={`tenant-status ${clinicStatus.className}`}>
+                              {clinicStatus.label}
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
-                      <div className="tenant-status-group">
-                        {tenant.isDemo ? (
-                          <span className="tenant-status demo">Demo</span>
-                        ) : null}
-                        {!shouldHideInactiveStatusForDemo ? (
-                          <span className={`tenant-status ${clinicStatus.className}`}>
-                            {clinicStatus.label}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
 
-                    <div className="tenant-meta">
-                      <div>
-                        <span>ID Klinik</span>
-                        <strong>{tenant.id}</strong>
+                      <div className="tenant-meta">
+                        <div>
+                          <span>ID Klinik</span>
+                          <strong>{tenant.id}</strong>
+                        </div>
+                        <div>
+                          <span>Paket</span>
+                          <strong>{formatPricingLabel(tenant)}</strong>
+                          {tenant.isDemo ? (
+                            <p className="field-hint">{getDemoPricingNotice(tenant)}</p>
+                          ) : null}
+                        </div>
+                        <div>
+                          <span>Dibuat</span>
+                          <strong>{formatTenantDate(tenant.createdAt)}</strong>
+                        </div>
+                        <div>
+                          <span>Diperbarui</span>
+                          <strong>{formatTenantDate(tenant.updatedAt)}</strong>
+                        </div>
                       </div>
-                      <div>
-                        <span>Paket</span>
-                        <strong>{formatPricingLabel(tenant.pricing)}</strong>
-                        {tenant.isDemo ? (
-                          <p className="field-hint">{getDemoPricingNotice(tenant)}</p>
-                        ) : null}
-                      </div>
-                      <div>
-                        <span>Dibuat</span>
-                        <strong>{formatTenantDate(tenant.createdAt)}</strong>
-                      </div>
-                      <div>
-                        <span>Diperbarui</span>
-                        <strong>{formatTenantDate(tenant.updatedAt)}</strong>
-                      </div>
-                    </div>
 
-                    {!tenant.isProcessComplete ? (
-                      <p className="tenant-inline-notice">
-                        Klinik sedang diproses. Kami akan menyelesaikan penyiapan akses
-                        secepatnya.
-                      </p>
-                    ) : null}
+                      {!tenant.isProcessComplete ? (
+                        <p className="tenant-inline-notice">
+                          Klinik sedang diproses. Kami akan menyelesaikan penyiapan akses
+                          secepatnya.
+                        </p>
+                      ) : null}
 
-                    {tenant.isDemo ? (
-                      <p className="tenant-inline-notice tenant-inline-notice-demo">
-                        {getDemoExpiryNotice(tenant)}
-                      </p>
-                    ) : null}
+                      {tenant.isDemo ? (
+                        <p className="tenant-inline-notice tenant-inline-notice-demo">
+                          {getDemoExpiryNotice(tenant)}
+                        </p>
+                      ) : null}
 
-                    <div className="tenant-actions">
-                      <a href={`https://${tenant.domain}`} className="ghost-button">
-                        Buka Klinik
-                      </a>
-                      <button type="button" className="tenant-text-action">
-                        Kelola Klinik
-                      </button>
-                    </div>
-                  </article>
+                      <div className="tenant-actions">
+                        <a href={`https://${tenant.domain}`} className="ghost-button">
+                          Buka Klinik
+                        </a>
+                        <button type="button" className="tenant-text-action">
+                          Kelola Klinik
+                        </button>
+                      </div>
+                    </article>
                   );
                 })}
               </div>
