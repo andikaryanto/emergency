@@ -21,10 +21,6 @@ export const metadata: Metadata = {
   },
 };
 
-function formatOptionalValue(value: string | null) {
-  return value && value.trim().length > 0 ? value : "-";
-}
-
 export default async function PaymentProfilePage() {
   const [currentUser, authorizationHeader] = await Promise.all([
     getLandlordAuthUser(),
