@@ -1,5 +1,21 @@
 import { ApiError, apiEndpointUrls, requestJson } from "../api";
 
+type TenantSubscriptionPricingApiResource = {
+  id?: unknown;
+  code?: unknown;
+  name?: unknown;
+};
+
+type TenantSubscriptionPricingPlanApiResource = {
+  id?: unknown;
+  code?: unknown;
+  name?: unknown;
+  description?: unknown;
+  amount?: unknown;
+  billing_cycle?: unknown;
+  subscription_pricing?: TenantSubscriptionPricingApiResource | null;
+};
+
 type ListTenantsApiResponse = {
   message?: string;
   data?: {
@@ -8,6 +24,7 @@ type ListTenantsApiResponse = {
       name?: string;
       domain?: string;
       pricing?: string;
+      subscription_pricing_plan?: TenantSubscriptionPricingPlanApiResource | null;
       is_demo?: boolean;
       is_active?: boolean;
       is_process_complete?: boolean;
@@ -61,6 +78,23 @@ export class ListLandlordTenantsError extends Error {
   }
 }
 
+function normalizePricingName(value: unknown) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "basic" || normalized === "advance" || normalized === "pro") {
+    return (normalized.charAt(0).toUpperCase() + normalized.slice(1)) as
+      | "Basic"
+      | "Advance"
+      | "Pro";
+  }
+
+  return null;
+}
+
 function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
   const resources = payload.data?._resources ?? [];
   const paging = payload.data?._paging;
@@ -77,13 +111,9 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
     }
 
     const normalizedPricing =
-      typeof tenant.pricing === "string" &&
-      (tenant.pricing.toLowerCase() === "basic" ||
-        tenant.pricing.toLowerCase() === "advance" ||
-        tenant.pricing.toLowerCase() === "pro")
-        ? (tenant.pricing.charAt(0).toUpperCase() +
-            tenant.pricing.slice(1).toLowerCase()) as "Basic" | "Advance" | "Pro"
-        : null;
+      normalizePricingName(tenant.subscription_pricing_plan?.subscription_pricing?.name) ??
+      normalizePricingName(tenant.subscription_pricing_plan?.name) ??
+      normalizePricingName(tenant.pricing);
 
     return [
       {
