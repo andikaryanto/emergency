@@ -74,7 +74,7 @@ const pricing = [
       "Rekap billing dalam format Excel",
       "Rekap jumlah kunjungan pasien (Excel)",
       "Integrasi Satu Sehat",
-      "Integrasi BPJS",
+      // "Integrasi BPJS",
       "Bantuan prioritas",
     ],
     accent: "featured",

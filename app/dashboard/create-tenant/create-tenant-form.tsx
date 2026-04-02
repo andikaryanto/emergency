@@ -137,7 +137,7 @@ export function CreateTenantForm() {
             <input type="radio" name="pricing_id" value="3" />
             <div>
               <strong>Pro</strong>
-              <p>Rp299K/bulan. Semua fitur Advance plus integrasi Satu Sehat dan BPJS.</p>
+              <p>Rp299K/bulan. Semua fitur Advance plus integrasi Satu Sehat.</p>
             </div>
           </label>
         </div>
