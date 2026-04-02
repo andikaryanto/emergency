@@ -8,6 +8,7 @@ export type LandlordAuthUser = {
   name: string;
   email: string;
   isActive: boolean;
+  role: string | null;
 };
 
 export type LandlordSession = {
@@ -85,4 +86,8 @@ export async function getLandlordAuthorizationHeader() {
   return {
     Authorization: `Bearer ${token}`,
   } satisfies HeadersInit;
+}
+
+export function isLandlordAdmin(user: LandlordAuthUser | null) {
+  return user?.role === "admin";
 }

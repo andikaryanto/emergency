@@ -64,6 +64,10 @@ export async function loginUserAction(
     const session = await loginLandlordUser(validation.payload);
 
     await setLandlordSession(session);
+
+    if (session.user.role === "admin") {
+      redirect("/admin/subscription-invoices");
+    }
   } catch (error) {
     if (error instanceof LoginUserError) {
       return createErrorState(error.message, error.fieldErrors);

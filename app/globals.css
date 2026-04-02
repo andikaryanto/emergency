@@ -1122,6 +1122,71 @@ input {
   overflow-wrap: anywhere;
 }
 
+.admin-filter-summary strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.admin-filter-toggle-wrap {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.admin-filter-toggle-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-filter-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 38, 31, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.admin-filter-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 800;
+  transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease,
+    background 180ms ease;
+}
+
+.admin-filter-option:hover {
+  transform: translateY(-1px);
+}
+
+.admin-filter-option.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+  box-shadow: 0 12px 24px rgba(12, 139, 107, 0.18);
+}
+
+.admin-filter-summary p {
+  margin: 0;
+}
+
+.admin-invoice-list {
+  margin-top: 24px;
+}
+
+.admin-invoice-tenant {
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .tenant-text-action {
   border: 0;
   background: transparent;
@@ -1162,6 +1227,18 @@ input {
   .dashboard-overview,
   .tenant-meta {
     grid-template-columns: 1fr;
+  }
+
+  .admin-filter-toggle-wrap {
+    justify-items: start;
+  }
+
+  .admin-filter-toggle {
+    width: 100%;
+  }
+
+  .admin-filter-option {
+    min-width: 0;
   }
 
   .nav-wrap {
