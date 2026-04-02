@@ -28,6 +28,7 @@ type ListTenantsApiResponse = {
       is_demo?: boolean;
       is_active?: boolean;
       is_process_complete?: boolean;
+      has_ready_payment_invoice?: boolean;
       trial_ends_at?: string | null;
       paid_at?: string | null;
       disabled_at?: string | null;
@@ -52,6 +53,7 @@ export type LandlordTenant = {
   isDemo: boolean;
   isActive: boolean;
   isProcessComplete: boolean;
+  hasReadyPaymentInvoice: boolean;
   trialEndsAt: string | null;
   paidAt: string | null;
   disabledAt: string | null;
@@ -137,6 +139,7 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
         isDemo: Boolean(tenant.is_demo),
         isActive: Boolean(tenant.is_active),
         isProcessComplete: Boolean(tenant.is_process_complete),
+        hasReadyPaymentInvoice: Boolean(tenant.has_ready_payment_invoice),
         trialEndsAt:
           typeof tenant.trial_ends_at === "string" ? tenant.trial_ends_at : null,
         paidAt: typeof tenant.paid_at === "string" ? tenant.paid_at : null,

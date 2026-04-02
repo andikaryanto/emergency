@@ -142,6 +142,10 @@ function getDemoPricingNotice(tenant: ListLandlordTenantsResponse["tenants"][num
   return `Selama masa demo, paket yang aktif adalah Basic. Paket ${selectedPricing} akan aktif setelah klinik diaktivasi atau pembayaran selesai.`;
 }
 
+function getTenantSubscriptionInvoicesPath(tenantId: number) {
+  return `/dashboard/tenants/${tenantId}/subscription-invoices`;
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
   const isCreated = params?.created === "1";
@@ -365,10 +369,26 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         </p>
                       ) : null}
 
+                      {tenant.hasReadyPaymentInvoice ? (
+                        <p className="tenant-inline-notice tenant-inline-notice-payment">
+                          Ada invoice langganan yang siap dibayar untuk klinik ini. Lanjutkan ke
+                          halaman konfirmasi pembayaran untuk melihat detail invoice dan kirim
+                          konfirmasi pembayaran.
+                        </p>
+                      ) : null}
+
                       <div className="tenant-actions">
                         <a href={`https://${tenant.domain}`} className="ghost-button">
                           Buka Klinik
                         </a>
+                        {tenant.hasReadyPaymentInvoice ? (
+                          <Link
+                            href={getTenantSubscriptionInvoicesPath(tenant.id)}
+                            className="primary-button tenant-payment-button"
+                          >
+                            Konfirmasi Pembayaran
+                          </Link>
+                        ) : null}
                         <button type="button" className="tenant-text-action">
                           Kelola Klinik
                         </button>

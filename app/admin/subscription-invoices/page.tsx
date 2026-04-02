@@ -13,6 +13,7 @@ import {
   type ListSubscriptionInvoicesResponse,
   listSubscriptionInvoices,
 } from "../../../lib/landlord/list-subscription-invoices";
+import { formatCurrency, formatDateTime } from "../../../lib/format";
 
 export const metadata: Metadata = {
   title: "Invoice Langganan Admin",
@@ -37,42 +38,6 @@ function parseBooleanSearchParam(value: string | undefined) {
   const normalized = value.trim().toLowerCase();
 
   return normalized === "1" || normalized === "true";
-}
-
-function parseApiDate(value: string) {
-  return new Date(value.replace(" ", "T"));
-}
-
-function formatDateTime(value: string | null) {
-  if (!value) {
-    return "-";
-  }
-
-  const date = parseApiDate(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
-function formatCurrency(value: number | null) {
-  if (value === null) {
-    return "-";
-  }
-
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
 }
 
 export default async function AdminSubscriptionInvoicesPage({
