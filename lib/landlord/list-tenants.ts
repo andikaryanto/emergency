@@ -48,6 +48,7 @@ export type LandlordTenant = {
   name: string;
   domain: string;
   pricing: "Basic" | "Advance" | "Pro" | null;
+  billingCycle: "monthly" | "yearly" | null;
   isDemo: boolean;
   isActive: boolean;
   isProcessComplete: boolean;
@@ -95,6 +96,14 @@ function normalizePricingName(value: unknown) {
   return null;
 }
 
+function normalizeBillingCycle(value: unknown): "monthly" | "yearly" | null {
+  if (value === "monthly" || value === "yearly") {
+    return value;
+  }
+
+  return null;
+}
+
 function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
   const resources = payload.data?._resources ?? [];
   const paging = payload.data?._paging;
@@ -114,6 +123,9 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
       normalizePricingName(tenant.subscription_pricing_plan?.subscription_pricing?.name) ??
       normalizePricingName(tenant.subscription_pricing_plan?.name) ??
       normalizePricingName(tenant.pricing);
+    const normalizedBillingCycle = normalizeBillingCycle(
+      tenant.subscription_pricing_plan?.billing_cycle,
+    );
 
     return [
       {
@@ -121,6 +133,7 @@ function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
         name: tenant.name,
         domain: tenant.domain,
         pricing: normalizedPricing,
+        billingCycle: normalizedBillingCycle,
         isDemo: Boolean(tenant.is_demo),
         isActive: Boolean(tenant.is_active),
         isProcessComplete: Boolean(tenant.is_process_complete),
