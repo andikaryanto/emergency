@@ -684,6 +684,20 @@ input {
   background: rgba(255, 255, 255, 0.88);
 }
 
+.auth-form select,
+.auth-form textarea {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.88);
+  font: inherit;
+}
+
+.auth-form textarea {
+  resize: vertical;
+  min-height: 112px;
+}
+
 .auth-form button,
 .login-form button {
   margin-top: 10px;
@@ -751,6 +765,12 @@ input {
 }
 
 .auth-form input[aria-invalid="true"] {
+  border-color: rgba(197, 76, 76, 0.5);
+  background: rgba(255, 244, 244, 0.95);
+}
+
+.auth-form select[aria-invalid="true"],
+.auth-form textarea[aria-invalid="true"] {
   border-color: rgba(197, 76, 76, 0.5);
   background: rgba(255, 244, 244, 0.95);
 }
@@ -1143,6 +1163,55 @@ input {
 
 .tenant-invoice-meta {
   grid-template-columns: repeat(4, 1fr);
+}
+
+.payment-profile-meta {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.payment-profile-form-panel {
+  align-items: start;
+}
+
+.payment-profile-form-wrap {
+  width: min(520px, 100%);
+}
+
+.payment-profile-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.payment-profile-checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.payment-profile-editor {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(16, 38, 31, 0.08);
+}
+
+.payment-profile-editor-head h3 {
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+  font-family: var(--font-display), sans-serif;
+}
+
+.payment-profile-delete-button {
+  cursor: pointer;
+}
+
+.payment-profile-toggle-button {
+  cursor: pointer;
+}
+
+.payment-profile-card-actions {
+  flex-wrap: wrap;
 }
 
 .tenant-invoice-created-at {
