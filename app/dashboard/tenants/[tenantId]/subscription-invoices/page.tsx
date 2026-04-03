@@ -5,13 +5,18 @@ import {
   getLandlordAccessToken,
   getLandlordAuthorizationHeader,
 } from "../../../../../lib/landlord/auth-session";
+import { formatCurrency, formatDateTime } from "../../../../../lib/format";
+import {
+  ListPaymentProfilesError,
+  listPaymentProfiles,
+} from "../../../../../lib/landlord/list-payment-profiles";
 import {
   ListTenantSubscriptionInvoicesError,
   type ListTenantSubscriptionInvoicesResponse,
   type TenantSubscriptionInvoice,
   listTenantSubscriptionInvoices,
 } from "../../../../../lib/landlord/list-tenant-subscription-invoices";
-import { formatCurrency, formatDateTime } from "../../../../../lib/format";
+import { PaymentConfirmationButton } from "./payment-confirmation-button";
 
 export const metadata: Metadata = {
   title: "Konfirmasi Pembayaran Invoice",
@@ -51,6 +56,41 @@ function getStatusLabel(invoice: TenantSubscriptionInvoice) {
   } as const;
 }
 
+function getConfirmationStatusLabel(invoice: TenantSubscriptionInvoice) {
+  if (!invoice.paymentConfirmation) {
+    return null;
+  }
+
+  const normalizedStatus = invoice.paymentConfirmation.status?.trim().toLowerCase();
+
+  if (normalizedStatus === "approved") {
+    return {
+      label: "Konfirmasi Disetujui",
+      className: "active",
+    } as const;
+  }
+
+  if (normalizedStatus === "rejected") {
+    return {
+      label: "Konfirmasi Ditolak",
+      className: "inactive",
+    } as const;
+  }
+
+  return {
+    label: "Konfirmasi Pending",
+    className: "demo",
+  } as const;
+}
+
+function isPaymentConfirmationApproved(invoice: TenantSubscriptionInvoice) {
+  return invoice.paymentConfirmation?.status?.trim().toLowerCase() === "approved";
+}
+
+function canManagePaymentConfirmation(invoice: TenantSubscriptionInvoice) {
+  return invoice.status !== "paid" && !isPaymentConfirmationApproved(invoice);
+}
+
 export default async function TenantSubscriptionInvoicesPage({
   params,
 }: TenantSubscriptionInvoicesPageProps) {
@@ -71,6 +111,7 @@ export default async function TenantSubscriptionInvoicesPage({
   }
 
   let invoiceErrorMessage: string | null = null;
+  let paymentProfileErrorMessage: string | null = null;
   let invoiceData: ListTenantSubscriptionInvoicesResponse = {
     tenant: null,
     invoices: [],
@@ -82,6 +123,7 @@ export default async function TenantSubscriptionInvoicesPage({
       isLastPage: true,
     },
   };
+  let paymentProfiles = [] as Awaited<ReturnType<typeof listPaymentProfiles>>["paymentProfiles"];
 
   try {
     invoiceData = await listTenantSubscriptionInvoices(resolvedTenantId, authorizationHeader);
@@ -92,6 +134,17 @@ export default async function TenantSubscriptionInvoicesPage({
         : "Invoice tenant tidak dapat dimuat saat ini.";
   }
 
+  try {
+    const paymentProfileData = await listPaymentProfiles(authorizationHeader);
+
+    paymentProfiles = paymentProfileData.paymentProfiles;
+  } catch (error) {
+    paymentProfileErrorMessage =
+      error instanceof ListPaymentProfilesError
+        ? error.message
+        : "Payment profile tidak dapat dimuat saat ini.";
+  }
+
   const tenantName = invoiceData.tenant?.name ?? `Tenant #${tenantId}`;
   const tenantDomain = invoiceData.tenant?.domain ?? "-";
   const billingCycleLabel = formatBillingCycleLabel(invoiceData.tenant?.billingCycle ?? null);
@@ -100,6 +153,13 @@ export default async function TenantSubscriptionInvoicesPage({
       ? `${invoiceData.tenant.pricingName} - ${billingCycleLabel}`
       : invoiceData.tenant.pricingName
     : "-";
+  const defaultPaymentProfile =
+    paymentProfiles.find((profile) => profile.isDefault && profile.isActive) ??
+    paymentProfiles.find((profile) => profile.isDefault) ??
+    paymentProfiles.find((profile) => profile.isActive) ??
+    paymentProfiles[0] ??
+    null;
+  const hasDefaultPaymentProfile = Boolean(defaultPaymentProfile);
 
   return (
     <main className="dashboard-shell">
@@ -117,8 +177,7 @@ export default async function TenantSubscriptionInvoicesPage({
             <span className="card-label">Invoice tenant</span>
             <strong>{tenantName}</strong>
             <p>
-              Tinjau invoice langganan yang aktif untuk tenant ini, lalu lanjutkan ke
-              proses konfirmasi pembayaran saat invoice sudah siap dibayar.
+              Tinjau invoice langganan tenant ini dan kirim konfirmasi pembayaran bila diperlukan.
             </p>
           </div>
         </aside>
@@ -130,7 +189,7 @@ export default async function TenantSubscriptionInvoicesPage({
               <h1>Konfirmasi pembayaran untuk {tenantName}.</h1>
               <p>
                 Cek invoice yang belum dibayar, pastikan nominal dan jatuh temponya,
-                lalu gunakan halaman ini sebagai pintu masuk ke alur konfirmasi pembayaran.
+                lalu kirim konfirmasi pembayaran.
               </p>
             </div>
 
@@ -160,10 +219,25 @@ export default async function TenantSubscriptionInvoicesPage({
             <strong>{tenantDomain}</strong>
             <p>
               Nominal paket saat ini {formatCurrency(invoiceData.tenant?.amount ?? null)}.
-              {" "}Halaman ini menampilkan invoice langganan tenant yang bisa Anda cek
-              sebelum melakukan konfirmasi pembayaran.
             </p>
           </section>
+
+          {paymentProfileErrorMessage ? (
+            <section className="dashboard-feedback">{paymentProfileErrorMessage}</section>
+          ) : !defaultPaymentProfile ? (
+            <section className="dashboard-feedback">
+              Belum ada payment profile default. Tambahkan dulu di{" "}
+              <Link href="/dashboard/payment-profile">halaman Profil Pembayaran</Link>
+              {" "}agar konfirmasi pembayaran bisa dikirim.
+            </section>
+          ) : (
+            <section className="dashboard-feedback tenant-invoice-summary">
+              <strong>Profile default: {defaultPaymentProfile.displayName}</strong>
+              <p>
+                Data awal diambil dari profile default dan masih bisa Anda ubah saat mengirim konfirmasi pembayaran.
+              </p>
+            </section>
+          )}
 
           {invoiceErrorMessage ? (
             <section className="dashboard-feedback">{invoiceErrorMessage}</section>
@@ -178,8 +252,7 @@ export default async function TenantSubscriptionInvoicesPage({
                   <span className="eyebrow">Invoice Tenant</span>
                   <h2 id="tenant-subscription-invoices">Daftar invoice belum dibayar</h2>
                   <p>
-                    Semua invoice di halaman ini adalah invoice unpaid yang siap Anda
-                    lanjutkan ke proses konfirmasi pembayaran.
+                    Semua invoice di halaman ini belum dibayar.
                   </p>
                 </div>
               </div>
@@ -187,6 +260,7 @@ export default async function TenantSubscriptionInvoicesPage({
               <div className="tenant-list admin-invoice-list">
                 {invoiceData.invoices.map((invoice) => {
                   const status = getStatusLabel(invoice);
+                  const confirmationStatus = getConfirmationStatusLabel(invoice);
 
                   return (
                     <article className="tenant-card" key={invoice.id}>
@@ -196,6 +270,11 @@ export default async function TenantSubscriptionInvoicesPage({
                           <span className="admin-invoice-tenant">{tenantName}</span>
                         </div>
                         <div className="tenant-status-group">
+                          {confirmationStatus ? (
+                            <span className={`tenant-status ${confirmationStatus.className}`}>
+                              {confirmationStatus.label}
+                            </span>
+                          ) : null}
                           <span className={`tenant-status ${status.className}`}>
                             {status.label}
                           </span>
@@ -227,13 +306,48 @@ export default async function TenantSubscriptionInvoicesPage({
                         </p>
                       ) : null}
 
+                      {invoice.paymentConfirmation ? (
+                        <p className="tenant-inline-notice tenant-inline-notice-payment">
+                          Konfirmasi pembayaran sudah ada dengan status{" "}
+                          <strong>{invoice.paymentConfirmation.status ?? "pending"}</strong>.
+                          Dikirim pada {formatDateTime(invoice.paymentConfirmation.submittedAt)}.
+                        </p>
+                      ) : (
+                        <p className="tenant-inline-notice tenant-inline-notice-payment">
+                          Belum ada konfirmasi pembayaran untuk invoice ini.
+                        </p>
+                      )}
+
                       <div className="tenant-actions">
                         <span className="tenant-inline-notice tenant-invoice-created-at">
                           Dibuat pada {formatDateTime(invoice.createdAt)}.
                         </span>
-                        {invoice.status === "unpaid" ? (
-                          <button type="button" className="primary-button tenant-payment-button">
-                            Konfirmasi Pembayaran
+                        {hasDefaultPaymentProfile && canManagePaymentConfirmation(invoice) ? (
+                          <PaymentConfirmationButton
+                            tenantId={resolvedTenantId}
+                            invoiceId={invoice.id}
+                            amount={invoice.amount}
+                            hasExistingConfirmation={Boolean(invoice.paymentConfirmation)}
+                            paymentConfirmationId={invoice.paymentConfirmation?.id}
+                            paymentProfile={{
+                              id: defaultPaymentProfile.id,
+                              displayName: defaultPaymentProfile.displayName,
+                              paymentMethod: defaultPaymentProfile.paymentMethod,
+                              accountHolderName: defaultPaymentProfile.accountHolderName,
+                              bankName: defaultPaymentProfile.bankName,
+                              accountNumber: defaultPaymentProfile.accountNumber,
+                              notes: defaultPaymentProfile.notes,
+                            }}
+                          />
+                        ) : hasDefaultPaymentProfile ? (
+                          <button
+                            type="button"
+                            className="ghost-button payment-profile-toggle-button"
+                            disabled
+                            aria-disabled="true"
+                            title="Konfirmasi pembayaran sudah tidak dapat diubah"
+                          >
+                            Konfirmasi Tidak Tersedia
                           </button>
                         ) : null}
                       </div>

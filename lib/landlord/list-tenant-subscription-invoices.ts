@@ -1,5 +1,7 @@
 import { ApiError, apiEndpointUrls, requestJson } from "../api";
 
+type JsonObject = Record<string, unknown>;
+
 type TenantSubscriptionPricingApiResource = {
   name?: unknown;
 };
@@ -34,6 +36,7 @@ type TenantSubscriptionInvoiceApiResource = {
   tenant?: TenantApiResource | null;
   unpaid_subscription_invoices?: unknown;
   subscription_pricing_plan?: TenantSubscriptionPricingPlanApiResource | null;
+  subscription_invoice_payment_confirmation?: unknown;
 };
 
 type ListTenantSubscriptionInvoicesApiResponse = {
@@ -60,6 +63,17 @@ export type TenantSubscriptionInvoice = {
   notes: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+  paymentConfirmation: {
+    id: number | null;
+    status: string | null;
+    notes: string | null;
+    submittedAt: string | null;
+    reviewedAt: string | null;
+    createdAt: string | null;
+    updatedAt: string | null;
+    paymentProfileSnapshot: JsonObject | null;
+    selfLink: string | null;
+  } | null;
 };
 
 export type TenantSubscriptionInvoiceTenant = {
@@ -98,8 +112,18 @@ function getString(value: unknown) {
   return typeof value === "string" ? value : null;
 }
 
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function getNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function getNestedObject(source: JsonObject, key: string) {
+  const value = source[key];
+
+  return isJsonObject(value) ? value : null;
 }
 
 function normalizeBillingCycle(value: unknown): "monthly" | "yearly" | null {
@@ -127,6 +151,13 @@ function normalizeInvoice(
     return null;
   }
 
+  const paymentConfirmation = isJsonObject(invoice.subscription_invoice_payment_confirmation)
+    ? invoice.subscription_invoice_payment_confirmation
+    : null;
+  const paymentConfirmationLink = paymentConfirmation
+    ? getNestedObject(paymentConfirmation, "_link")
+    : null;
+
   return {
     id,
     invoiceNumber,
@@ -139,6 +170,22 @@ function normalizeInvoice(
     notes: getString(invoice.notes),
     createdAt: getString(invoice.created_at),
     updatedAt: getString(invoice.updated_at),
+    paymentConfirmation: paymentConfirmation
+      ? {
+          id: getNumber(paymentConfirmation.id),
+          status: getString(paymentConfirmation.status),
+          notes: getString(paymentConfirmation.notes),
+          submittedAt: getString(paymentConfirmation.submitted_at),
+          reviewedAt: getString(paymentConfirmation.reviewed_at),
+          createdAt: getString(paymentConfirmation.created_at),
+          updatedAt: getString(paymentConfirmation.updated_at),
+          paymentProfileSnapshot: getNestedObject(
+            paymentConfirmation,
+            "payment_profile_snapshot",
+          ),
+          selfLink: getString(paymentConfirmationLink?.self),
+        }
+      : null,
   };
 }
 
