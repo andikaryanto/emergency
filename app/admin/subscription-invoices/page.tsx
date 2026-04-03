@@ -29,14 +29,15 @@ export const metadata: Metadata = {
 type AdminSubscriptionInvoicesPageProps = {
   searchParams?: Promise<{
     is_paid?: string;
+    has_payment_confirmation?: string;
     domain?: string;
     page?: string;
   }>;
 };
 
-function parseBooleanSearchParam(value: string | undefined) {
+function parseBooleanSearchParam(value: string | undefined, defaultValue = false) {
   if (value === undefined) {
-    return false;
+    return defaultValue;
   }
 
   const normalized = value.trim().toLowerCase();
@@ -94,17 +95,23 @@ function getPaymentConfirmationStatusLabel(invoice: SubscriptionInvoice) {
 
 function createPageHref({
   isPaid,
+  hasPaymentConfirmation,
   domain,
   page,
 }: {
   isPaid: boolean;
+  hasPaymentConfirmation: boolean;
   domain: string;
   page: number;
 }) {
   const params = new URLSearchParams({
-    is_paid: String(isPaid),
+    is_paid: isPaid ? "1" : "0",
     page: String(page),
   });
+
+  if (hasPaymentConfirmation) {
+    params.set("has_payment_confirmation", "1");
+  }
 
   if (domain) {
     params.set("domain", domain);
@@ -117,7 +124,11 @@ export default async function AdminSubscriptionInvoicesPage({
   searchParams,
 }: AdminSubscriptionInvoicesPageProps) {
   const params = await searchParams;
-  const isPaid = parseBooleanSearchParam(params?.is_paid);
+  const isPaid = parseBooleanSearchParam(params?.is_paid, false);
+  const hasPaymentConfirmation = parseBooleanSearchParam(
+    params?.has_payment_confirmation,
+    false,
+  );
   const domain = normalizeDomainSearch(params?.domain);
   const currentPage = parsePageSearchParam(params?.page);
   const [currentUser, accessToken, authorizationHeader] = await Promise.all([
@@ -148,6 +159,7 @@ export default async function AdminSubscriptionInvoicesPage({
   try {
     invoiceData = await listSubscriptionInvoices(authorizationHeader, {
       isPaid,
+      hasPaymentConfirmation,
       page: currentPage,
       domain,
     });
@@ -232,6 +244,10 @@ export default async function AdminSubscriptionInvoicesPage({
               <strong>{isPaid ? "Paid" : "Unpaid"}</strong>
             </article>
             <article className="dashboard-stat">
+              <span>Konfirmasi pembayaran</span>
+              <strong>{hasPaymentConfirmation ? "Ada Konfirmasi" : "Semua Invoice"}</strong>
+            </article>
+            <article className="dashboard-stat">
               <span>Halaman aktif</span>
               <strong>
                 {invoiceData.paging.page} / {totalPages}
@@ -243,7 +259,7 @@ export default async function AdminSubscriptionInvoicesPage({
             <strong>Ringkasan cepat</strong>
             <p>
               Pada halaman ini ada {paidCount} invoice berstatus paid dan {unpaidCount} invoice
-              berstatus unpaid.
+              berstatus unpaid dengan filter konfirmasi pembayaran {hasPaymentConfirmation ? "aktif" : "tidak aktif"}.
             </p>
           </section>
 
@@ -254,18 +270,31 @@ export default async function AdminSubscriptionInvoicesPage({
                 <h2 id="subscription-invoice-list">List subscription invoices</h2>
                 <p>Pantau invoice tenant, cari berdasarkan domain, dan ubah filter status pembayaran dengan cepat.</p>
               </div>
+            </div>
+
+            <div className="admin-filter-row" aria-label="Filter invoice langganan">
               <div className="admin-filter-toggle-wrap">
                 <span className="admin-filter-toggle-label">Filter status pembayaran</span>
                 <div className="admin-filter-toggle" aria-label="Filter invoice berdasarkan pembayaran">
                   <Link
-                    href={createPageHref({ isPaid: false, domain, page: 1 })}
+                    href={createPageHref({
+                      isPaid: false,
+                      hasPaymentConfirmation,
+                      domain,
+                      page: 1,
+                    })}
                     className={`admin-filter-option ${!isPaid ? "active" : ""}`}
                     aria-current={!isPaid ? "page" : undefined}
                   >
                     Belum Dibayar
                   </Link>
                   <Link
-                    href={createPageHref({ isPaid: true, domain, page: 1 })}
+                    href={createPageHref({
+                      isPaid: true,
+                      hasPaymentConfirmation,
+                      domain,
+                      page: 1,
+                    })}
                     className={`admin-filter-option ${isPaid ? "active" : ""}`}
                     aria-current={isPaid ? "page" : undefined}
                   >
@@ -273,10 +302,46 @@ export default async function AdminSubscriptionInvoicesPage({
                   </Link>
                 </div>
               </div>
+
+              <div className="admin-filter-toggle-wrap">
+                <span className="admin-filter-toggle-label">Filter konfirmasi pembayaran</span>
+                <div
+                  className="admin-filter-toggle"
+                  aria-label="Filter invoice berdasarkan konfirmasi pembayaran"
+                >
+                  <Link
+                    href={createPageHref({
+                      isPaid,
+                      hasPaymentConfirmation: true,
+                      domain,
+                      page: 1,
+                    })}
+                    className={`admin-filter-option ${hasPaymentConfirmation ? "active" : ""}`}
+                    aria-current={hasPaymentConfirmation ? "page" : undefined}
+                  >
+                    Ada Konfirmasi
+                  </Link>
+                  <Link
+                    href={createPageHref({
+                      isPaid,
+                      hasPaymentConfirmation: false,
+                      domain,
+                      page: 1,
+                    })}
+                    className={`admin-filter-option ${!hasPaymentConfirmation ? "active" : ""}`}
+                    aria-current={!hasPaymentConfirmation ? "page" : undefined}
+                  >
+                    Semua Invoice
+                  </Link>
+                </div>
+              </div>
             </div>
 
             <form className="auth-form admin-invoice-search-form" method="get">
-              <input type="hidden" name="is_paid" value={String(isPaid)} />
+              <input type="hidden" name="is_paid" value={isPaid ? "1" : "0"} />
+              {hasPaymentConfirmation ? (
+                <input type="hidden" name="has_payment_confirmation" value="1" />
+              ) : null}
               <label htmlFor="admin-invoice-search">Cari tenant</label>
               <input
                 id="admin-invoice-search"
@@ -451,6 +516,7 @@ export default async function AdminSubscriptionInvoicesPage({
                     <Link
                       href={createPageHref({
                         isPaid,
+                        hasPaymentConfirmation,
                         domain,
                         page: invoiceData.paging.page - 1,
                       })}
@@ -472,6 +538,7 @@ export default async function AdminSubscriptionInvoicesPage({
                     <Link
                       href={createPageHref({
                         isPaid,
+                        hasPaymentConfirmation,
                         domain,
                         page: invoiceData.paging.page + 1,
                       })}

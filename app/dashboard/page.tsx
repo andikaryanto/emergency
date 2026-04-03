@@ -56,13 +56,6 @@ function getClinicStatusLabel(tenant: ListLandlordTenantsResponse["tenants"][num
     } as const;
   }
 
-  if (tenant.disabledAt) {
-    return {
-      label: "Tidak aktif",
-      className: "inactive",
-    } as const;
-  }
-
   if (tenant.isActive) {
     return {
       label: "Aktif",
@@ -312,8 +305,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <div className="tenant-list">
                 {tenantData.tenants.map((tenant) => {
                   const clinicStatus = getClinicStatusLabel(tenant);
-                  const shouldHideInactiveStatusForDemo =
-                    tenant.isDemo && clinicStatus.className === "inactive";
 
                   return (
                     <article
@@ -329,11 +320,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           {tenant.isDemo ? (
                             <span className="tenant-status demo">Demo</span>
                           ) : null}
-                          {!shouldHideInactiveStatusForDemo ? (
-                            <span className={`tenant-status ${clinicStatus.className}`}>
-                              {clinicStatus.label}
-                            </span>
-                          ) : null}
+                          <span className={`tenant-status ${clinicStatus.className}`}>
+                            {clinicStatus.label}
+                          </span>
                         </div>
                       </div>
 

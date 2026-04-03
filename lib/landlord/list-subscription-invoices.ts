@@ -294,13 +294,18 @@ export async function listSubscriptionInvoices(
   headers: HeadersInit,
   options: {
     isPaid?: boolean;
+    hasPaymentConfirmation?: boolean;
     page?: number;
     domain?: string;
   } = {},
 ) {
   const url = new URL(apiEndpointUrls.landlord.subscriptionInvoices);
 
-  url.searchParams.set("is_paid", String(options.isPaid ?? false));
+  url.searchParams.set("is_paid", options.isPaid ? "1" : "0");
+
+  if (options.hasPaymentConfirmation) {
+    url.searchParams.set("has_payment_confirmation", "1");
+  }
 
   if (typeof options.page === "number" && Number.isFinite(options.page) && options.page > 0) {
     url.searchParams.set("page", String(options.page));

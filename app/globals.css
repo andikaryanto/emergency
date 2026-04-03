@@ -1041,10 +1041,18 @@ input {
   align-items: start;
 }
 
+.admin-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
 .admin-filter-toggle-wrap {
   display: grid;
   gap: 10px;
-  justify-items: end;
+  justify-items: start;
   flex-shrink: 0;
 }
 
@@ -1134,6 +1142,15 @@ input {
   font-weight: 700;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.admin-invoice-tenant {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--primary);
 }
 
 .tenant-status {
@@ -1312,6 +1329,10 @@ input {
   .dashboard-overview,
   .tenant-meta {
     grid-template-columns: 1fr;
+  }
+
+  .admin-filter-row {
+    flex-direction: column;
   }
 
   .admin-filter-toggle-wrap {
