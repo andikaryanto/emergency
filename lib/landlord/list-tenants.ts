@@ -106,9 +106,9 @@ function normalizeBillingCycle(value: unknown): "monthly" | "yearly" | null {
   return null;
 }
 
-function normalizeListTenantsResponse(payload: ListTenantsApiResponse) {
-  const resources = payload.data?._resources ?? [];
-  const paging = payload.data?._paging;
+function normalizeListTenantsResponse(payload: ListTenantsApiResponse | null | undefined) {
+  const resources = payload?.data?._resources ?? [];
+  const paging = payload?.data?._paging;
 
   const tenants = resources.flatMap((tenant) => {
     if (
