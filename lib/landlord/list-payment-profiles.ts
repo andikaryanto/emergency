@@ -100,10 +100,10 @@ function normalizePaymentProfile(
 }
 
 function normalizeListPaymentProfilesResponse(
-  payload: ListPaymentProfilesApiResponse,
+  payload: ListPaymentProfilesApiResponse | null | undefined,
 ) {
-  const resources = Array.isArray(payload.data?._resources) ? payload.data._resources : [];
-  const paging = payload.data?._paging;
+  const resources = Array.isArray(payload?.data?._resources) ? payload.data._resources : [];
+  const paging = payload?.data?._paging;
   const paymentProfiles = resources.flatMap((profile) => {
     const normalized = normalizePaymentProfile(profile);
 

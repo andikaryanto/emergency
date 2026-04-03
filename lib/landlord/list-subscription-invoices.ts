@@ -18,13 +18,34 @@ type ListSubscriptionInvoicesApiResponse = {
 export type SubscriptionInvoice = {
   id: number | string;
   invoiceNumber: string;
+  tenantId: number | null;
   tenantName: string;
+  tenantDomain: string | null;
   subscriptionName: string | null;
   amount: number | null;
   isPaid: boolean;
   paidAt: string | null;
   dueDate: string | null;
   createdAt: string | null;
+  paymentConfirmation: {
+    id: number | null;
+    status: string | null;
+    notes: string | null;
+    submittedAt: string | null;
+    reviewedAt: string | null;
+    createdAt: string | null;
+    updatedAt: string | null;
+    paymentProfileSnapshot: {
+      paymentMethod: string | null;
+      accountHolderName: string | null;
+      bankName: string | null;
+      accountNumber: string | null;
+      transferredAmount: number | null;
+      profileId: number | null;
+      profileLabel: string | null;
+      submittedNotes: string | null;
+    } | null;
+  } | null;
 };
 
 export type ListSubscriptionInvoicesResponse = {
@@ -127,13 +148,25 @@ function getInvoiceNumber(invoice: JsonObject, identity: number | string) {
   );
 }
 
-function getTenantName(invoice: JsonObject) {
+function getTenant(invoice: JsonObject) {
   const subscription = getNestedObject(invoice, "subscription");
   const subscriptionInvoice = getNestedObject(invoice, "subscription_invoice");
-  const tenant =
+
+  return (
     getNestedObject(invoice, "tenant") ??
     (subscription ? getNestedObject(subscription, "tenant") : null) ??
-    (subscriptionInvoice ? getNestedObject(subscriptionInvoice, "tenant") : null);
+    (subscriptionInvoice ? getNestedObject(subscriptionInvoice, "tenant") : null)
+  );
+}
+
+function getTenantId(invoice: JsonObject) {
+  const tenant = getTenant(invoice);
+
+  return getNumber(tenant?.id) ?? getNumber(invoice.tenant_id);
+}
+
+function getTenantName(invoice: JsonObject) {
+  const tenant = getTenant(invoice);
 
   return (
     getString(tenant?.name) ??
@@ -141,6 +174,12 @@ function getTenantName(invoice: JsonObject) {
     getString(invoice.clinic_name) ??
     "-"
   );
+}
+
+function getTenantDomain(invoice: JsonObject) {
+  const tenant = getTenant(invoice);
+
+  return getString(tenant?.domain) ?? getString(invoice.domain) ?? null;
 }
 
 function getSubscriptionName(invoice: JsonObject) {
@@ -162,11 +201,49 @@ function getSubscriptionName(invoice: JsonObject) {
   );
 }
 
+function getPaymentConfirmation(invoice: JsonObject) {
+  const paymentConfirmation = getNestedObject(
+    invoice,
+    "subscription_invoice_payment_confirmation",
+  );
+
+  if (!paymentConfirmation) {
+    return null;
+  }
+
+  const paymentProfileSnapshot = getNestedObject(
+    paymentConfirmation,
+    "payment_profile_snapshot",
+  );
+
+  return {
+    id: getNumber(paymentConfirmation.id),
+    status: getString(paymentConfirmation.status),
+    notes: getString(paymentConfirmation.notes),
+    submittedAt: getString(paymentConfirmation.submitted_at),
+    reviewedAt: getString(paymentConfirmation.reviewed_at),
+    createdAt: getString(paymentConfirmation.created_at),
+    updatedAt: getString(paymentConfirmation.updated_at),
+    paymentProfileSnapshot: paymentProfileSnapshot
+      ? {
+          paymentMethod: getString(paymentProfileSnapshot.payment_method),
+          accountHolderName: getString(paymentProfileSnapshot.account_holder_name),
+          bankName: getString(paymentProfileSnapshot.bank_name),
+          accountNumber: getString(paymentProfileSnapshot.account_number),
+          transferredAmount: getNumber(paymentProfileSnapshot.transferred_amount),
+          profileId: getNumber(paymentProfileSnapshot.profile_id),
+          profileLabel: getString(paymentProfileSnapshot.profile_label),
+          submittedNotes: getString(paymentProfileSnapshot.submitted_notes),
+        }
+      : null,
+  };
+}
+
 function normalizeListSubscriptionInvoicesResponse(
-  payload: ListSubscriptionInvoicesApiResponse,
+  payload: ListSubscriptionInvoicesApiResponse | null | undefined,
 ) {
-  const resources = Array.isArray(payload.data?._resources) ? payload.data._resources : [];
-  const paging = payload.data?._paging;
+  const resources = Array.isArray(payload?.data?._resources) ? payload.data._resources : [];
+  const paging = payload?.data?._paging;
 
   const invoices = resources.flatMap((invoice) => {
     if (!isJsonObject(invoice)) {
@@ -179,7 +256,9 @@ function normalizeListSubscriptionInvoicesResponse(
       {
         id: identity,
         invoiceNumber: getInvoiceNumber(invoice, identity),
+        tenantId: getTenantId(invoice),
         tenantName: getTenantName(invoice),
+        tenantDomain: getTenantDomain(invoice),
         subscriptionName: getSubscriptionName(invoice),
         amount:
           getNumber(invoice.amount) ??
@@ -192,6 +271,7 @@ function normalizeListSubscriptionInvoicesResponse(
         paidAt: getString(invoice.paid_at),
         dueDate: getString(invoice.due_date),
         createdAt: getString(invoice.created_at),
+        paymentConfirmation: getPaymentConfirmation(invoice),
       },
     ];
   });
@@ -214,11 +294,21 @@ export async function listSubscriptionInvoices(
   headers: HeadersInit,
   options: {
     isPaid?: boolean;
+    page?: number;
+    domain?: string;
   } = {},
 ) {
   const url = new URL(apiEndpointUrls.landlord.subscriptionInvoices);
 
   url.searchParams.set("is_paid", String(options.isPaid ?? false));
+
+  if (typeof options.page === "number" && Number.isFinite(options.page) && options.page > 0) {
+    url.searchParams.set("page", String(options.page));
+  }
+
+  if (options.domain && options.domain.trim().length > 0) {
+    url.searchParams.set("domain", options.domain.trim());
+  }
 
   try {
     const response = await requestJson<ListSubscriptionInvoicesApiResponse, undefined>({

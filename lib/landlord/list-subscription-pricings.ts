@@ -114,7 +114,11 @@ export async function listSubscriptionPricings() {
       method: "GET",
     });
 
-    const resources = response.data?._resources;
+    const resources = response?.data?._resources;
+
+    if (response === null || response === undefined) {
+      return [];
+    }
 
     if (!Array.isArray(resources)) {
       throw new ApiError({

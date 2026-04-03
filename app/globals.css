@@ -1037,6 +1037,60 @@ input {
   max-width: 46ch;
 }
 
+.admin-invoice-toolbar {
+  align-items: start;
+}
+
+.admin-filter-toggle-wrap {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  flex-shrink: 0;
+}
+
+.admin-filter-toggle-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-filter-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(16, 38, 31, 0.08);
+}
+
+.admin-filter-option {
+  min-width: 160px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-filter-option.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+  color: white;
+  box-shadow: 0 16px 28px rgba(24, 62, 48, 0.18);
+}
+
+.admin-invoice-search-form {
+  margin-top: 18px;
+}
+
+.admin-invoice-search-form button {
+  justify-self: start;
+}
+
 .tenant-list {
   display: grid;
   gap: 16px;
