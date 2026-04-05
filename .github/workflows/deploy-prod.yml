@@ -1,0 +1,112 @@
+name: Deploy Production Landing (Promote from Staging)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_deploy:
+        description: "Type yes to deploy landing to production"
+        required: true
+        default: "no"
+      image_tag:
+        description: "Optional landing image tag (SHA). Leave empty to use latest successful staging landing deploy SHA."
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-prod-landing
+  cancel-in-progress: true
+
+jobs:
+  deploy-prod-landing:
+    if: ${{ github.event.inputs.confirm_deploy == 'yes' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    environment: production
+    steps:
+      - name: Resolve Landing Image Tag to Deploy
+        id: resolve_sha
+        shell: bash
+        env:
+          INPUT_SHA: ${{ github.event.inputs.image_tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${INPUT_SHA}" ]]; then
+            echo "sha=${INPUT_SHA}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-staging-landing.yml/runs?branch=staging&per_page=20"
+          RESP="$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "${API_URL}")"
+          SHA="$(echo "${RESP}" | jq -r '.workflow_runs[] | select(.conclusion=="success") | .head_sha' | head -n1)"
+
+          if [[ -z "${SHA}" || "${SHA}" == "null" ]]; then
+            echo "No successful Deploy Staging Landing run found on branch staging."
+            exit 1
+          fi
+
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Infra Repo Owner/Name
+        id: infra_repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPO="${{ vars.INFRA_REPO }}"
+          echo "owner=${REPO%%/*}" >> "$GITHUB_OUTPUT"
+          echo "name=${REPO##*/}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub App Token (Infra Repo)
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          owner: ${{ steps.infra_repo.outputs.owner }}
+          repositories: ${{ steps.infra_repo.outputs.name }}
+
+      - name: Checkout Infra Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.INFRA_REPO }}
+          token: ${{ steps.app_token.outputs.token }}
+          path: infra-ops
+
+      - name: Start SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+
+      - name: Add Production Host to known_hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          source infra-ops/infra_kubernetes/servers/prod.env
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${SERVER_SSH_PORT}" "${SERVER_HOST}" >> ~/.ssh/known_hosts
+
+      - name: Provision Production Manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash infra-ops/infra_kubernetes/scripts/20_provision_k8s.sh infra-ops/infra_kubernetes/servers/prod.env
+
+      - name: Deploy Landing to Production
+        shell: bash
+        env:
+          IMAGE_TAG_TO_DEPLOY: ${{ steps.resolve_sha.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test -n "${IMAGE_TAG_TO_DEPLOY}"
+          LANDING_IMAGE_TO_DEPLOY="andiaryanto11/app-emergency:${IMAGE_TAG_TO_DEPLOY}"
+          echo "Deploying landing image ${LANDING_IMAGE_TO_DEPLOY}"
+          cp infra-ops/infra_kubernetes/servers/prod.env /tmp/prod.env
+          if grep -q '^LANDING_IMAGE=' /tmp/prod.env; then
+            sed -i "s|^LANDING_IMAGE=.*|LANDING_IMAGE=${LANDING_IMAGE_TO_DEPLOY}|" /tmp/prod.env
+          else
+            echo "LANDING_IMAGE=${LANDING_IMAGE_TO_DEPLOY}" >> /tmp/prod.env
+          fi
+          grep '^LANDING_IMAGE=' /tmp/prod.env
+          LANDING_IMAGE="${LANDING_IMAGE_TO_DEPLOY}" bash infra-ops/infra_kubernetes/scripts/31_deploy_landing.sh /tmp/prod.env
