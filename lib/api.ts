@@ -14,6 +14,9 @@ function withTrailingSlash(url: string) {
 const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
 const ENABLE_API_DEBUG_LOG = env.apiDebugLog;
 const LANDLORD_API_BASE_URL = new URL(withTrailingSlash(env.apiBaseUrl));
+// Non-local environments can resolve the landlord API to IPv6 first, while some hosts
+// still only have reliable IPv4 egress. Force IPv4 for landlord requests until infra
+// networking is fully aligned.
 const SHOULD_FORCE_LANDLORD_IPV4 = env.appEnv !== "local";
 let requestSequence = 0;
 
