@@ -14,11 +14,20 @@ function withTrailingSlash(url: string) {
 const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
 const ENABLE_API_DEBUG_LOG = env.apiDebugLog;
 const LANDLORD_API_BASE_URL = new URL(withTrailingSlash(env.apiBaseUrl));
+const SHOULD_FORCE_LANDLORD_IPV4 = env.appEnv !== "local";
 let requestSequence = 0;
+
+function isLoopbackHostname(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+}
 
 function shouldForceIpv4(url: string) {
   try {
     const targetUrl = new URL(url);
+
+    if (!SHOULD_FORCE_LANDLORD_IPV4 || isLoopbackHostname(targetUrl.hostname)) {
+      return false;
+    }
 
     return (
       targetUrl.protocol === LANDLORD_API_BASE_URL.protocol &&
