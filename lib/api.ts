@@ -1,4 +1,3 @@
-import { lookup } from "node:dns";
 import http from "node:http";
 import https from "node:https";
 import { env } from "./env";
@@ -55,10 +54,8 @@ async function fetchWithIpv4(url: string, init: RequestInit) {
     path: `${targetUrl.pathname}${targetUrl.search}`,
     method: init.method ?? "GET",
     headers: Object.fromEntries(headers.entries()),
+    family: 4,
     ...(init.signal ? { signal: init.signal } : {}),
-    lookup(hostname: string, options: Parameters<typeof lookup>[1], callback: Parameters<typeof lookup>[2]) {
-      lookup(hostname, { ...options, family: 4, all: false }, callback);
-    },
   };
 
   return await new Promise<Response>((resolve, reject) => {
