@@ -1,3 +1,5 @@
+import http from "node:http";
+import https from "node:https";
 import { env } from "./env";
 
 function normalizePath(path: string) {
@@ -10,7 +12,100 @@ function withTrailingSlash(url: string) {
 
 const DEFAULT_TIMEOUT_MS = env.apiTimeoutMs;
 const ENABLE_API_DEBUG_LOG = env.apiDebugLog;
+const LANDLORD_API_BASE_URL = new URL(withTrailingSlash(env.apiBaseUrl));
+// Non-local environments can resolve the landlord API to IPv6 first, while some hosts
+// still only have reliable IPv4 egress. Force IPv4 for landlord requests until infra
+// networking is fully aligned.
+const SHOULD_FORCE_LANDLORD_IPV4 = env.appEnv !== "local";
 let requestSequence = 0;
+
+function isLoopbackHostname(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+}
+
+function shouldForceIpv4(url: string) {
+  try {
+    const targetUrl = new URL(url);
+
+    if (!SHOULD_FORCE_LANDLORD_IPV4 || isLoopbackHostname(targetUrl.hostname)) {
+      return false;
+    }
+
+    return (
+      targetUrl.protocol === LANDLORD_API_BASE_URL.protocol &&
+      targetUrl.hostname === LANDLORD_API_BASE_URL.hostname &&
+      targetUrl.port === LANDLORD_API_BASE_URL.port
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function fetchWithIpv4(url: string, init: RequestInit) {
+  const targetUrl = new URL(url);
+  const transport = targetUrl.protocol === "https:" ? https : http;
+  const headers = new Headers(init.headers);
+  const body =
+    typeof init.body === "string" || init.body instanceof Uint8Array ? init.body : undefined;
+  const requestOptions = {
+    protocol: targetUrl.protocol,
+    hostname: targetUrl.hostname,
+    port: Number(targetUrl.port || (targetUrl.protocol === "https:" ? 443 : 80)),
+    path: `${targetUrl.pathname}${targetUrl.search}`,
+    method: init.method ?? "GET",
+    headers: Object.fromEntries(headers.entries()),
+    family: 4,
+    ...(init.signal ? { signal: init.signal } : {}),
+  };
+
+  return await new Promise<Response>((resolve, reject) => {
+    const request = transport.request(
+      requestOptions,
+      (response) => {
+        const chunks: Buffer[] = [];
+
+        response.on("data", (chunk) => {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        });
+
+        response.on("end", () => {
+          const responseHeaders = new Headers();
+
+          for (const [key, value] of Object.entries(response.headers)) {
+            if (Array.isArray(value)) {
+              for (const item of value) {
+                responseHeaders.append(key, item);
+              }
+              continue;
+            }
+
+            if (typeof value === "string") {
+              responseHeaders.set(key, value);
+            }
+          }
+
+          resolve(
+            new Response(Buffer.concat(chunks), {
+              status: response.statusCode ?? 500,
+              statusText: response.statusMessage ?? "",
+              headers: responseHeaders,
+            }),
+          );
+        });
+
+        response.on("error", reject);
+      },
+    );
+
+    request.on("error", reject);
+
+    if (body !== undefined) {
+      request.write(body);
+    }
+
+    request.end();
+  });
+}
 
 export const apiEndpoints = {
   landlord: {
@@ -300,13 +395,16 @@ export async function requestJson<TResponse, TBody extends JsonRecord | undefine
   });
 
   try {
-    const response = await fetch(url, {
+    const requestInit: RequestInit = {
       method,
       headers: requestHeaders,
       cache: "no-store",
       signal,
       ...(body ? { body: JSON.stringify(body) } : {}),
-    });
+    };
+    const response = shouldForceIpv4(url)
+      ? await fetchWithIpv4(url, requestInit)
+      : await fetch(url, requestInit);
 
     const payload = await parseResponsePayload(response);
     const durationMs = Date.now() - startedAt;
