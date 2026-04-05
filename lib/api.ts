@@ -169,7 +169,7 @@ function logApiEvent(label: string, meta: Record<string, unknown>) {
     return;
   }
 
-  console.info(`[api] ${label}`, sanitizeForLog(meta));
+  console.info("[api] " + new Date().toISOString() + " " + label, sanitizeForLog(meta));
 }
 
 function toErrorLogMeta(error: unknown) {
