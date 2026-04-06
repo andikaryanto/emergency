@@ -26,12 +26,14 @@ export const metadata: Metadata = {
   description:
     `${env.appName} adalah aplikasi klinik online untuk mengelola pasien, antrean, jadwal dokter, kasir, dan laporan harian dengan lebih mudah.`,
   keywords: [
-    "saas klinik",
     "aplikasi klinik",
+    "aplikasi klinik online",
     "software klinik",
-    "tenant subdomain klinik",
-    "manajemen klinik",
-    "rekam medis digital",
+    "sistem manajemen klinik",
+    "rekam medis elektronik",
+    "rekam medis elektronik klinik",
+    "aplikasi antrean pasien",
+    "aplikasi pendaftaran pasien",
   ],
   alternates: {
     canonical: "/",

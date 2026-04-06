@@ -61,8 +61,8 @@ jobs:
         run: |
           set -euo pipefail
           IMAGE_TAG="${GITHUB_SHA}"
-          LANDING_IMAGE="andiaryanto11/app-emergency:${IMAGE_TAG}"
-          LANDING_IMAGE_LATEST="andiaryanto11/app-emergency:latest"
+          LANDING_IMAGE="andiaryanto11/app-emergency:staging-${IMAGE_TAG}"
+          LANDING_IMAGE_LATEST="andiaryanto11/app-emergency:staging-latest"
           echo "image_tag=${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
           echo "landing_image=${LANDING_IMAGE}" >> "${GITHUB_OUTPUT}"
           echo "LANDING_IMAGE=${LANDING_IMAGE}" >> "${GITHUB_ENV}"
@@ -138,7 +138,7 @@ jobs:
       - name: Deploy Landing to Staging
         shell: bash
         env:
-          LANDING_IMAGE_FROM_BUILD: andiaryanto11/app-emergency:${{ github.sha }}
+          LANDING_IMAGE_FROM_BUILD: andiaryanto11/app-emergency:staging-${{ github.sha }}
         run: |
           set -euo pipefail
           test -n "${LANDING_IMAGE_FROM_BUILD}"
