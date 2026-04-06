@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import { env } from "../lib/env";
+import { WhatsAppFloat } from "./whatsapp-float";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -66,6 +67,7 @@ export default function RootLayout({
     <html lang="id">
       <body className={`${manrope.variable} ${spaceGrotesk.variable}`}>
         {children}
+        <WhatsAppFloat />
       </body>
     </html>
   );
