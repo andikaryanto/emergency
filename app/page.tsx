@@ -8,7 +8,7 @@ import { MobileHeaderMenu } from "./mobile-header-menu";
 
 const productHighlights = [
   {
-    title: "Cabang klinik siap dipakai",
+    title: "Aplikasi Klinik Online, RME, dan Sistem Manajemen Klinik",
     description:
       "Setiap klinik mendapatkan alamat login sendiri agar operasional lebih rapi, aman, dan mudah diakses oleh tim.",
   },
@@ -136,16 +136,18 @@ const faqs = [
 ];
 
 export const metadata: Metadata = {
-  title: "Aplikasi Klinik Online dan Rekam Medis Elektronik untuk Operasional Harian",
+  title: "Aplikasi Klinik Online, RME, dan Sistem Manajemen Klinik",
   description:
-    "Klinik RME adalah aplikasi klinik online untuk pendaftaran pasien, antrean, jadwal dokter, kasir, laporan, dan rekam medis elektronik dalam satu sistem yang mudah dipakai.",
+    "Klinik RME adalah aplikasi klinik online dan software klinik untuk pendaftaran pasien, antrean, jadwal dokter, kasir, laporan, dan rekam medis elektronik dalam satu sistem yang mudah dipakai.",
   keywords: [
     "aplikasi klinik online",
     "software klinik",
     "sistem manajemen klinik",
+    "rekam medis elektronik",
     "rekam medis elektronik klinik",
     "aplikasi pendaftaran pasien",
-    "aplikasi antrean klinik",
+    "aplikasi antrean pasien",
+    "software manajemen klinik",
   ],
   alternates: {
     canonical: "/",
@@ -272,12 +274,12 @@ export default async function HomePage() {
           <div className="hero-copy">
             <span className="eyebrow">Aplikasi Klinik Berbasis Cloud</span>
             <h1>
-              Aplikasi klinik online untuk operasional, antrean pasien, dan rekam medis elektronik.
+              Aplikasi klinik online untuk operasional, antrean pasien, rekam medis elektronik, dan manajemen klinik.
             </h1>
             <p>
               Kelola pendaftaran pasien, antrean, jadwal dokter, kasir, laporan
-              harian, dan rekam medis elektronik dalam satu software klinik yang
-              mudah dipakai. Setiap klinik juga mendapat alamat login sendiri
+              harian, dan rekam medis elektronik dalam satu software klinik dan
+              sistem manajemen klinik yang mudah dipakai. Setiap klinik juga mendapat alamat login sendiri
               agar akses lebih profesional dan rapi untuk seluruh tim.
             </p>
             <ul className="hero-points" aria-label="Nilai utama produk">

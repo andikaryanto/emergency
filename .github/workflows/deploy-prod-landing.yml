@@ -1,4 +1,4 @@
-name: Deploy Production Landing (Promote from Staging)
+name: Deploy Production Landing
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
         default: "no"
       image_tag:
-        description: "Optional landing image tag (SHA). Leave empty to use latest successful staging landing deploy SHA."
+        description: "Optional source commit SHA. Leave empty to use latest successful staging landing deploy SHA."
         required: false
         default: ""
 
@@ -25,7 +25,7 @@ jobs:
       actions: read
     environment: production
     steps:
-      - name: Resolve Landing Image Tag to Deploy
+      - name: Resolve Source Commit SHA
         id: resolve_sha
         shell: bash
         env:
@@ -48,6 +48,51 @@ jobs:
           fi
 
           echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout Landing Repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve_sha.outputs.sha }}
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Prepare Production Image Metadata
+        id: prod_meta
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.resolve_sha.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test -n "${SOURCE_SHA}"
+          LANDING_IMAGE="andiaryanto11/app-emergency:prod-${SOURCE_SHA}"
+          LANDING_IMAGE_LATEST="andiaryanto11/app-emergency:prod-latest"
+          echo "landing_image=${LANDING_IMAGE}" >> "${GITHUB_OUTPUT}"
+          echo "LANDING_IMAGE=${LANDING_IMAGE}" >> "${GITHUB_ENV}"
+          echo "LANDING_IMAGE_LATEST=${LANDING_IMAGE_LATEST}" >> "${GITHUB_ENV}"
+
+      - name: Build and Push Production Landing Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          build-args: |
+            APP_NAME=Klinik RME
+            APP_URL=https://clinicrme.my.id
+            API_URL=https://landlord.clinicrme.my.id
+            TENANT_BASE_DOMAIN=clinicrme.my.id
+            API_TIMEOUT_MS=10000
+            APP_ENV=production
+          tags: |
+            ${{ env.LANDING_IMAGE }}
+            ${{ env.LANDING_IMAGE_LATEST }}
 
       - name: Resolve Infra Repo Owner/Name
         id: infra_repo
@@ -96,11 +141,10 @@ jobs:
       - name: Deploy Landing to Production
         shell: bash
         env:
-          IMAGE_TAG_TO_DEPLOY: ${{ steps.resolve_sha.outputs.sha }}
+          LANDING_IMAGE_TO_DEPLOY: ${{ steps.prod_meta.outputs.landing_image }}
         run: |
           set -euo pipefail
-          test -n "${IMAGE_TAG_TO_DEPLOY}"
-          LANDING_IMAGE_TO_DEPLOY="andiaryanto11/app-emergency:${IMAGE_TAG_TO_DEPLOY}"
+          test -n "${LANDING_IMAGE_TO_DEPLOY}"
           echo "Deploying landing image ${LANDING_IMAGE_TO_DEPLOY}"
           cp infra-ops/infra_kubernetes/servers/prod.env /tmp/prod.env
           if grep -q '^LANDING_IMAGE=' /tmp/prod.env; then
