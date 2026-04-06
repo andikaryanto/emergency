@@ -129,6 +129,12 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p "${SERVER_SSH_PORT}" "${SERVER_HOST}" >> ~/.ssh/known_hosts
 
+      - name: Provision Staging Manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash infra-ops/infra_kubernetes/scripts/20_provision_k8s.sh infra-ops/infra_kubernetes/servers/staging.env
+
       - name: Deploy Landing to Staging
         shell: bash
         env:
