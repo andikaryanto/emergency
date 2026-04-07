@@ -40,7 +40,11 @@ export default function BlogPage() {
           {blogPosts.map((post) => (
             <article key={post.slug} className="info-card blog-card">
               <p className="blog-card-meta">{post.publishedAt} · {post.readingTime}</p>
-              <h3>{post.title}</h3>
+              <h3>
+                <Link href={"/blog/" + post.slug} className="blog-card-title-link">
+                  {post.title}
+                </Link>
+              </h3>
               <p>{post.description}</p>
               <Link href={"/blog/" + post.slug} className="ghost-button">
                 Baca Artikel

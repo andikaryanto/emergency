@@ -1670,3 +1670,11 @@ input {
     font-size: clamp(2.2rem, 10vw, 3.2rem);
   }
 }
+
+.blog-card-title-link {
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.blog-card-title-link:hover {
+  color: var(--primary-deep);
+}
