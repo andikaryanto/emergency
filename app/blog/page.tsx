@@ -6,7 +6,7 @@ import { LandingHeader } from "../landing-header";
 export const metadata: Metadata = {
   title: "Blog Klinik RME",
   description:
-    "Artikel seputar operasional klinik, software klinik, dan rekam medis elektronik untuk membantu klinik bekerja lebih rapi dan efisien.",
+    "Artikel untuk pemilik klinik, admin, dan tim operasional yang ingin merapikan alur kerja, pelayanan pasien, dan keputusan harian di klinik.",
   alternates: {
     canonical: "/blog",
   },
@@ -21,10 +21,11 @@ export default function BlogPage() {
         <div className="hero-grid">
           <div className="hero-copy">
             <span className="eyebrow">Blog Klinik RME</span>
-            <h1>Artikel yang membahas operasional klinik dengan bahasa yang jelas dan tidak berputar-putar.</h1>
+            <h1>Artikel untuk pemilik klinik, admin, dan tim operasional yang ingin kerja harian terasa lebih rapi.</h1>
             <p>
-              Blog ini ditujukan untuk pemilik klinik, admin, dan tim operasional
-              yang ingin membaca persoalan sehari-hari dengan sudut pandang yang lebih praktis.
+              Kami membahas persoalan yang sering muncul di meja depan, ruang praktik,
+              kasir, sampai laporan harian. Isinya dibuat untuk orang yang menjalankan
+              klinik setiap hari, bukan untuk pembaca yang hanya ingin teori.
             </p>
           </div>
         </div>
@@ -33,7 +34,7 @@ export default function BlogPage() {
       <section className="feature-panel">
         <div className="section-heading">
           <span className="eyebrow">Artikel Terbaru</span>
-          <h2>Kumpulan tulisan yang membahas persoalan klinik dari sisi operasional yang nyata.</h2>
+          <h2>Tulisan yang dekat dengan masalah nyata di operasional klinik.</h2>
         </div>
 
         <div className="blog-list">

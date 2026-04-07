@@ -3,4 +3,5 @@ export const landingNavLinks = [
   { href: "/fitur", label: "Fitur" },
   { href: "/harga", label: "Harga" },
   { href: "/faq", label: "FAQ" },
+  { href: "/blog", label: "Blog" },
 ] as const;

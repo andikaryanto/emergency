@@ -81,7 +81,7 @@ export const blogPosts: BlogPost[] = [
     title: "Antrean Klinik Selalu Kacau Saat Ramai? Biasanya Bukan Karena Staf Kurang Cepat",
     description:
       "Kalau antrean klinik selalu kacau saat jam ramai, masalahnya sering ada di alur kerja, bukan di kecepatan staf.",
-    publishedAt: "2026-04-07",
+    publishedAt: "2026-04-02",
     readingTime: "5 menit baca",
     keywords: [
       "antrean klinik",
@@ -141,7 +141,7 @@ export const blogPosts: BlogPost[] = [
     title: "Laporan Klinik Sering Tidak Cocok Saat Dicek Ulang? Biasanya Masalahnya Bukan Di Excel",
     description:
       "Kalau laporan klinik sering berubah saat diperiksa ulang, masalahnya sering ada di alur pencatatan harian yang tidak konsisten sejak awal.",
-    publishedAt: "2026-04-07",
+    publishedAt: "2026-03-28",
     readingTime: "6 menit baca",
     keywords: [
       "laporan klinik",
@@ -201,7 +201,7 @@ export const blogPosts: BlogPost[] = [
     title: "Kenapa Data Pasien Sering Tidak Ketemu Saat Dibutuhkan? Biasanya Bukan Karena Staf Lupa",
     description:
       "Kalau data pasien sering sulit ditemukan saat dibutuhkan, masalahnya biasanya ada di cara klinik menyimpan dan memindahkan informasi, bukan semata-mata di ingatan staf.",
-    publishedAt: "2026-04-07",
+    publishedAt: "2026-03-19",
     readingTime: "5 menit baca",
     keywords: [
       "data pasien klinik",
@@ -261,7 +261,7 @@ export const blogPosts: BlogPost[] = [
     title: "Klinik Terasa Sibuk Terus, Tapi Owner Tetap Sulit Lihat Angkanya? Biasanya Ini Penyebabnya",
     description:
       "Kalau klinik terasa ramai setiap hari tapi owner tetap sulit membaca angka operasionalnya, biasanya masalahnya ada di cara data dikumpulkan dan disajikan.",
-    publishedAt: "2026-04-07",
+    publishedAt: "2026-03-11",
     readingTime: "6 menit baca",
     keywords: [
       "owner klinik",
@@ -314,6 +314,186 @@ export const blogPosts: BlogPost[] = [
     closing: [
       "Kalau klinik terasa sibuk terus tapi owner tetap sulit membaca angkanya, itu bukan hal kecil. Biasanya justru di situlah masalah operasional mulai tersembunyi lebih lama dari yang seharusnya.",
       "Begitu aktivitas harian bisa diterjemahkan menjadi data yang lebih jelas, owner akan lebih mudah melihat mana yang benar-benar tumbuh, mana yang hanya terlihat ramai, dan mana yang perlu segera dibenahi.",
+    ],
+  },
+  {
+    slug: "stok-obat-sering-baru-terasa-habis-saat-pasien-datang",
+    title: "Stok Obat Sering Baru Terasa Habis Saat Pasien Datang? Ini Masalah yang Sering Tersembunyi",
+    description:
+      "Kalau stok obat baru terasa habis saat pasien datang, biasanya masalahnya bukan sekadar lupa belanja, tapi karena alur stok belum benar-benar terlihat.",
+    publishedAt: "2026-03-03",
+    readingTime: "6 menit baca",
+    keywords: [
+      "stok obat klinik",
+      "manajemen stok klinik",
+      "software klinik",
+      "operasional farmasi klinik",
+    ],
+    intro: [
+      "Ada jenis masalah yang baru terasa benar-benar mengganggu saat pasien sudah berdiri di depan meja obat. Resep sudah keluar, pembayaran hampir selesai, lalu tim baru sadar stok obat yang dibutuhkan ternyata tipis atau malah habis.",
+      "Situasi seperti ini sering dianggap murni masalah kelalaian. Padahal, kalau kejadian yang sama berulang, biasanya persoalannya lebih dalam. Klinik sebenarnya punya stok, punya catatan pembelian, bahkan punya orang yang bertanggung jawab, tetapi pergerakan barangnya tidak cukup terlihat dari hari ke hari.",
+      "Itulah kenapa stok obat yang sering baru terasa habis di saat genting biasanya bukan masalah satu momen. Ia lebih sering menjadi tanda bahwa kontrol stok masih berjalan setengah manual dan terlalu bergantung pada ingatan tim.",
+    ],
+    sections: [
+      {
+        heading: "1. Stok terlihat ada di rak, tapi angka nyatanya tidak selalu sama",
+        paragraphs: [
+          "Di banyak klinik, stok sering terasa aman karena secara fisik barang masih tampak ada. Masalahnya, yang terlihat sekilas tidak selalu sama dengan jumlah yang benar-benar siap dipakai. Ada item yang tinggal sedikit, ada yang sudah dipesan untuk pasien tertentu, dan ada yang sebenarnya sudah habis tapi belum dicoret dari catatan.",
+          "Kalau tim hanya mengandalkan pandangan mata atau catatan terpisah, rasa aman itu bisa menipu sampai akhirnya masalah muncul di waktu yang paling tidak enak.",
+        ],
+      },
+      {
+        heading: "2. Barang keluar cepat, tapi pencatatannya sering tertinggal",
+        paragraphs: [
+          "Jam sibuk membuat fokus tim lebih banyak tertuju ke pelayanan pasien. Itu wajar. Yang sering tertunda justru pencatatan barang keluar, terutama untuk item yang pergerakannya cepat. Akibatnya, angka stok di catatan tampak baik-baik saja, padahal raknya sudah menipis sejak kemarin.",
+          "Kalau jeda antara barang keluar dan barang tercatat terlalu sering terjadi, stok akan selalu terasa terlambat dibaca.",
+        ],
+      },
+      {
+        heading: "3. Klinik tahu harus restock, tapi tidak selalu tahu kapan harus mulai bergerak",
+        paragraphs: [
+          "Masalah stok jarang muncul karena klinik tidak mau restock. Yang lebih sering terjadi, tim baru sadar harus belanja ketika sisa barang sudah terlalu tipis. Di titik itu ruang geraknya sempit, apalagi kalau supplier tidak bisa kirim cepat atau ada item yang memang sedang susah dicari.",
+          "Tanpa tanda peringatan yang lebih awal, keputusan restock selalu terasa terlambat satu langkah.",
+        ],
+      },
+      {
+        heading: "4. Obat yang paling sering dipakai justru paling rawan luput diawasi",
+        paragraphs: [
+          "Barang yang bergerak cepat sering dianggap paling aman karena selalu ada di pikiran tim. Ironisnya, justru item seperti itulah yang paling mudah menipis tanpa terasa. Perputarannya tinggi, keluar sedikit demi sedikit, lalu tahu-tahu sudah melewati batas aman.",
+          "Kalau klinik tidak punya cara melihat pergerakan stok harian dengan lebih jelas, item yang paling penting justru paling mudah bikin panik.",
+        ],
+      },
+      {
+        heading: "5. Kontrol stok yang baik bukan soal gudang besar, tapi soal visibilitas yang tidak putus",
+        paragraphs: [
+          "Banyak klinik tidak butuh sistem rumit untuk urusan stok. Yang lebih dibutuhkan biasanya adalah alur yang membuat barang masuk, barang keluar, dan sisa stok bisa terbaca tanpa harus menunggu pengecekan manual besar-besaran.",
+          "Begitu visibilitas stok membaik, keputusan belanja juga ikut lebih tenang. Tim tidak lagi bergerak setelah panik, tetapi sebelum masalahnya keburu terasa ke pasien.",
+        ],
+      },
+    ],
+    closing: [
+      "Kalau stok obat sering baru terasa habis saat pasien datang, masalahnya biasanya bukan semata-mata karena tim lupa mengecek. Sering kali mereka hanya bekerja dengan gambaran stok yang datangnya terlambat.",
+      "Saat pergerakan obat lebih mudah dibaca dari hari ke hari, klinik bisa menghindari momen-momen canggung yang sebenarnya bisa dicegah sejak awal.",
+    ],
+  },
+  {
+    slug: "pasien-lama-kok-masih-sering-ditanya-hal-yang-sama",
+    title: "Pasien Lama Kok Masih Sering Ditanya Hal yang Sama? Biasanya Riwayatnya Tidak Benar-Benar Nyambung",
+    description:
+      "Kalau pasien lama masih sering ditanya hal yang sama setiap datang, biasanya masalahnya ada di riwayat kunjungan yang tidak tersambung rapi.",
+    publishedAt: "2026-02-22",
+    readingTime: "5 menit baca",
+    keywords: [
+      "riwayat pasien klinik",
+      "rekam medis elektronik",
+      "pengalaman pasien klinik",
+      "software klinik",
+    ],
+    intro: [
+      "Pasien lama biasanya datang dengan satu harapan sederhana: prosesnya harusnya lebih mudah daripada kunjungan pertama. Mereka berharap data dasar sudah ada, riwayat keluhan masih bisa dibaca, dan tim tidak perlu mengulang pertanyaan yang sama dari nol.",
+      "Tapi di banyak klinik, yang terjadi justru sebaliknya. Pasien yang sudah pernah datang beberapa kali masih harus menjawab pertanyaan yang mirip, mengulang obat yang pernah diminum, atau menjelaskan lagi kunjungan sebelumnya.",
+      "Kalau ini sesekali terjadi, mungkin masih bisa dimaklumi. Tapi kalau berulang, biasanya masalahnya bukan staf kurang perhatian. Riwayat pasiennya memang belum benar-benar nyambung dari satu kunjungan ke kunjungan berikutnya.",
+    ],
+    sections: [
+      {
+        heading: "1. Data pasien ada, tapi konteks kunjungannya terpisah-pisah",
+        paragraphs: [
+          "Nama, nomor telepon, dan identitas dasar mungkin sudah tersimpan. Namun itu belum cukup kalau catatan keluhan, tindakan, resep, atau arahan dokter masih tersimpan di tempat yang berbeda atau tidak mudah dibaca ulang.",
+          "Akibatnya, pasien memang terdaftar sebagai pasien lama, tetapi pengalaman layanannya masih terasa seperti pasien baru setiap kali datang.",
+        ],
+      },
+      {
+        heading: "2. Tim harus bertanya ulang karena riwayat sebelumnya tidak muncul di saat yang tepat",
+        paragraphs: [
+          "Bukan berarti tim tidak mau membaca catatan lama. Sering kali mereka memang tidak sempat atau tidak mudah menemukannya saat pasien sedang dilayani. Dalam situasi seperti itu, cara tercepat adalah bertanya ulang langsung ke pasien.",
+          "Dari sisi operasional itu terasa praktis, tapi dari sisi pasien, pengalaman ini perlahan mengikis rasa percaya bahwa klinik benar-benar mengenal kondisinya.",
+        ],
+      },
+      {
+        heading: "3. Pengulangan pertanyaan membuat pelayanan terasa lebih lambat dari yang seharusnya",
+        paragraphs: [
+          "Setiap pertanyaan yang diulang memang tampak kecil. Tapi kalau itu terjadi di banyak titik, waktunya ikut menumpuk. Admin mengulang identitas, perawat mengulang keluhan dasar, dokter mengulang riwayat singkat, lalu pasien merasa prosesnya memutar.",
+          "Klinik tampak tetap berjalan, tetapi energi tim habis untuk menggali ulang informasi yang sebenarnya sudah pernah diberikan.",
+        ],
+      },
+      {
+        heading: "4. Pasien lama biasanya lebih cepat merasakan kualitas sistem kerja klinik",
+        paragraphs: [
+          "Pasien baru belum punya pembanding. Pasien lama punya. Mereka tahu apakah kunjungan kedua terasa lebih lancar atau justru sama repotnya. Karena itu, pengalaman pasien lama sering menjadi cermin paling jujur tentang seberapa rapi sistem kerja klinik sebenarnya.",
+          "Kalau pasien lama masih merasa harus memulai dari awal, biasanya memang ada yang belum tersambung dengan baik di balik layar.",
+        ],
+      },
+      {
+        heading: "5. Riwayat pasien yang nyambung membuat layanan terasa lebih tenang, bukan sekadar lebih cepat",
+        paragraphs: [
+          "Manfaat terbesar dari riwayat pasien yang tersusun rapi bukan cuma menghemat waktu. Ia juga membuat percakapan antara pasien dan tim klinik terasa lebih tenang, karena semua orang memulai dari pemahaman yang sama.",
+          "Di titik itu, pasien merasa diperhatikan, dan tim juga tidak perlu terus-menerus mengejar informasi dasar yang seharusnya sudah ada.",
+        ],
+      },
+    ],
+    closing: [
+      "Kalau pasien lama masih sering ditanya hal yang sama, itu biasanya bukan masalah sepele. Bagi pasien, itu tanda bahwa kunjungan sebelumnya belum benar-benar tinggal sebagai bagian dari riwayat layanan.",
+      "Begitu data dan konteks pasien saling tersambung dengan lebih rapi, pengalaman datang kembali ke klinik biasanya langsung terasa lebih ringan bagi kedua belah pihak.",
+    ],
+  },
+  {
+    slug: "sudah-pakai-komputer-tapi-kerja-klinik-masih-ribet",
+    title: "Sudah Pakai Komputer, Tapi Kerja Klinik Masih Ribet? Biasanya Yang Berubah Baru Alatnya",
+    description:
+      "Kalau klinik sudah memakai komputer tapi kerja harian masih terasa ribet, biasanya yang berubah hanya medianya, bukan alur kerjanya.",
+    publishedAt: "2026-02-12",
+    readingTime: "6 menit baca",
+    keywords: [
+      "digitalisasi klinik",
+      "software klinik",
+      "operasional klinik",
+      "sistem manajemen klinik",
+    ],
+    intro: [
+      "Banyak klinik merasa sudah cukup modern karena prosesnya tidak lagi serba tulis tangan. Pendaftaran dicatat di laptop, rekap disimpan di spreadsheet, dan beberapa data sudah dikirim lewat chat atau file digital. Sekilas semuanya tampak lebih maju.",
+      "Tapi setelah dijalani, kerja harian tetap terasa ribet. Data masih dicari-cari, laporan masih dirapikan manual, dan tim masih harus berpindah-pindah tempat hanya untuk menyelesaikan satu alur pasien.",
+      "Kalau kondisinya seperti itu, masalahnya biasanya bukan karena tim kurang adaptif. Sering kali yang berubah memang baru alatnya, sementara cara kerjanya masih membawa kebiasaan lama dalam format yang berbeda.",
+    ],
+    sections: [
+      {
+        heading: "1. Memindahkan catatan kertas ke spreadsheet tidak otomatis membuat alur jadi rapi",
+        paragraphs: [
+          "Digital bukan selalu berarti terintegrasi. Banyak klinik sudah berhenti menulis di buku besar, tetapi alur datanya masih sama tercecernya. Hanya medianya yang berpindah ke file dan folder.",
+          "Akibatnya, tim memang bekerja dengan layar, tetapi tetap mengalami kebingungan yang mirip seperti saat semuanya masih manual.",
+        ],
+      },
+      {
+        heading: "2. Satu proses pasien masih harus melewati terlalu banyak tempat",
+        paragraphs: [
+          "Pendaftaran ada di satu file, jadwal dokter di file lain, billing di tempat lain, dan stok obat dicek lewat jalur terpisah. Saat semua bagian itu tidak bicara satu sama lain, tim harus menjadi penghubung manual di tengahnya.",
+          "Itulah sebabnya klinik bisa tampak digital di permukaan, tapi tetap melelahkan dalam praktik sehari-hari.",
+        ],
+      },
+      {
+        heading: "3. Kesalahan kecil tetap berulang karena sumber datanya tidak tunggal",
+        paragraphs: [
+          "Saat ada lebih dari satu tempat untuk mencatat hal yang sama, selisih kecil hampir tidak bisa dihindari. Nama pasien bisa beda penulisan, status pembayaran bisa tertinggal, dan laporan akhir tetap harus dicocokkan ulang.",
+          "Kalau sumber datanya tidak tunggal, komputer hanya mempercepat pengetikan, bukan memperjelas operasional.",
+        ],
+      },
+      {
+        heading: "4. Tim merasa sudah bekerja digital, tetapi owner belum benar-benar mendapat visibilitas",
+        paragraphs: [
+          "Dari sisi owner, digitalisasi seharusnya membuat kondisi klinik lebih mudah dibaca. Kalau yang terjadi justru laporan tetap lama, angka tetap samar, dan banyak hal masih harus ditanyakan manual, berarti manfaat besarnya belum benar-benar terasa.",
+          "Di sini biasanya terlihat bahwa yang dibutuhkan bukan sekadar perangkat, melainkan sistem yang menyatukan alur kerja.",
+        ],
+      },
+      {
+        heading: "5. Klinik baru terasa lebih ringan saat alat dan alurnya berubah bersama",
+        paragraphs: [
+          "Komputer tentu membantu, tapi ia tidak cukup kalau hanya dipakai sebagai pengganti kertas. Yang lebih berdampak adalah ketika pendaftaran, layanan, pembayaran, dan laporan berjalan di alur yang saling terhubung.",
+          "Begitu alat dan alur berubah bersama, tim biasanya baru benar-benar merasakan bedanya: kerja tidak lagi terasa pindah-pindah dan keputusan jadi lebih cepat diambil.",
+        ],
+      },
+    ],
+    closing: [
+      "Kalau klinik sudah memakai komputer tapi kerja harian masih terasa ribet, itu bukan berarti upaya digitalisasi gagal. Mungkin klinik hanya baru mengganti medianya, belum merapikan alurnya.",
+      "Saat sistem kerjanya ikut dibenahi, barulah teknologi terasa membantu, bukan sekadar membuat pekerjaan lama tampil dalam bentuk yang lebih modern.",
     ],
   },
 ];
