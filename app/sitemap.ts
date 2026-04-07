@@ -7,31 +7,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   const baseUrl = env.appUrl;
+  const lastModified = new Date();
 
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
+      url: `${baseUrl}/produk`,
+      lastModified,
       changeFrequency: "monthly",
-      priority: 0.7,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/fitur`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/harga`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/faq`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/signup`,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/dashboard`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.6,
+      priority: 0.8,
     },
   ];
 }

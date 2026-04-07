@@ -2,138 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   listSubscriptionPricings,
-  type SubscriptionPricing,
 } from "../lib/landlord/list-subscription-pricings";
-import { MobileHeaderMenu } from "./mobile-header-menu";
-
-const productHighlights = [
-  {
-    title: "Aplikasi Klinik Online, RME, dan Sistem Manajemen Klinik",
-    description:
-      "Setiap klinik mendapatkan alamat login sendiri agar operasional lebih rapi, aman, dan mudah diakses oleh tim.",
-  },
-  {
-    title: "Pelayanan sampai pembayaran",
-    description:
-      "Atur pendaftaran pasien, jadwal dokter, antrean, transaksi, dan riwayat layanan dalam satu sistem yang mudah dipakai.",
-  },
-  {
-    title: "Laporan selalu terpantau",
-    description:
-      "Pantau jumlah kunjungan pasien, performa layanan, dan pendapatan harian langsung dari dashboard.",
-  },
-];
-
-const features = [
-  "Setiap klinik punya alamat login sendiri",
-  "Pendaftaran pasien dan antrean digital",
-  "Jadwal dokter dan layanan terintegrasi",
-  "Kasir, invoice, dan laporan operasional",
-];
-
-const pricingContent: Record<
-  "Basic" | "Advance" | "Pro",
-  {
-    description: string;
-    items: string[];
-    accent: "light" | "featured";
-  }
-> = {
-  Basic: {
-    description: "Pilihan hemat untuk klinik yang ingin mulai digitalisasi operasional harian.",
-    items: [
-      "1 alamat login klinik",
-      "Manajemen pasien dan antrean",
-      "Kasir dan invoice",
-      "Laporan operasional dasar",
-      "Bantuan via email",
-    ],
-    accent: "light",
-  },
-  Advance: {
-    description:
-      "Paket unggulan untuk klinik yang butuh operasional lengkap, analitik, dan kontrol bisnis lebih kuat.",
-    items: [
-      "Akses untuk banyak staf",
-      "Dashboard laporan harian lengkap",
-      "Pengaturan dokter dan layanan",
-      "Modul laboratorium",
-      "Analisis time visit rate pasien",
-      "Perhitungan insentif praktisioner",
-      "Rekap billing dalam format Excel",
-      "Rekap jumlah kunjungan pasien (Excel)",
-      "Bantuan prioritas",
-    ],
-    accent: "light",
-  },
-  Pro: {
-    description:
-      "Paket lengkap untuk klinik yang butuh semua fitur Advance ditambah integrasi layanan kesehatan nasional.",
-    items: [
-      "Akses untuk banyak staf",
-      "Dashboard laporan harian lengkap",
-      "Pengaturan dokter dan layanan",
-      "Modul laboratorium",
-      "Analisis time visit rate pasien",
-      "Perhitungan insentif praktisioner",
-      "Rekap billing dalam format Excel",
-      "Rekap jumlah kunjungan pasien (Excel)",
-      "Integrasi Satu Sehat",
-      "Bantuan prioritas",
-    ],
-    accent: "featured",
-  },
-};
-
-const pricingFallback = [
-  {
-    name: "Basic" as const,
-    monthlyAmount: 199000,
-    yearlyAmount: 2299000,
-    ...pricingContent.Basic,
-  },
-  {
-    name: "Advance" as const,
-    monthlyAmount: 249000,
-    yearlyAmount: 2899000,
-    ...pricingContent.Advance,
-  },
-  {
-    name: "Pro" as const,
-    monthlyAmount: 299000,
-    yearlyAmount: 3499000,
-    ...pricingContent.Pro,
-  },
-];
-
-const stats = [
-  { value: "24/7", label: "akses cloud untuk operasional klinik" },
-  { value: "< 5 mnt", label: "waktu aktif tenant baru" },
-  { value: "1 panel", label: "untuk admin, kasir, dan dokter" },
-];
-
-const faqs = [
-  {
-    question: "Apa itu Klinik RME?",
-    answer:
-      "Klinik RME adalah aplikasi klinik berbasis cloud untuk membantu klinik mengelola pendaftaran pasien, antrean, jadwal dokter, kasir, laporan, dan rekam medis elektronik dalam satu sistem.",
-  },
-  {
-    question: "Siapa yang cocok menggunakan aplikasi ini?",
-    answer:
-      "Aplikasi ini cocok untuk klinik umum, klinik pratama, klinik dengan banyak staf, maupun klinik yang ingin merapikan operasional harian tanpa proses manual yang tersebar.",
-  },
-  {
-    question: "Apakah setiap klinik mendapat akses login sendiri?",
-    answer:
-      "Ya. Setiap klinik mendapatkan alamat login sendiri agar akses untuk admin, kasir, dan dokter lebih rapi, aman, dan mudah dikelola.",
-  },
-  {
-    question: "Fitur apa saja yang tersedia di software klinik ini?",
-    answer:
-      "Fitur utama mencakup pendaftaran pasien, antrean digital, jadwal dokter, kasir, invoice, laporan operasional, hingga paket tertentu yang mendukung integrasi Satu Sehat.",
-  },
-];
+import {
+  faqs,
+  features,
+  formatRupiah,
+  mapPricingForDisplay,
+  productHighlights,
+  stats,
+} from "../lib/landing-content";
+import { LandingHeader } from "./landing-header";
 
 export const metadata: Metadata = {
   title: "Aplikasi Klinik Online, RME, dan Sistem Manajemen Klinik",
@@ -166,37 +44,6 @@ export const metadata: Metadata = {
       "Software klinik berbasis cloud untuk operasional klinik, antrean pasien, jadwal dokter, kasir, dan laporan.",
   },
 };
-
-function formatRupiah(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-function mapPricingForDisplay(pricings: SubscriptionPricing[]) {
-  const items = pricings
-    .filter((pricing) => pricing.isActive)
-    .map((pricing) => {
-      const monthlyPlan = pricing.subscription_pricing_plans.find(
-        (plan) => plan.isActive && plan.billingCycle === "monthly",
-      );
-      const yearlyPlan = pricing.subscription_pricing_plans.find(
-        (plan) => plan.isActive && plan.billingCycle === "yearly",
-      );
-
-      return {
-        name: pricing.name,
-        monthlyAmount: monthlyPlan?.amount ?? 0,
-        yearlyAmount: yearlyPlan?.amount ?? 0,
-        ...pricingContent[pricing.name],
-      };
-    })
-    .filter((pricing) => pricing.monthlyAmount > 0 || pricing.yearlyAmount > 0);
-
-  return items.length > 0 ? items : pricingFallback;
-}
 
 export default async function HomePage() {
   const subscriptionPricings = await listSubscriptionPricings();
@@ -244,31 +91,7 @@ export default async function HomePage() {
       />
 
       <section className="hero-section">
-        <div className="nav-wrap">
-          <div className="brand-mark">
-            <span className="brand-logo">+</span>
-            <div>
-              <p>Klinik RME</p>
-              <span>Solusi Digital untuk Klinik Modern</span>
-            </div>
-          </div>
-          <nav className="nav-links" aria-label="Navigasi utama">
-            <a href="#produk">Produk</a>
-            <a href="#fitur">Fitur</a>
-            <a href="#harga">Harga</a>
-            <a href="#faq">FAQ</a>
-            <Link href="/login">Login</Link>
-          </nav>
-          <div className="nav-actions">
-            <Link className="ghost-button" href="/login">
-              Login
-            </Link>
-            <Link className="primary-button" href="/signup">
-              Coba Sekarang
-            </Link>
-          </div>
-          <MobileHeaderMenu />
-        </div>
+        <LandingHeader />
 
         <div className="hero-grid">
           <div className="hero-copy">
@@ -279,8 +102,9 @@ export default async function HomePage() {
             <p>
               Kelola pendaftaran pasien, antrean, jadwal dokter, kasir, laporan
               harian, dan rekam medis elektronik dalam satu software klinik dan
-              sistem manajemen klinik yang mudah dipakai. Setiap klinik juga mendapat alamat login sendiri
-              agar akses lebih profesional dan rapi untuk seluruh tim.
+              sistem manajemen klinik yang mudah dipakai. Setiap klinik juga
+              mendapat alamat login sendiri agar akses lebih profesional dan rapi
+              untuk seluruh tim.
             </p>
             <ul className="hero-points" aria-label="Nilai utama produk">
               {features.map((feature) => (
@@ -362,6 +186,9 @@ export default async function HomePage() {
             Dirancang agar mudah dipahami pemilik klinik, staf administrasi,
             kasir, dan dokter sejak hari pertama penggunaan.
           </p>
+          <Link href="/produk" className="ghost-button">
+            Lihat halaman Produk
+          </Link>
         </div>
 
         <div className="highlight-grid">
@@ -377,8 +204,15 @@ export default async function HomePage() {
 
       <section className="stats-section" id="fitur">
         <div className="stats-copy">
-          <span className="eyebrow">Kenapa pilih Klinik RME</span>
+          <span className="eyebrow">Fitur</span>
           <h2>Tampilan mudah dipahami, alur kerja jelas, dan membantu klinik bekerja lebih efisien.</h2>
+          <p>
+            Lihat lebih detail bagaimana modul pasien, antrean, dokter, kasir,
+            laporan, dan akses multi-staf membantu operasional klinik.
+          </p>
+          <Link href="/fitur" className="ghost-button">
+            Lihat halaman Fitur
+          </Link>
         </div>
         <div className="stats-grid">
           {stats.map((stat) => (
@@ -423,6 +257,9 @@ export default async function HomePage() {
             Mulai dari Basic, lanjut ke Advance untuk operasional yang lebih lengkap,
             lalu pilih Pro saat klinik Anda membutuhkan integrasi Satu Sehat dan BPJS.
           </p>
+          <Link href="/harga" className="ghost-button ghost-inverse">
+            Lihat halaman Harga
+          </Link>
         </div>
 
         <div className="pricing-grid">
@@ -465,6 +302,9 @@ export default async function HomePage() {
             Bagian ini membantu calon pengguna memahami fungsi software klinik,
             kecocokan penggunaan, dan fitur utama yang tersedia.
           </p>
+          <Link href="/faq" className="ghost-button">
+            Lihat halaman FAQ
+          </Link>
         </div>
 
         <div className="highlight-grid">
