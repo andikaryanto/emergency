@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { blogPosts } from "../lib/blog-posts";
 import { env } from "../lib/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -7,31 +8,57 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   const baseUrl = env.appUrl;
+  const lastModified = new Date();
+  const blogEntries = blogPosts.map((post) => ({
+    url: baseUrl + "/blog/" + post.slug,
+    lastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
 
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
+      url: baseUrl + "/produk",
+      lastModified,
       changeFrequency: "monthly",
-      priority: 0.7,
+      priority: 0.9,
     },
     {
-      url: `${baseUrl}/signup`,
-      lastModified: new Date(),
+      url: baseUrl + "/fitur",
+      lastModified,
       changeFrequency: "monthly",
-      priority: 0.7,
+      priority: 0.9,
     },
     {
-      url: `${baseUrl}/dashboard`,
-      lastModified: new Date(),
+      url: baseUrl + "/harga",
+      lastModified,
       changeFrequency: "weekly",
-      priority: 0.6,
+      priority: 0.9,
+    },
+    {
+      url: baseUrl + "/faq",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: baseUrl + "/blog",
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...blogEntries,
+    {
+      url: baseUrl + "/signup",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
   ];
 }

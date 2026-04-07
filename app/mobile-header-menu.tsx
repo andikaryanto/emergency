@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { landingNavLinks } from "./landing-navigation";
 
 export function MobileHeaderMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,15 +40,11 @@ export function MobileHeaderMenu() {
       {isOpen ? (
         <div id="mobile-header-menu" className="mobile-menu-panel">
           <nav className="mobile-menu-links" aria-label="Navigasi mobile">
-            <a href="#produk" onClick={() => setIsOpen(false)}>
-              Produk
-            </a>
-            <a href="#fitur" onClick={() => setIsOpen(false)}>
-              Fitur
-            </a>
-            <a href="#harga" onClick={() => setIsOpen(false)}>
-              Harga
-            </a>
+            {landingNavLinks.map((item) => (
+              <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)}>
+                {item.label}
+              </Link>
+            ))}
             <Link href="/login" onClick={() => setIsOpen(false)}>
               Login
             </Link>
