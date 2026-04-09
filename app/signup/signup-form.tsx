@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { GoogleSignInButton } from "../../components/auth/google-sign-in-button";
 import { registerUserAction } from "./actions";
 import { initialRegisterActionState } from "./form-state";
 
@@ -15,7 +16,14 @@ function SubmitButton() {
   );
 }
 
-export function SignupForm() {
+type SignupFormProps = {
+  googleSignIn: {
+    authUrl?: string;
+    enabled: boolean;
+  };
+};
+
+export function SignupForm({ googleSignIn }: SignupFormProps) {
   const [state, formAction] = useActionState(
     registerUserAction,
     initialRegisterActionState,
@@ -94,6 +102,16 @@ export function SignupForm() {
             {state.fieldErrors.confirmPassword}
           </p>
         ) : null}
+
+        <div className="auth-divider" aria-hidden="true">
+          <span>atau</span>
+        </div>
+
+        <GoogleSignInButton
+          authUrl={googleSignIn.authUrl}
+          enabled={googleSignIn.enabled}
+          mode="signup"
+        />
 
         <SubmitButton />
       </form>

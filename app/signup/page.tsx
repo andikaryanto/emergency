@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { env } from "../../lib/env";
+import { getGoogleAuthFeedbackMessage } from "../../lib/landlord/google-auth";
 import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
 import { SignupForm } from "./signup-form";
 
@@ -26,6 +28,10 @@ export default async function SignupPage() {
     redirect("/dashboard");
   }
 
+  const googleSignupHint = getGoogleAuthFeedbackMessage({
+    google: "auto_registered",
+  });
+
   return (
     <main className="auth-shell">
       <section className="auth-card">
@@ -37,6 +43,10 @@ export default async function SignupPage() {
             Anda bisa membuat tenant klinik sendiri dari dalam dashboard.
           </p>
 
+          {env.googleAuth.enabled && googleSignupHint ? (
+            <p className="field-hint field-hint-neutral">{googleSignupHint}</p>
+          ) : null}
+
           <ul className="auth-benefits">
             {signupBenefits.map((benefit) => (
               <li key={benefit}>{benefit}</li>
@@ -44,7 +54,18 @@ export default async function SignupPage() {
           </ul>
         </div>
 
-        <SignupForm />
+        <SignupForm
+          googleSignIn={{
+            enabled: env.googleAuth.enabled,
+            authUrl: env.googleAuth.authUrl,
+          }}
+        />
+
+        {env.googleAuth.enabled && !env.googleAuth.authUrl ? (
+          <p className="field-hint field-hint-neutral">
+            Google Sign-In sudah diaktifkan, tetapi URL otorisasi belum diisi.
+          </p>
+        ) : null}
 
         <div className="auth-footer">
           <p className="auth-helper">

@@ -8,6 +8,12 @@ function getRequiredEnv(name: string, fallback?: string) {
   return value;
 }
 
+function getOptionalEnv(name: string) {
+  const value = process.env[name]?.trim();
+
+  return value || undefined;
+}
+
 function getPositiveIntegerEnv(name: string, fallback: number) {
   const rawValue = process.env[name];
 
@@ -63,4 +69,10 @@ export const env = {
     "API_DEBUG_LOG",
     (process.env.APP_ENV?.trim().toLowerCase() || "production") !== "production",
   ),
+  googleAuth: {
+    enabled: getBooleanEnv("NEXT_PUBLIC_GOOGLE_SIGN_IN_ENABLED", false),
+    clientId: getOptionalEnv("NEXT_PUBLIC_GOOGLE_CLIENT_ID"),
+    authUrl: getOptionalEnv("NEXT_PUBLIC_GOOGLE_SIGN_IN_URL"),
+    callbackUrl: getOptionalEnv("GOOGLE_OAUTH_CALLBACK_URL"),
+  },
 };

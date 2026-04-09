@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { env } from "../../lib/env";
+import {
+  getGoogleAuthFeedbackMessage,
+  getGoogleAuthFeedbackTone,
+} from "../../lib/landlord/google-auth";
 import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
 import { LoginForm } from "./login-form";
 
@@ -15,6 +20,9 @@ export const metadata: Metadata = {
 
 type LoginPageProps = {
   searchParams?: Promise<{
+    email?: string;
+    google?: string;
+    message?: string;
     registered?: string;
     reset?: string;
   }>;
@@ -30,6 +38,16 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const isRegistered = params?.registered === "1";
   const isReset = params?.reset === "1";
+  const googleFeedbackMessage = getGoogleAuthFeedbackMessage({
+    google: params?.google,
+    email: params?.email,
+    message: params?.message,
+  });
+  const googleFeedbackTone = getGoogleAuthFeedbackTone({
+    google: params?.google,
+    email: params?.email,
+    message: params?.message,
+  });
 
   return (
     <main className="auth-shell">
@@ -55,7 +73,30 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </p>
         ) : null}
 
-        <LoginForm />
+        {googleFeedbackMessage ? (
+          <p
+            className={`auth-message ${
+              googleFeedbackTone === "success"
+                ? "auth-message-success"
+                : "auth-message-error"
+            }`}
+          >
+            {googleFeedbackMessage}
+          </p>
+        ) : null}
+
+        <LoginForm
+          googleSignIn={{
+            enabled: env.googleAuth.enabled,
+            authUrl: env.googleAuth.authUrl,
+          }}
+        />
+
+        {env.googleAuth.enabled && !env.googleAuth.authUrl ? (
+          <p className="field-hint field-hint-neutral">
+            Google Sign-In sudah diaktifkan, tetapi URL otorisasi belum diisi.
+          </p>
+        ) : null}
 
         <div className="auth-footer">
           <p className="auth-helper">
