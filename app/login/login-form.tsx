@@ -9,10 +9,11 @@ import { initialLoginActionState } from "./form-state";
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
   const isDisabled = pending || disabled;
+  const label = isDisabled ? "Sedang masuk..." : "Masuk";
 
   return (
     <button type="submit" disabled={isDisabled}>
-      {pending ? "Memproses..." : "Masuk"}
+      {label}
     </button>
   );
 }
