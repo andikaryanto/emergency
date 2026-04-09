@@ -50,10 +50,18 @@ type RawGoogleAuthPayload = {
         status?: string;
       };
       session?: RawGoogleAuthSession;
-    };
+    } & RawGoogleAuthSession;
   };
   message?: string;
 };
+
+function toRawGoogleAuthPayload(value: unknown): RawGoogleAuthPayload {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  return value as RawGoogleAuthPayload;
+}
 
 function isGoogleAuthStatus(value: string): value is GoogleAuthResultStatus {
   return googleAuthResultStatuses.includes(value as GoogleAuthResultStatus);
@@ -65,6 +73,10 @@ function normalizeGoogleAuthStatus(value: string | undefined): GoogleAuthResultS
   }
 
   return isGoogleAuthStatus(value) ? value : "error";
+}
+
+function hasGoogleAuthFeedback(query: GoogleAuthCallbackQuery) {
+  return Boolean(query.google?.trim() || query.message?.trim());
 }
 
 function normalizeGoogleAuthSession(rawSession: RawGoogleAuthSession) {
@@ -95,20 +107,22 @@ function normalizeGoogleAuthSession(rawSession: RawGoogleAuthSession) {
   } satisfies LandlordSession;
 }
 
-export function normalizeGoogleAuthResult(
-  payload: RawGoogleAuthPayload,
-): GoogleAuthResult {
-  const authResult = payload.data?._resources?.auth_result;
-  const session = payload.data?._resources?.session;
-  const status = normalizeGoogleAuthStatus(authResult?.status);
+export function normalizeGoogleAuthResult(payload: unknown): GoogleAuthResult {
+  const normalizedPayload = toRawGoogleAuthPayload(payload);
+  const authResult = normalizedPayload.data?._resources?.auth_result;
+  const resource = normalizedPayload.data?._resources;
+  const session = resource?.session ?? resource;
+  const normalizedSession = normalizeGoogleAuthSession(session ?? {});
+  const status =
+    authResult?.status || normalizedSession
+      ? normalizeGoogleAuthStatus(authResult?.status ?? "success")
+      : "error";
   const message =
     authResult?.message ??
-    payload.message ??
+    normalizedPayload.message ??
     "Login dengan Google belum dapat diproses.";
 
   if (status === "success" || status === "auto_registered" || status === "already_linked") {
-    const normalizedSession = normalizeGoogleAuthSession(session ?? {});
-
     if (!normalizedSession) {
       return {
         status: "error",
@@ -132,6 +146,10 @@ export function normalizeGoogleAuthResult(
 }
 
 export function getGoogleAuthFeedbackMessage(query: GoogleAuthCallbackQuery) {
+  if (!hasGoogleAuthFeedback(query)) {
+    return null;
+  }
+
   const status = normalizeGoogleAuthStatus(query.google);
   const email = query.email?.trim();
   const customMessage = query.message?.trim();
@@ -157,6 +175,10 @@ export function getGoogleAuthFeedbackMessage(query: GoogleAuthCallbackQuery) {
 }
 
 export function getGoogleAuthFeedbackTone(query: GoogleAuthCallbackQuery) {
+  if (!hasGoogleAuthFeedback(query)) {
+    return null;
+  }
+
   const status = normalizeGoogleAuthStatus(query.google);
 
   return status === "auto_registered" || status === "already_linked"

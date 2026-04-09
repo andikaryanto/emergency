@@ -88,13 +88,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <LoginForm
           googleSignIn={{
             enabled: env.googleAuth.enabled,
-            authUrl: env.googleAuth.authUrl,
+            clientId: env.googleAuth.clientId,
           }}
         />
 
-        {env.googleAuth.enabled && !env.googleAuth.authUrl ? (
+        {env.googleAuth.enabled && !env.googleAuth.clientId ? (
           <p className="field-hint field-hint-neutral">
-            Google Sign-In sudah diaktifkan, tetapi URL otorisasi belum diisi.
+            Google Sign-In sudah diaktifkan, tetapi Google Client ID belum diisi.
           </p>
         ) : null}
 

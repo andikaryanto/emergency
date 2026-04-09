@@ -1,5 +1,11 @@
+"use client";
+
+import Script from "next/script";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { loginWithGoogleAction } from "../../app/auth-actions";
+
 type GoogleSignInButtonProps = {
-  authUrl?: string;
+  clientId?: string;
   enabled: boolean;
   mode: "login" | "signup";
 };
@@ -9,33 +15,101 @@ const buttonCopy = {
   signup: "Login dengan Google",
 } as const;
 
+const initialGoogleLoginActionState = {
+  status: "idle",
+  message: null,
+} as const;
+
 export function GoogleSignInButton({
-  authUrl,
+  clientId,
   enabled,
   mode,
 }: GoogleSignInButtonProps) {
   const label = buttonCopy[mode];
+  const buttonContainerRef = useRef<HTMLDivElement | null>(null);
+  const credentialInputRef = useRef<HTMLInputElement | null>(null);
+  const hiddenFormRef = useRef<HTMLFormElement | null>(null);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [state, formAction] = useActionState(
+    loginWithGoogleAction,
+    initialGoogleLoginActionState,
+  );
+  const isReady = enabled && Boolean(clientId);
 
-  if (!enabled || !authUrl) {
+  useEffect(() => {
+    if (window.google) {
+      setIsScriptLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isReady || !isScriptLoaded || !buttonContainerRef.current || !window.google) {
+      return;
+    }
+
+    const handleCredentialResponse = (response: GoogleCredentialResponse) => {
+      if (!response.credential || !credentialInputRef.current || !hiddenFormRef.current) {
+        return;
+      }
+
+      credentialInputRef.current.value = response.credential;
+      hiddenFormRef.current.requestSubmit();
+    };
+
+    buttonContainerRef.current.innerHTML = "";
+    window.google.accounts.id.initialize({
+      client_id: clientId!,
+      callback: handleCredentialResponse,
+    });
+    window.google.accounts.id.renderButton(buttonContainerRef.current, {
+      theme: "outline",
+      size: "large",
+      shape: "pill",
+      text: "signin_with",
+      width: 360,
+    });
+  }, [clientId, isReady, isScriptLoaded]);
+
+  if (!isReady) {
     return (
-      <button
-        type="button"
-        className="social-auth-button social-auth-button-disabled"
-        disabled
-        aria-disabled="true"
-        title="Google Sign-In belum dikonfigurasi"
-      >
-        <GoogleMark />
-        <span>{label}</span>
-      </button>
+      <div className="social-auth-stack">
+        <button
+          type="button"
+          className="social-auth-button social-auth-button-disabled"
+          disabled
+          aria-disabled="true"
+          title="Google Sign-In belum dikonfigurasi"
+        >
+          <GoogleMark />
+          <span>{label}</span>
+        </button>
+      </div>
     );
   }
 
   return (
-    <a className="social-auth-button" href={authUrl}>
-      <GoogleMark />
-      <span>{label}</span>
-    </a>
+    <div className="social-auth-stack">
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+        onLoad={() => setIsScriptLoaded(true)}
+      />
+
+      {state.message ? (
+        <p className="auth-message auth-message-error" role="alert">
+          {state.message}
+        </p>
+      ) : null}
+
+      <form ref={hiddenFormRef} action={formAction} className="social-auth-hidden-form">
+        <input ref={credentialInputRef} type="hidden" name="id_token" />
+      </form>
+
+      <div
+        ref={buttonContainerRef}
+        className="google-sign-in-container"
+      />
+    </div>
   );
 }
 
@@ -65,4 +139,35 @@ function GoogleMark() {
       />
     </svg>
   );
+}
+
+type GoogleCredentialResponse = {
+  credential?: string;
+};
+
+type GoogleAccountsId = {
+  initialize: (options: {
+    callback: (response: GoogleCredentialResponse) => void;
+    client_id: string;
+  }) => void;
+  renderButton: (
+    parent: HTMLElement,
+    options: {
+      shape?: "circle" | "pill" | "rectangular" | "square";
+      size?: "large" | "medium" | "small";
+      text?: "continue_with" | "signin" | "signin_with" | "signup_with";
+      theme?: "filled_black" | "filled_blue" | "outline";
+      width?: number;
+    },
+  ) => void;
+};
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: GoogleAccountsId;
+      };
+    };
+  }
 }

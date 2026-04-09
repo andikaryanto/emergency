@@ -18,7 +18,7 @@ function SubmitButton() {
 
 type LoginFormProps = {
   googleSignIn: {
-    authUrl?: string;
+    clientId?: string;
     enabled: boolean;
   };
 };
@@ -68,18 +68,18 @@ export function LoginForm({ googleSignIn }: LoginFormProps) {
           </p>
         ) : null}
 
-        <div className="auth-divider" aria-hidden="true">
-          <span>atau</span>
-        </div>
-
-        <GoogleSignInButton
-          authUrl={googleSignIn.authUrl}
-          enabled={googleSignIn.enabled}
-          mode="login"
-        />
-
         <SubmitButton />
       </form>
+
+      <div className="auth-divider" aria-hidden="true">
+        <span>atau</span>
+      </div>
+
+      <GoogleSignInButton
+        clientId={googleSignIn.clientId}
+        enabled={googleSignIn.enabled}
+        mode="login"
+      />
     </>
   );
 }

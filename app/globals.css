@@ -808,6 +808,29 @@ input {
   flex-shrink: 0;
 }
 
+.social-auth-stack {
+  display: grid;
+  gap: 12px;
+  margin: 10px 0 14px;
+}
+
+.social-auth-hidden-form {
+  display: none;
+}
+
+.google-sign-in-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.google-sign-in-container > div {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
 .auth-footer {
   display: grid;
   gap: 10px;
