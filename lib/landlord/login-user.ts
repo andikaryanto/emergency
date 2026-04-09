@@ -17,6 +17,14 @@ type LoginUserApiResponse = {
       token?: string;
       expired_at?: string;
       user?: {
+        auth_providers?:
+          | Array<
+              | string
+              | {
+                  provider?: string;
+                }
+            >
+          | null;
         id?: number;
         name?: string;
         email?: string;
@@ -31,6 +39,7 @@ export type LoginUserResponse = {
   token: string;
   expiredAt: string;
   user: {
+    authProviders: string[];
     id: number;
     name: string;
     email: string;
@@ -113,6 +122,7 @@ function normalizeLoginResponse(payload: LoginUserApiResponse) {
     token,
     expiredAt,
     user: {
+      authProviders: normalizeAuthProviders(user.auth_providers),
       id: user.id,
       name: user.name,
       email: user.email,
@@ -120,6 +130,30 @@ function normalizeLoginResponse(payload: LoginUserApiResponse) {
       role: typeof user.role === "string" ? user.role : null,
     },
   } satisfies LoginUserResponse;
+}
+
+function normalizeAuthProviders(
+  value:
+    | Array<
+        | string
+        | {
+            provider?: string;
+          }
+      >
+    | null
+    | undefined,
+) {
+  if (!value) {
+    return [];
+  }
+
+  const providers = value
+    .map((item) =>
+      typeof item === "string" ? item.trim().toLowerCase() : item.provider?.trim().toLowerCase(),
+    )
+    .filter((item): item is string => Boolean(item));
+
+  return Array.from(new Set(providers));
 }
 
 export async function loginLandlordUser(payload: LoginUserRequest) {

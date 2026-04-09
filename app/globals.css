@@ -1122,6 +1122,93 @@ input {
   max-width: 34ch;
 }
 
+.dashboard-account-card {
+  margin-top: 24px;
+  padding: 24px 26px;
+  border-radius: 28px;
+  border: 1px solid rgba(16, 38, 31, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dashboard-account-card-copy {
+  max-width: 48ch;
+}
+
+.dashboard-account-card-copy h2 {
+  margin: 16px 0 10px;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.dashboard-account-card-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-account-card-actions {
+  min-width: min(100%, 320px);
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.dashboard-connect-stack {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.dashboard-connect-message {
+  margin: 0;
+}
+
+.dashboard-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.dashboard-provider-badge::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.dashboard-provider-badge.connected {
+  color: #0b5e53;
+  background: rgba(219, 244, 237, 0.92);
+}
+
+.dashboard-provider-badge.connected::before {
+  background: #0c8b6b;
+}
+
+.dashboard-provider-badge.not-connected {
+  color: #72510a;
+  background: rgba(255, 244, 214, 0.92);
+}
+
+.dashboard-provider-badge.not-connected::before {
+  background: #d19b15;
+}
+
+.dashboard-connect-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .landing-notice {
   margin: 0 0 26px;
 }

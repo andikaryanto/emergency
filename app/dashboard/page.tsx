@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ConnectGoogleButton } from "../../components/dashboard/connect-google-button";
 import { logoutUserAction } from "./actions";
 import {
   getLandlordAccessToken,
   getLandlordAuthorizationHeader,
   getLandlordAuthUser,
+  hasLandlordAuthProvider,
   isLandlordAdmin,
 } from "../../lib/landlord/auth-session";
 import {
@@ -25,6 +27,7 @@ export const metadata: Metadata = {
 type DashboardPageProps = {
   searchParams?: Promise<{
     created?: string;
+    google_connected?: string;
   }>;
 };
 
@@ -142,6 +145,7 @@ function getTenantSubscriptionInvoicesPath(tenantId: number) {
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const params = await searchParams;
   const isCreated = params?.created === "1";
+  const isGoogleConnectedMessage = params?.google_connected === "1";
   const [currentUser, accessToken, authorizationHeader] = await Promise.all([
     getLandlordAuthUser(),
     getLandlordAccessToken(),
@@ -149,6 +153,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   ]);
   const currentUserName = currentUser?.name ?? "dr. Amanda Pratama";
   const isAdmin = isLandlordAdmin(currentUser);
+  const isGoogleConnected = hasLandlordAuthProvider(currentUser, "google");
   let tenantErrorMessage: string | null = null;
   let tenantData: ListLandlordTenantsResponse = {
     tenants: [],
@@ -242,6 +247,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   Klinik baru berhasil dibuat dan daftar Anda sudah diperbarui.
                 </p>
               ) : null}
+              {isGoogleConnectedMessage ? (
+                <p className="auth-message auth-message-success dashboard-message">
+                  Akun Google berhasil dihubungkan ke akun Anda.
+                </p>
+              ) : null}
             </div>
 
             <div className="dashboard-header-actions">
@@ -268,6 +278,37 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               Pastikan data klinik dan akun utama sudah benar agar proses
               penggunaan berjalan lancar selama masa percobaan.
             </p>
+          </section>
+
+          <section className="dashboard-account-card" aria-label="Koneksi akun">
+            <div className="dashboard-account-card-copy">
+              <span className="eyebrow">Koneksi Akun</span>
+              <h2>Hubungkan akun Google Anda.</h2>
+              <p>
+                Sambungkan Google agar akun ini punya metode login tambahan yang
+                lebih cepat dan nyaman dipakai oleh pemilik akun utama.
+              </p>
+            </div>
+
+            <div className="dashboard-account-card-actions">
+              <span
+                className={`dashboard-provider-badge ${
+                  isGoogleConnected ? "connected" : "not-connected"
+                }`}
+              >
+                {isGoogleConnected ? "Google Terhubung" : "Google Belum Terhubung"}
+              </span>
+
+              {isGoogleConnected ? (
+                <p className="field-hint field-hint-success">
+                  Akun ini sudah terhubung dengan Google dan bisa dipakai untuk login.
+                </p>
+              ) : (
+                <>
+                  <ConnectGoogleButton />
+                </>
+              )}
+            </div>
           </section>
 
           <section className="dashboard-overview" id="overview">

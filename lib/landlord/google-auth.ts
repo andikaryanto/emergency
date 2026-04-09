@@ -29,6 +29,14 @@ export type GoogleAuthResult =
     };
 
 type RawGoogleAuthUser = {
+  auth_providers?:
+    | Array<
+        | string
+        | {
+            provider?: string;
+          }
+      >
+    | null;
   email?: string;
   id?: number;
   is_active?: boolean;
@@ -98,6 +106,7 @@ function normalizeGoogleAuthSession(rawSession: RawGoogleAuthSession) {
     token,
     expiredAt,
     user: {
+      authProviders: normalizeAuthProviders(user.auth_providers),
       id: user.id,
       name: user.name,
       email: user.email,
@@ -105,6 +114,30 @@ function normalizeGoogleAuthSession(rawSession: RawGoogleAuthSession) {
       role: typeof user.role === "string" ? user.role : null,
     },
   } satisfies LandlordSession;
+}
+
+function normalizeAuthProviders(
+  value:
+    | Array<
+        | string
+        | {
+            provider?: string;
+          }
+      >
+    | null
+    | undefined,
+) {
+  if (!value) {
+    return [];
+  }
+
+  const providers = value
+    .map((item) =>
+      typeof item === "string" ? item.trim().toLowerCase() : item.provider?.trim().toLowerCase(),
+    )
+    .filter((item): item is string => Boolean(item));
+
+  return Array.from(new Set(providers));
 }
 
 export function normalizeGoogleAuthResult(payload: unknown): GoogleAuthResult {
