@@ -6,8 +6,10 @@ import { loginWithGoogleAction } from "../../app/auth-actions";
 
 type GoogleSignInButtonProps = {
   clientId?: string;
+  disabled?: boolean;
   enabled: boolean;
   mode: "login" | "signup";
+  onPendingChange?: (pending: boolean) => void;
 };
 
 const buttonCopy = {
@@ -22,8 +24,10 @@ const initialGoogleLoginActionState = {
 
 export function GoogleSignInButton({
   clientId,
+  disabled = false,
   enabled,
   mode,
+  onPendingChange,
 }: GoogleSignInButtonProps) {
   const label = buttonCopy[mode];
   const buttonContainerRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +38,7 @@ export function GoogleSignInButton({
     loginWithGoogleAction,
     initialGoogleLoginActionState,
   );
-  const isReady = enabled && Boolean(clientId);
+  const isReady = enabled && Boolean(clientId) && !disabled;
 
   useEffect(() => {
     if (window.google) {
@@ -43,7 +47,22 @@ export function GoogleSignInButton({
   }, []);
 
   useEffect(() => {
-    if (!isReady || !isScriptLoaded || !buttonContainerRef.current || !window.google) {
+    if (state.status === "error") {
+      onPendingChange?.(false);
+    }
+  }, [onPendingChange, state.status]);
+
+  useEffect(() => {
+    if (!buttonContainerRef.current) {
+      return;
+    }
+
+    if (disabled) {
+      buttonContainerRef.current.innerHTML = "";
+      return;
+    }
+
+    if (!isReady || !isScriptLoaded || !window.google) {
       return;
     }
 
@@ -52,6 +71,7 @@ export function GoogleSignInButton({
         return;
       }
 
+      onPendingChange?.(true);
       credentialInputRef.current.value = response.credential;
       hiddenFormRef.current.requestSubmit();
     };
@@ -68,9 +88,9 @@ export function GoogleSignInButton({
       text: "signin_with",
       width: 360,
     });
-  }, [clientId, isReady, isScriptLoaded]);
+  }, [clientId, disabled, isReady, isScriptLoaded, onPendingChange]);
 
-  if (!isReady) {
+  if (!enabled || !clientId) {
     return (
       <div className="social-auth-stack">
         <button
@@ -107,7 +127,7 @@ export function GoogleSignInButton({
 
       <div
         ref={buttonContainerRef}
-        className="google-sign-in-container"
+        className={`google-sign-in-container${disabled ? " google-sign-in-container-disabled" : ""}`}
       />
     </div>
   );

@@ -1,16 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GoogleSignInButton } from "../../components/auth/google-sign-in-button";
 import { registerUserAction } from "./actions";
 import { initialRegisterActionState } from "./form-state";
 
-function SubmitButton() {
+function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled;
 
   return (
-    <button type="submit" disabled={pending}>
+    <button type="submit" disabled={isDisabled}>
       {pending ? "Memproses..." : "Buat Akun"}
     </button>
   );
@@ -28,6 +29,13 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
     registerUserAction,
     initialRegisterActionState,
   );
+  const [isAuthBusy, setIsAuthBusy] = useState(false);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      setIsAuthBusy(false);
+    }
+  }, [state.status]);
 
   return (
     <>
@@ -37,12 +45,19 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
         </p>
       ) : null}
 
-      <form className="auth-form" action={formAction} noValidate>
+      <form
+        className="auth-form"
+        action={formAction}
+        noValidate
+        onSubmitCapture={() => setIsAuthBusy(true)}
+      >
         <label htmlFor="name">Nama</label>
         <input
           id="name"
           name="name"
           type="text"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="Nama lengkap Anda"
           aria-invalid={Boolean(state.fieldErrors.name)}
           aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
@@ -58,6 +73,8 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
           id="email"
           name="email"
           type="email"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="nama@klinikanda.com"
           aria-invalid={Boolean(state.fieldErrors.email)}
           aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
@@ -73,6 +90,8 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
           id="password"
           name="password"
           type="password"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="Minimal 8 karakter"
           aria-invalid={Boolean(state.fieldErrors.password)}
           aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
@@ -91,6 +110,8 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
           id="confirm-password"
           name="confirmPassword"
           type="password"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="Ulangi password Anda"
           aria-invalid={Boolean(state.fieldErrors.confirmPassword)}
           aria-describedby={
@@ -103,7 +124,7 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
           </p>
         ) : null}
 
-        <SubmitButton />
+        <SubmitButton disabled={isAuthBusy} />
       </form>
 
       <div className="auth-divider" aria-hidden="true">
@@ -112,8 +133,10 @@ export function SignupForm({ googleSignIn }: SignupFormProps) {
 
       <GoogleSignInButton
         clientId={googleSignIn.clientId}
+        disabled={isAuthBusy}
         enabled={googleSignIn.enabled}
         mode="signup"
+        onPendingChange={setIsAuthBusy}
       />
     </>
   );

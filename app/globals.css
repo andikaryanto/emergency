@@ -831,6 +831,17 @@ input {
   max-width: 100%;
 }
 
+.google-sign-in-container-disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.auth-form input[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .auth-footer {
   display: grid;
   gap: 10px;
