@@ -117,6 +117,7 @@ export const apiEndpoints = {
     paymentProfiles: "/api/landlord/user/payment-profiles",
     subscriptionPricings: "/api/landlord/subscription-pricings",
     subscriptionInvoices: "/api/landlord/admin/subscription-invoices",
+    activeTenants: "/api/landlord/admin/tenants/active",
     tenant: "/api/landlord/tenant",
     tenantNameAvailability: "/api/landlord/tenant-name-availability",
     tenants: "/api/landlord/tenants",
@@ -150,6 +151,10 @@ export const apiEndpointUrls = {
     ).toString(),
     subscriptionInvoices: new URL(
       normalizePath(apiEndpoints.landlord.subscriptionInvoices),
+      withTrailingSlash(env.apiBaseUrl),
+    ).toString(),
+    activeTenants: new URL(
+      normalizePath(apiEndpoints.landlord.activeTenants),
       withTrailingSlash(env.apiBaseUrl),
     ).toString(),
     tenant: new URL(

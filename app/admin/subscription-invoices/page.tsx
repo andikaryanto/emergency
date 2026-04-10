@@ -195,6 +195,9 @@ export default async function AdminSubscriptionInvoicesPage({
             <Link className="dashboard-link" href="/dashboard">
               Dashboard
             </Link>
+            <Link className="dashboard-link" href="/admin/tenants/active">
+              Tenant Aktif
+            </Link>
             <Link className="dashboard-link active" href="/admin/subscription-invoices">
               Invoice Langganan
             </Link>

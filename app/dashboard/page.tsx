@@ -209,9 +209,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               Profil Pembayaran
             </Link>
             {isAdmin ? (
-              <Link className="dashboard-link" href="/admin/subscription-invoices">
-                Invoice Langganan
-              </Link>
+              <>
+                <Link className="dashboard-link" href="/admin/tenants/active">
+                  Tenant Aktif
+                </Link>
+                <Link className="dashboard-link" href="/admin/subscription-invoices">
+                  Invoice Langganan
+                </Link>
+              </>
             ) : null}
           </nav>
 
