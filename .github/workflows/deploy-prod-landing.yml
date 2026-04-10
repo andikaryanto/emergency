@@ -85,9 +85,9 @@ jobs:
           push: true
           build-args: |
             APP_NAME=Klinik RME
-            APP_URL=https://clinicrme.my.id
-            API_URL=https://landlord.clinicrme.my.id
-            TENANT_BASE_DOMAIN=clinicrme.my.id
+            APP_URL=https://klinikrme.id
+            API_URL=https://landlord.klinikrme.id
+            TENANT_BASE_DOMAIN=klinikrme.id
             API_TIMEOUT_MS=10000
             APP_ENV=production
           tags: |
