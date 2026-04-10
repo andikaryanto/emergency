@@ -4,12 +4,16 @@ import Script from "next/script";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { connectGoogleAction } from "../../app/dashboard/actions";
 
+type ConnectGoogleButtonProps = {
+  clientId?: string;
+};
+
 const initialConnectGoogleActionState = {
   status: "idle",
   message: null,
 } as const;
 
-export function ConnectGoogleButton() {
+export function ConnectGoogleButton({ clientId }: ConnectGoogleButtonProps) {
   const buttonContainerRef = useRef<HTMLDivElement | null>(null);
   const credentialInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenFormRef = useRef<HTMLFormElement | null>(null);
@@ -42,7 +46,7 @@ export function ConnectGoogleButton() {
       return;
     }
 
-    if (!isScriptLoaded || !window.google) {
+    if (!clientId || !isScriptLoaded || !window.google) {
       return;
     }
 
@@ -58,7 +62,7 @@ export function ConnectGoogleButton() {
 
     buttonContainerRef.current.innerHTML = "";
     window.google.accounts.id.initialize({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
+      client_id: clientId,
       callback: handleCredentialResponse,
     });
     window.google.accounts.id.renderButton(buttonContainerRef.current, {
@@ -68,7 +72,7 @@ export function ConnectGoogleButton() {
       text: "continue_with",
       width: 280,
     });
-  }, [isPending, isScriptLoaded]);
+  }, [clientId, isPending, isScriptLoaded]);
 
   return (
     <div className="dashboard-connect-stack">
@@ -88,10 +92,22 @@ export function ConnectGoogleButton() {
         <input ref={credentialInputRef} type="hidden" name="id_token" />
       </form>
 
-      <div
-        ref={buttonContainerRef}
-        className={`google-sign-in-container${isPending ? " google-sign-in-container-disabled" : ""}`}
-      />
+      {clientId ? (
+        <div
+          ref={buttonContainerRef}
+          className={`google-sign-in-container${isPending ? " google-sign-in-container-disabled" : ""}`}
+        />
+      ) : (
+        <button
+          type="button"
+          className="ghost-button dashboard-connect-button"
+          disabled
+          aria-disabled="true"
+          title="Google Client ID belum dikonfigurasi"
+        >
+          Hubungkan Google
+        </button>
+      )}
 
       <p className="field-hint field-hint-neutral">
         Hubungkan akun Google untuk mempermudah login berikutnya.

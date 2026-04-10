@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConnectGoogleButton } from "../../components/dashboard/connect-google-button";
+import { env } from "../../lib/env";
 import { logoutUserAction } from "./actions";
 import {
   getLandlordAccessToken,
@@ -305,7 +306,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 </p>
               ) : (
                 <>
-                  <ConnectGoogleButton />
+                  <ConnectGoogleButton clientId={env.googleAuth.clientId} />
                 </>
               )}
             </div>
