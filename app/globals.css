@@ -749,6 +749,99 @@ input {
   cursor: pointer;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 2px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(16, 38, 31, 0.12);
+}
+
+.social-auth-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 0;
+  border: 1px solid rgba(16, 38, 31, 0.14);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.social-auth-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(12, 139, 107, 0.28);
+  box-shadow: 0 10px 24px rgba(16, 38, 31, 0.08);
+}
+
+.social-auth-button-disabled,
+.social-auth-button-disabled:hover {
+  transform: none;
+  cursor: not-allowed;
+  opacity: 0.72;
+  box-shadow: none;
+  border-color: rgba(16, 38, 31, 0.12);
+}
+
+.social-auth-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.social-auth-stack {
+  display: grid;
+  gap: 12px;
+  margin: 10px 0 14px;
+}
+
+.social-auth-hidden-form {
+  display: none;
+}
+
+.google-sign-in-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.google-sign-in-container > div {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.google-sign-in-container-disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.auth-form input[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .auth-footer {
   display: grid;
   gap: 10px;
@@ -1027,6 +1120,93 @@ input {
 
 .dashboard-notice-copy {
   max-width: 34ch;
+}
+
+.dashboard-account-card {
+  margin-top: 24px;
+  padding: 24px 26px;
+  border-radius: 28px;
+  border: 1px solid rgba(16, 38, 31, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dashboard-account-card-copy {
+  max-width: 48ch;
+}
+
+.dashboard-account-card-copy h2 {
+  margin: 16px 0 10px;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.dashboard-account-card-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-account-card-actions {
+  min-width: min(100%, 320px);
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.dashboard-connect-stack {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.dashboard-connect-message {
+  margin: 0;
+}
+
+.dashboard-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.dashboard-provider-badge::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.dashboard-provider-badge.connected {
+  color: #0b5e53;
+  background: rgba(219, 244, 237, 0.92);
+}
+
+.dashboard-provider-badge.connected::before {
+  background: #0c8b6b;
+}
+
+.dashboard-provider-badge.not-connected {
+  color: #72510a;
+  background: rgba(255, 244, 214, 0.92);
+}
+
+.dashboard-provider-badge.not-connected::before {
+  background: #d19b15;
+}
+
+.dashboard-connect-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .landing-notice {

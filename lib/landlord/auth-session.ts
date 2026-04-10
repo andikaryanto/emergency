@@ -4,6 +4,7 @@ const LANDLORD_AUTH_TOKEN_COOKIE = "landlord_auth_token";
 const LANDLORD_AUTH_USER_COOKIE = "landlord_auth_user";
 
 export type LandlordAuthUser = {
+  authProviders: string[];
   id: number;
   name: string;
   email: string;
@@ -48,6 +49,17 @@ export async function setLandlordSession(session: LandlordSession) {
   });
 }
 
+export async function setLandlordAuthUser(user: LandlordAuthUser) {
+  const cookieStore = await cookies();
+
+  cookieStore.set(LANDLORD_AUTH_USER_COOKIE, JSON.stringify(user), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+}
+
 export async function clearLandlordSession() {
   const cookieStore = await cookies();
 
@@ -70,7 +82,28 @@ export async function getLandlordAuthUser() {
   }
 
   try {
-    return JSON.parse(value) as LandlordAuthUser;
+    const parsedValue = JSON.parse(value) as Partial<LandlordAuthUser>;
+
+    if (
+      typeof parsedValue.id !== "number" ||
+      typeof parsedValue.name !== "string" ||
+      typeof parsedValue.email !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      id: parsedValue.id,
+      name: parsedValue.name,
+      email: parsedValue.email,
+      isActive: Boolean(parsedValue.isActive),
+      role: typeof parsedValue.role === "string" ? parsedValue.role : null,
+      authProviders: Array.isArray(parsedValue.authProviders)
+        ? parsedValue.authProviders
+            .map((item) => (typeof item === "string" ? item.trim().toLowerCase() : null))
+            .filter((item): item is string => Boolean(item))
+        : [],
+    } satisfies LandlordAuthUser;
   } catch {
     return null;
   }
@@ -90,4 +123,32 @@ export async function getLandlordAuthorizationHeader() {
 
 export function isLandlordAdmin(user: LandlordAuthUser | null) {
   return user?.role === "admin";
+}
+
+export function hasLandlordAuthProvider(
+  user: LandlordAuthUser | null,
+  provider: string,
+) {
+  const normalizedProvider = provider.trim().toLowerCase();
+
+  return (
+    user?.authProviders?.some(
+      (item) => item.trim().toLowerCase() === normalizedProvider,
+    ) ?? false
+  );
+}
+
+export function appendLandlordAuthProvider(
+  user: LandlordAuthUser,
+  provider: string,
+): LandlordAuthUser {
+  const normalizedProvider = provider.trim().toLowerCase();
+  const authProviders = Array.from(
+    new Set([...user.authProviders, normalizedProvider].filter(Boolean)),
+  );
+
+  return {
+    ...user,
+    authProviders,
+  };
 }

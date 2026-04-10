@@ -121,8 +121,10 @@ export const apiEndpoints = {
     tenantNameAvailability: "/api/landlord/tenant-name-availability",
     tenants: "/api/landlord/tenants",
     user: {
+      connectGoogle: "/api/landlord/user/connect-google",
       forgotPassword: "/api/landlord/user/forgot-password",
       login: "/api/landlord/user/login",
+      loginGoogle: "/api/landlord/user/login-google",
       register: "/api/landlord/user/register",
       resendVerificationEmail: "/api/landlord/user/resend-verification-email",
       resetPassword: "/api/landlord/user/reset-password",
@@ -163,12 +165,20 @@ export const apiEndpointUrls = {
       withTrailingSlash(env.apiBaseUrl),
     ).toString(),
     user: {
+      connectGoogle: new URL(
+        normalizePath(apiEndpoints.landlord.user.connectGoogle),
+        withTrailingSlash(env.apiBaseUrl),
+      ).toString(),
       forgotPassword: new URL(
         normalizePath(apiEndpoints.landlord.user.forgotPassword),
         withTrailingSlash(env.apiBaseUrl),
       ).toString(),
       login: new URL(
         normalizePath(apiEndpoints.landlord.user.login),
+        withTrailingSlash(env.apiBaseUrl),
+      ).toString(),
+      loginGoogle: new URL(
+        normalizePath(apiEndpoints.landlord.user.loginGoogle),
         withTrailingSlash(env.apiBaseUrl),
       ).toString(),
       register: new URL(

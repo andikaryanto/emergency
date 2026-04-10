@@ -1,25 +1,42 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { GoogleSignInButton } from "../../components/auth/google-sign-in-button";
 import { loginUserAction } from "./actions";
 import { initialLoginActionState } from "./form-state";
 
-function SubmitButton() {
+function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled;
+  const label = isDisabled ? "Sedang masuk..." : "Masuk";
 
   return (
-    <button type="submit" disabled={pending}>
-      {pending ? "Memproses..." : "Masuk"}
+    <button type="submit" disabled={isDisabled}>
+      {label}
     </button>
   );
 }
 
-export function LoginForm() {
+type LoginFormProps = {
+  googleSignIn: {
+    clientId?: string;
+    enabled: boolean;
+  };
+};
+
+export function LoginForm({ googleSignIn }: LoginFormProps) {
   const [state, formAction] = useActionState(
     loginUserAction,
     initialLoginActionState,
   );
+  const [isAuthBusy, setIsAuthBusy] = useState(false);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      setIsAuthBusy(false);
+    }
+  }, [state.status]);
 
   return (
     <>
@@ -29,12 +46,19 @@ export function LoginForm() {
         </p>
       ) : null}
 
-      <form className="auth-form" action={formAction} noValidate>
+      <form
+        className="auth-form"
+        action={formAction}
+        noValidate
+        onSubmitCapture={() => setIsAuthBusy(true)}
+      >
         <label htmlFor="email">Email</label>
         <input
           id="email"
           name="email"
           type="email"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="nama@klinikanda.com"
           aria-invalid={Boolean(state.fieldErrors.email)}
           aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
@@ -50,6 +74,8 @@ export function LoginForm() {
           id="password"
           name="password"
           type="password"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
           placeholder="••••••••"
           aria-invalid={Boolean(state.fieldErrors.password)}
           aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
@@ -60,8 +86,20 @@ export function LoginForm() {
           </p>
         ) : null}
 
-        <SubmitButton />
+        <SubmitButton disabled={isAuthBusy} />
       </form>
+
+      <div className="auth-divider" aria-hidden="true">
+        <span>atau</span>
+      </div>
+
+      <GoogleSignInButton
+        clientId={googleSignIn.clientId}
+        disabled={isAuthBusy}
+        enabled={googleSignIn.enabled}
+        mode="login"
+        onPendingChange={setIsAuthBusy}
+      />
     </>
   );
 }
