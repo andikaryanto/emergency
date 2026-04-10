@@ -1637,6 +1637,27 @@ input {
     width: 100%;
   }
 
+  .dashboard-account-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-account-card-copy,
+  .dashboard-account-card-actions {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dashboard-connect-stack,
+  .dashboard-account-card-actions {
+    justify-items: stretch;
+  }
+
+  .dashboard-provider-badge {
+    justify-content: center;
+  }
+
   .nav-links,
   .nav-actions {
     display: none;
