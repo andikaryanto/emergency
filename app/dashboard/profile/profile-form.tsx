@@ -71,7 +71,7 @@ export function ProfileForm({ userId, initialValues }: ProfileFormProps) {
           type="text"
           inputMode="tel"
           defaultValue={initialValues?.phone ?? ""}
-          placeholder="Contoh: 08967392721"
+          placeholder="Masukkan nomor telepon"
           aria-invalid={Boolean(state.fieldErrors.phone)}
           aria-describedby={state.fieldErrors.phone ? "phone-error" : "phone-hint"}
         />

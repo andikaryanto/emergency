@@ -95,8 +95,8 @@ export default async function ProfilePage() {
               <span className="eyebrow">Profil User</span>
               <h1>Perbarui informasi user Anda.</h1>
               <p>
-                Data berikut akan diambil dari endpoint user aktif, lalu dapat Anda
-                ubah untuk nomor telepon dan alamat utama akun.
+                Kelola informasi kontak dan alamat utama akun Anda di satu tempat
+                agar data tetap rapi dan mudah diperbarui kapan saja.
               </p>
             </div>
 
@@ -127,9 +127,8 @@ export default async function ProfilePage() {
               <span className="eyebrow">Edit Profil</span>
               <h2>Lengkapi kontak dan alamat user.</h2>
               <p>
-                Endpoint yang dipakai adalah `GET/POST api/landlord/user/{profileSummary.id}`.
-                Field yang dapat diperbarui meliputi nomor telepon, alamat, kota,
-                provinsi, dan kode pos.
+                Perbarui nomor telepon, alamat, kota, provinsi, dan kode pos
+                agar informasi akun Anda selalu terbaru.
               </p>
             </div>
 

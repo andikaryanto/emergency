@@ -90,9 +90,8 @@ export default async function PaymentProfilePage() {
               <span className="eyebrow">Profil Pembayaran</span>
               <h1>Profil pembayaran default Anda.</h1>
               <p>
-                Halaman ini menampilkan payment profile yang terhubung ke akun Anda.
-                Saat ini endpoint mengembalikan collection, tetapi alurnya diasumsikan
-                hanya memakai satu profile utama.
+                Halaman ini menampilkan profil pembayaran yang terhubung ke akun
+                Anda untuk dipakai sebagai referensi utama saat konfirmasi pembayaran.
               </p>
             </div>
 
@@ -125,8 +124,8 @@ export default async function PaymentProfilePage() {
               <span className="eyebrow">Atur Profil</span>
               <h2>Tambahkan payment profile default.</h2>
               <p>
-                Template ini menyiapkan data yang nanti akan dipakai otomatis saat
-                Anda mengonfirmasi pembayaran invoice tenant.
+                Simpan profil pembayaran utama Anda di sini agar proses konfirmasi
+                pembayaran invoice tenant jadi lebih cepat dan rapi.
               </p>
             </div>
 

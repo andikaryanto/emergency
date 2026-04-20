@@ -199,7 +199,7 @@ export async function updateLandlordUserProfile(
   try {
     await requestJson<unknown, UpdateLandlordUserProfileRequest>({
       url: `${apiEndpointUrls.landlord.user.detail}/${userId}`,
-      method: "POST",
+      method: "PATCH",
       body: payload,
       headers,
     });
