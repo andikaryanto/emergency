@@ -66,6 +66,9 @@ export default async function PaymentProfilePage() {
             <Link className="dashboard-link" href="/dashboard">
               Dashboard
             </Link>
+            <Link className="dashboard-link" href="/dashboard/profile">
+              Profil User
+            </Link>
             <Link className="dashboard-link active" href="/dashboard/payment-profile">
               Profil Pembayaran
             </Link>
