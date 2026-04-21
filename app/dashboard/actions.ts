@@ -236,7 +236,7 @@ export async function createTenantSnapPaymentTransactionAction(
         status: "error",
         message:
           payload?.message ??
-          "Transaksi pembayaran Midtrans belum bisa dibuat saat ini.",
+          "Transaksi pembayaran belum bisa dibuat saat ini.",
         snap: null,
       };
     }

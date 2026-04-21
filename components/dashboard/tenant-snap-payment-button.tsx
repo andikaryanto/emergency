@@ -67,7 +67,7 @@ function loadMidtransSnapScript({
       existingScript.addEventListener("load", () => resolve(), { once: true });
       existingScript.addEventListener(
         "error",
-        () => reject(new Error("Snap Midtrans gagal dimuat.")),
+        () => reject(new Error("Layanan pembayaran gagal dimuat.")),
         { once: true },
       );
       return;
@@ -84,7 +84,7 @@ function loadMidtransSnapScript({
     script.dataset.midtransSnap = "true";
     script.setAttribute("data-client-key", clientKey);
     script.addEventListener("load", () => resolve(), { once: true });
-    script.addEventListener("error", () => reject(new Error("Snap Midtrans gagal dimuat.")), {
+    script.addEventListener("error", () => reject(new Error("Layanan pembayaran gagal dimuat.")), {
       once: true,
     });
     document.body.appendChild(script);
@@ -94,12 +94,19 @@ function loadMidtransSnapScript({
 export function TenantSnapPaymentButton({ tenantId }: TenantSnapPaymentButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isSnapLoading, setIsSnapLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageStatus, setMessageStatus] = useState<"success" | "error" | null>(null);
+  const isDisabled = isPending || isSnapLoading;
 
   const handlePay = () => {
+    if (isDisabled) {
+      return;
+    }
+
     setMessage(null);
     setMessageStatus(null);
+    setIsSnapLoading(true);
 
     startTransition(async () => {
       const state = await createTenantSnapPaymentTransactionAction(initialState, {
@@ -109,12 +116,14 @@ export function TenantSnapPaymentButton({ tenantId }: TenantSnapPaymentButtonPro
       if (state.status !== "success" || !state.snap) {
         setMessageStatus("error");
         setMessage(state.message ?? "Pembayaran belum bisa dimulai saat ini.");
+        setIsSnapLoading(false);
         return;
       }
 
       if (state.snap.gateway?.toLowerCase() !== "midtrans") {
         setMessageStatus("error");
         setMessage("Gateway pembayaran yang diterima tidak didukung.");
+        setIsSnapLoading(false);
         return;
       }
 
@@ -125,32 +134,38 @@ export function TenantSnapPaymentButton({ tenantId }: TenantSnapPaymentButtonPro
         });
       } catch (error) {
         setMessageStatus("error");
-        setMessage(error instanceof Error ? error.message : "Snap Midtrans gagal dimuat.");
+        setMessage(error instanceof Error ? error.message : "Layanan pembayaran gagal dimuat.");
+        setIsSnapLoading(false);
         return;
       }
 
       if (!window.snap) {
         setMessageStatus("error");
-        setMessage("Snap Midtrans belum tersedia di browser.");
+        setMessage("Layanan pembayaran belum tersedia saat ini.");
+        setIsSnapLoading(false);
         return;
       }
 
       window.snap.pay(state.snap.token, {
         onSuccess: () => {
+          setIsSnapLoading(false);
           setMessageStatus("success");
           setMessage("Pembayaran berhasil diproses. Status invoice akan diperbarui.");
           router.refresh();
         },
         onPending: () => {
+          setIsSnapLoading(false);
           setMessageStatus("success");
-          setMessage("Transaksi dibuat. Lanjutkan pembayaran Anda di Midtrans.");
+          setMessage("Transaksi dibuat. Lanjutkan pembayaran Anda.");
           router.refresh();
         },
         onError: () => {
+          setIsSnapLoading(false);
           setMessageStatus("error");
-          setMessage("Pembayaran gagal diproses oleh Midtrans. Silakan coba lagi.");
+          setMessage("Pembayaran gagal diproses. Silakan coba lagi.");
         },
         onClose: () => {
+          setIsSnapLoading(false);
           setMessageStatus("error");
           setMessage(
             "Popup pembayaran ditutup. Anda masih bisa pakai konfirmasi pembayaran manual sebagai cadangan.",
@@ -177,9 +192,9 @@ export function TenantSnapPaymentButton({ tenantId }: TenantSnapPaymentButtonPro
         type="button"
         className="primary-button tenant-payment-button"
         onClick={handlePay}
-        disabled={isPending}
+        disabled={isDisabled}
       >
-        {isPending ? "Menyiapkan pembayaran..." : "Bayar"}
+        {isDisabled ? "Menyiapkan pembayaran..." : "Bayar"}
       </button>
     </div>
   );
