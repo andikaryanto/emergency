@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConnectGoogleButton } from "../../components/dashboard/connect-google-button";
+import { TenantSnapPaymentButton } from "../../components/dashboard/tenant-snap-payment-button";
 import { env } from "../../lib/env";
 import { logoutUserAction } from "./actions";
 import {
@@ -409,11 +410,19 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       ) : null}
 
                       {tenant.hasReadyPaymentInvoice ? (
-                        <p className="tenant-inline-notice tenant-inline-notice-payment">
-                          Ada invoice langganan yang siap dibayar untuk klinik ini. Lanjutkan ke
-                          halaman konfirmasi pembayaran untuk melihat detail invoice dan kirim
-                          konfirmasi pembayaran.
-                        </p>
+                        <div className="tenant-inline-notice tenant-inline-notice-payment">
+                          <p>
+                            Ada invoice langganan yang siap dibayar untuk klinik ini. Lanjutkan ke
+                            halaman konfirmasi pembayaran untuk melihat detail invoice dan kirim
+                            konfirmasi pembayaran.
+                          </p>
+                          <Link
+                            href={getTenantSubscriptionInvoicesPath(tenant.id)}
+                            className="tenant-inline-link"
+                          >
+                            Konfirmasi Manual
+                          </Link>
+                        </div>
                       ) : null}
 
                       <div className="tenant-actions">
@@ -421,12 +430,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                           Buka Klinik
                         </a>
                         {tenant.hasReadyPaymentInvoice ? (
-                          <Link
-                            href={getTenantSubscriptionInvoicesPath(tenant.id)}
-                            className="primary-button tenant-payment-button"
-                          >
-                            Konfirmasi Pembayaran
-                          </Link>
+                          <TenantSnapPaymentButton tenantId={tenant.id} />
                         ) : null}
                         <button type="button" className="tenant-text-action">
                           Kelola Klinik

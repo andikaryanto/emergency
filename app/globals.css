@@ -1421,6 +1421,10 @@ input {
   line-height: 1.7;
 }
 
+.tenant-inline-notice p {
+  margin: 0;
+}
+
 .tenant-inline-notice-demo {
   background: rgba(215, 243, 106, 0.18);
   border-color: rgba(140, 170, 40, 0.22);
@@ -1428,9 +1432,17 @@ input {
 }
 
 .tenant-inline-notice-payment {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
   background: rgba(12, 139, 107, 0.12);
   border: 1px solid rgba(12, 139, 107, 0.18);
   color: var(--primary-deep);
+}
+
+.tenant-inline-link {
+  color: var(--primary-deep);
+  font-weight: 800;
 }
 
 .auth-footer a,
@@ -1440,6 +1452,7 @@ input {
 
 .tenant-payment-button {
   text-align: center;
+  cursor: pointer;
 }
 
 .tenant-invoice-summary strong {
@@ -1484,6 +1497,11 @@ input {
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid rgba(16, 38, 31, 0.08);
+}
+
+.tenant-snap-payment {
+  display: grid;
+  gap: 12px;
 }
 
 .payment-profile-editor-head h3 {
