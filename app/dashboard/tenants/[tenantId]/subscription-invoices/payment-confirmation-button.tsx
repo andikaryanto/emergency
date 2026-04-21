@@ -57,7 +57,7 @@ export function PaymentConfirmationButton({
   }, [state.status]);
 
   return (
-    <div className="payment-profile-editor">
+    <div className="payment-confirmation-toggle">
       <button
         type="button"
         className="ghost-button payment-profile-toggle-button"

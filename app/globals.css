@@ -1504,6 +1504,11 @@ input {
   gap: 12px;
 }
 
+.payment-confirmation-toggle {
+  display: grid;
+  gap: 12px;
+}
+
 .payment-profile-editor-head h3 {
   margin: 10px 0 0;
   font-size: 1.05rem;

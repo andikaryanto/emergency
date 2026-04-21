@@ -19,6 +19,7 @@ import {
   apiEndpointUrls,
   requestJson,
 } from "../../lib/api";
+import { env } from "../../lib/env";
 
 export async function logoutUserAction() {
   await clearLandlordSession();
@@ -189,6 +190,14 @@ export async function createTenantSnapPaymentTransactionAction(
     tenantId: number;
   },
 ): Promise<CreateTenantSnapPaymentTransactionActionState> {
+  if (env.paymentMethod !== "midtrans") {
+    return {
+      status: "error",
+      message: "Pembayaran online sedang tidak aktif saat ini.",
+      snap: null,
+    };
+  }
+
   const tenantId = input?.tenantId;
 
   if (!Number.isInteger(tenantId) || tenantId <= 0) {
