@@ -45,9 +45,6 @@ export function MobileHeaderMenu() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/login" onClick={() => setIsOpen(false)}>
-              Login
-            </Link>
           </nav>
 
           <div className="mobile-menu-actions">

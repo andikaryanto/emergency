@@ -48,6 +48,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: baseUrl + "/terms",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: baseUrl + "/contact",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: baseUrl + "/blog",
       lastModified,
       changeFrequency: "weekly",

@@ -18,7 +18,6 @@ export function LandingHeader() {
             {item.label}
           </Link>
         ))}
-        <Link href="/login">Login</Link>
       </nav>
       <div className="nav-actions">
         <Link className="ghost-button" href="/login">
