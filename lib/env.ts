@@ -50,6 +50,22 @@ function getBooleanEnv(name: string, fallback: boolean) {
   throw new Error(`Environment variable ${name} must be a boolean value.`);
 }
 
+function getPaymentMethodEnv(name: string, fallback: "manual" | "midtrans") {
+  const rawValue = process.env[name];
+
+  if (!rawValue) {
+    return fallback;
+  }
+
+  const normalizedValue = rawValue.trim().toLowerCase();
+
+  if (normalizedValue === "manual" || normalizedValue === "midtrans") {
+    return normalizedValue;
+  }
+
+  throw new Error(`Environment variable ${name} must be either "manual" or "midtrans".`);
+}
+
 function normalizeBaseUrl(value: string) {
   if (value.startsWith("http://") || value.startsWith("https://")) {
     return value;
@@ -69,6 +85,7 @@ export const env = {
     "API_DEBUG_LOG",
     (process.env.APP_ENV?.trim().toLowerCase() || "production") !== "production",
   ),
+  paymentMethod: getPaymentMethodEnv("PAYMENT_METHOD", "manual"),
   googleAuth: {
     enabled: getBooleanEnv("NEXT_PUBLIC_GOOGLE_SIGN_IN_ENABLED", false),
     clientId: getOptionalEnv("NEXT_PUBLIC_GOOGLE_CLIENT_ID"),

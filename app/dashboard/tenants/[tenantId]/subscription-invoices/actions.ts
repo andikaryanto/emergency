@@ -52,7 +52,6 @@ export async function submitSubscriptionInvoicePaymentConfirmationAction(
   formData: FormData,
 ): Promise<SubscriptionInvoicePaymentConfirmationActionState> {
   void previousState;
-
   const tenantId = getRequiredNumber(formData, "tenant_id");
   const invoiceId = getRequiredNumber(formData, "invoice_id");
   const paymentConfirmationId = getRequiredNumber(formData, "payment_confirmation_id");

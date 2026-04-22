@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConnectGoogleButton } from "../../components/dashboard/connect-google-button";
+import { TenantSnapPaymentButton } from "../../components/dashboard/tenant-snap-payment-button";
 import { env } from "../../lib/env";
 import { logoutUserAction } from "./actions";
 import {
@@ -147,6 +148,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const params = await searchParams;
   const isCreated = params?.created === "1";
   const isGoogleConnectedMessage = params?.google_connected === "1";
+  const isMidtransPaymentEnabled = env.paymentMethod === "midtrans";
   const [currentUser, accessToken, authorizationHeader] = await Promise.all([
     getLandlordAuthUser(),
     getLandlordAccessToken(),
@@ -412,23 +414,34 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                       ) : null}
 
                       {tenant.hasReadyPaymentInvoice ? (
-                        <p className="tenant-inline-notice tenant-inline-notice-payment">
-                          Ada invoice langganan yang siap dibayar untuk klinik ini. Lanjutkan ke
-                          halaman konfirmasi pembayaran untuk melihat detail invoice dan kirim
-                          konfirmasi pembayaran.
-                        </p>
+                        <div className="tenant-inline-notice tenant-inline-notice-payment">
+                          <p>
+                            {isMidtransPaymentEnabled
+                              ? "Ada invoice langganan yang siap dibayar untuk klinik ini. Anda bisa lanjutkan pembayaran langsung atau buka konfirmasi manual sebagai cadangan."
+                              : "Ada invoice langganan yang siap dibayar untuk klinik ini. Lanjutkan ke halaman konfirmasi pembayaran untuk melihat detail invoice dan kirim konfirmasi pembayaran."}
+                          </p>
+                          <Link
+                            href={getTenantSubscriptionInvoicesPath(tenant.id)}
+                            className="tenant-inline-link"
+                          >
+                            Konfirmasi Manual
+                          </Link>
+                        </div>
                       ) : null}
 
                       <div className="tenant-actions">
                         <a href={`https://${tenant.domain}`} className="ghost-button">
                           Buka Klinik
                         </a>
-                        {tenant.hasReadyPaymentInvoice ? (
+                        {tenant.hasReadyPaymentInvoice && isMidtransPaymentEnabled ? (
+                          <TenantSnapPaymentButton tenantId={tenant.id} />
+                        ) : null}
+                        {tenant.hasReadyPaymentInvoice && !isMidtransPaymentEnabled ? (
                           <Link
                             href={getTenantSubscriptionInvoicesPath(tenant.id)}
                             className="primary-button tenant-payment-button"
                           >
-                            Konfirmasi Pembayaran
+                            Bayar
                           </Link>
                         ) : null}
                         <button type="button" className="tenant-text-action">
