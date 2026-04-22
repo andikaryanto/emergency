@@ -18,11 +18,10 @@ export function LandingHeader() {
             {item.label}
           </Link>
         ))}
-        <Link href="/terms">Kebijakan</Link>
       </nav>
       <div className="nav-actions">
-        <Link className="ghost-button" href="/terms">
-          Kebijakan
+        <Link className="ghost-button" href="/login">
+          Login
         </Link>
         <Link className="primary-button" href="/signup">
           Coba Sekarang

@@ -118,7 +118,7 @@ export default async function HomePage() {
               <div className="dashboard-top">
                 <div>
                   <span className="card-label">Akun klinik aktif</span>
-                  <strong>klinik.clinicrme.my.id</strong>
+                  <strong>klinik.klinikrme.id</strong>
                 </div>
                 <span className="status-pill">Online</span>
               </div>
@@ -155,7 +155,7 @@ export default async function HomePage() {
 
             <div className="mini-card">
               <span className="card-label">Akses login klinik</span>
-              <strong>klinik.clinicrme.my.id</strong>
+              <strong>klinik.klinikrme.id</strong>
               <p>Masuk lebih cepat untuk admin, kasir, dan dokter.</p>
             </div>
           </div>

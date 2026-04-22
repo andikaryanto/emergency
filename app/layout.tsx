@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import { env } from "../lib/env";
+import { SiteFooter } from "./site-footer";
 import { WhatsAppFloat } from "./whatsapp-float";
 import "./globals.css";
 
@@ -69,6 +70,7 @@ export default function RootLayout({
     <html lang="id">
       <body className={`${manrope.variable} ${spaceGrotesk.variable}`}>
         {children}
+        <SiteFooter />
         <WhatsAppFloat />
       </body>
     </html>

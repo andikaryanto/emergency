@@ -653,6 +653,87 @@ input {
   color: rgba(239, 248, 246, 0.78);
 }
 
+.site-footer {
+  width: min(1180px, calc(100% - 32px));
+  margin: 8px auto 28px;
+  padding: 30px 32px 22px;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(246, 249, 245, 0.92)),
+    white;
+  box-shadow: var(--shadow);
+}
+
+.site-footer__inner,
+.site-footer__bottom,
+.site-footer__bottom-links {
+  display: flex;
+  gap: 24px;
+}
+
+.site-footer__inner {
+  align-items: start;
+  justify-content: space-between;
+}
+
+.site-footer__intro {
+  max-width: 28rem;
+}
+
+.site-footer__copy,
+.site-footer__contact p,
+.site-footer__bottom p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.site-footer__copy {
+  margin: 18px 0 0;
+}
+
+.site-footer__group {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.site-footer__group h2 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.1rem;
+}
+
+.site-footer__links,
+.site-footer__contact {
+  display: grid;
+  gap: 10px;
+}
+
+.site-footer__links a,
+.site-footer__contact a,
+.site-footer__bottom-links a {
+  color: var(--primary-deep);
+  font-weight: 700;
+}
+
+.site-footer__contact p,
+.site-footer__bottom p {
+  margin: 0;
+}
+
+.site-footer__bottom {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(16, 38, 31, 0.08);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-footer__bottom-links {
+  align-items: center;
+}
+
 .whatsapp-float {
   position: fixed;
   right: 24px;
@@ -1686,7 +1767,9 @@ input {
   .dashboard-header,
   .dashboard-notice,
   .tenant-section-head,
-  .create-tenant-panel {
+  .create-tenant-panel,
+  .site-footer__inner,
+  .site-footer__bottom {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -1705,6 +1788,12 @@ input {
     padding-top: 10px;
   }
 
+  .site-footer {
+    width: min(100% - 20px, 1180px);
+    padding: 24px 20px 18px;
+    border-radius: 28px;
+  }
+
   .hero-copy h1 {
     font-size: clamp(2.8rem, 16vw, 4.4rem);
   }
@@ -1716,7 +1805,8 @@ input {
   .metric-grid,
   .dashboard-header-actions,
   .tenant-card-head,
-  .tenant-actions {
+  .tenant-actions,
+  .site-footer__bottom-links {
     flex-direction: column;
     align-items: stretch;
   }

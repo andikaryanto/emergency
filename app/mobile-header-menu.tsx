@@ -45,14 +45,11 @@ export function MobileHeaderMenu() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/terms" onClick={() => setIsOpen(false)}>
-              Kebijakan
-            </Link>
           </nav>
 
           <div className="mobile-menu-actions">
-            <Link className="ghost-button" href="/terms" onClick={() => setIsOpen(false)}>
-              Kebijakan
+            <Link className="ghost-button" href="/login" onClick={() => setIsOpen(false)}>
+              Login
             </Link>
             <Link className="primary-button" href="/signup" onClick={() => setIsOpen(false)}>
               Coba Sekarang
