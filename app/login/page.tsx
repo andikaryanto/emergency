@@ -109,6 +109,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="auth-helper">
             Belum punya akun? <Link href="/signup">Buat akun sekarang</Link>
           </p>
+          <p className="auth-helper">
+            Dengan menggunakan layanan ini, Anda tunduk pada{" "}
+            <Link href="/terms">Syarat dan Ketentuan</Link>
+          </p>
           <Link href="/">Kembali ke halaman utama</Link>
         </div>
       </section>

@@ -75,6 +75,10 @@ export default async function SignupPage() {
             Sudah penasaran dengan area user?{" "}
             <Link href="/dashboard">Lihat dashboard tenant</Link>
           </p>
+          <p className="auth-helper">
+            Dengan membuat akun, Anda menyetujui{" "}
+            <Link href="/terms">Syarat dan Ketentuan</Link>
+          </p>
           <Link href="/">Kembali ke halaman utama</Link>
         </div>
       </section>

@@ -579,6 +579,65 @@ input {
   width: fit-content;
 }
 
+.legal-hero-grid {
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+}
+
+.legal-summary-card {
+  position: static;
+  width: auto;
+  display: grid;
+  gap: 16px;
+}
+
+.legal-summary-card strong {
+  margin-top: 0;
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+
+.legal-effective-date {
+  margin-top: 18px;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.legal-highlight-grid .info-card {
+  display: grid;
+  gap: 16px;
+}
+
+.legal-highlight-grid .info-card p {
+  margin: 0;
+}
+
+.legal-sections {
+  margin-top: 26px;
+}
+
+.legal-grid {
+  grid-template-columns: repeat(2, 1fr);
+  align-items: start;
+}
+
+.legal-card {
+  gap: 0;
+}
+
+.legal-card h3 {
+  margin-top: 0;
+}
+
+.legal-copy {
+  display: grid;
+  gap: 14px;
+}
+
+.legal-copy p {
+  margin: 0;
+}
+
 .cta-section {
   margin: 34px 0 14px;
   padding: 38px 40px;
