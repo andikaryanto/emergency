@@ -1537,6 +1537,14 @@ input {
   max-width: 34ch;
 }
 
+.profile-form-panel .payment-profile-form-wrap {
+  width: min(100%, 520px);
+}
+
+.profile-form textarea {
+  min-height: 120px;
+}
+
 @media (max-width: 1080px) {
   .hero-grid,
   .stats-section,
