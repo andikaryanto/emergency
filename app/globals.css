@@ -1608,6 +1608,11 @@ input {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.tenant-transfer-meta {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 0;
+}
+
 .payment-profile-meta {
   grid-template-columns: repeat(4, 1fr);
 }

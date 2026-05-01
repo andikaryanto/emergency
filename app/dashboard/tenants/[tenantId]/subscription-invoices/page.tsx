@@ -30,6 +30,12 @@ type TenantSubscriptionInvoicesPageProps = {
   }>;
 };
 
+const transferDestination = {
+  accountHolderName: "ANDI ARYANTO",
+  bankName: "Bank Mandiri",
+  accountNumber: "1380019002919",
+};
+
 function formatBillingCycleLabel(value: "monthly" | "yearly" | null) {
   if (value === "monthly") {
     return "Bulanan";
@@ -220,6 +226,30 @@ export default async function TenantSubscriptionInvoicesPage({
             <p>
               Nominal paket saat ini {formatCurrency(invoiceData.tenant?.amount ?? null)}.
             </p>
+          </section>
+
+          <section
+            className="dashboard-feedback tenant-invoice-summary tenant-transfer-destination"
+            aria-label="Rekening tujuan transfer"
+          >
+            <strong>Rekening tujuan transfer</strong>
+            <p>
+              Silakan transfer pembayaran invoice ke rekening berikut, lalu kirim konfirmasi pembayaran.
+            </p>
+            <div className="tenant-meta tenant-transfer-meta">
+              <div>
+                <span>Nama pemilik</span>
+                <strong>{transferDestination.accountHolderName}</strong>
+              </div>
+              <div>
+                <span>Bank</span>
+                <strong>{transferDestination.bankName}</strong>
+              </div>
+              <div>
+                <span>Nomor rekening</span>
+                <strong>{transferDestination.accountNumber}</strong>
+              </div>
+            </div>
           </section>
 
           {paymentProfileErrorMessage ? (
