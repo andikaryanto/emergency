@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { TenantSnapPaymentButton } from "../../../../../components/dashboard/tenant-snap-payment-button";
+import { env } from "../../../../../lib/env";
 import {
   getLandlordAccessToken,
   getLandlordAuthorizationHeader,
@@ -166,6 +168,8 @@ export default async function TenantSubscriptionInvoicesPage({
     paymentProfiles[0] ??
     null;
   const hasDefaultPaymentProfile = Boolean(defaultPaymentProfile);
+  const isMidtransPaymentEnabled = env.paymentMethod === "midtrans";
+  const canPayInstantly = isMidtransPaymentEnabled && Boolean(invoiceData.tenant?.hasReadyPaymentInvoice);
 
   return (
     <main className="dashboard-shell">
@@ -224,50 +228,78 @@ export default async function TenantSubscriptionInvoicesPage({
           <section className="dashboard-feedback tenant-invoice-summary">
             <strong>{tenantDomain}</strong>
             <p>
-              Nominal paket saat ini {formatCurrency(invoiceData.tenant?.amount ?? null)}.
+              Nominal paket saat ini{" "}
+              <span className="tenant-invoice-amount-highlight">
+                {formatCurrency(invoiceData.tenant?.amount ?? null)}
+              </span>
+              .
             </p>
           </section>
 
           <section
-            className="dashboard-feedback tenant-invoice-summary tenant-transfer-destination"
-            aria-label="Rekening tujuan transfer"
+            className="dashboard-feedback tenant-invoice-summary tenant-payment-options"
+            aria-label="Opsi pembayaran"
           >
-            <strong>Rekening tujuan transfer</strong>
-            <p>
-              Silakan transfer pembayaran invoice ke rekening berikut, lalu kirim konfirmasi pembayaran.
-            </p>
-            <div className="tenant-meta tenant-transfer-meta">
-              <div>
-                <span>Nama pemilik</span>
-                <strong>{transferDestination.accountHolderName}</strong>
+            <strong>Pilih cara membayar</strong>
+            <p>Anda bisa pakai salah satu dari opsi berikut untuk melunasi invoice tenant ini.</p>
+
+            {canPayInstantly ? (
+              <div className="tenant-actions">
+                <div>
+                  <strong>Bayar instan lewat Midtrans</strong>
+                  <p className="field-hint">
+                    Bisa bayar via Virtual Account atau e-wallet lewat Midtrans.
+                    Invoice otomatis terupdate setelah pembayaran berhasil.
+                  </p>
+                </div>
+                <TenantSnapPaymentButton tenantId={resolvedTenantId} />
               </div>
+            ) : null}
+
+            <div className="tenant-actions">
               <div>
-                <span>Bank</span>
-                <strong>{transferDestination.bankName}</strong>
+                <strong>Konfirmasi transfer manual</strong>
+                <p className="field-hint">
+                  Silakan transfer pembayaran invoice ke rekening berikut, lalu kirim konfirmasi
+                  pembayaran.
+                </p>
+
+                <div className="tenant-meta tenant-transfer-meta">
+                  <div>
+                    <span>Nama pemilik</span>
+                    <strong>{transferDestination.accountHolderName}</strong>
+                  </div>
+                  <div>
+                    <span>Bank</span>
+                    <strong>{transferDestination.bankName}</strong>
+                  </div>
+                  <div>
+                    <span>Nomor rekening</span>
+                    <strong>{transferDestination.accountNumber}</strong>
+                  </div>
+                </div>
+
+                <p
+                  className={`field-hint ${
+                    paymentProfileErrorMessage || !hasDefaultPaymentProfile
+                      ? "field-hint-error"
+                      : ""
+                  }`}
+                >
+                  {paymentProfileErrorMessage
+                    ? paymentProfileErrorMessage
+                    : hasDefaultPaymentProfile
+                      ? `Profile default: ${defaultPaymentProfile?.displayName}. Data ini dipakai sebagai referensi awal saat mengirim konfirmasi.`
+                      : "Belum ada payment profile default. Buat dulu supaya konfirmasi pembayaran bisa dicek oleh admin / bagian pembayaran."}
+                </p>
               </div>
-              <div>
-                <span>Nomor rekening</span>
-                <strong>{transferDestination.accountNumber}</strong>
-              </div>
+              {!hasDefaultPaymentProfile ? (
+                <Link href="/dashboard/payment-profile" className="ghost-button">
+                  Buat Profil Pembayaran
+                </Link>
+              ) : null}
             </div>
           </section>
-
-          {paymentProfileErrorMessage ? (
-            <section className="dashboard-feedback">{paymentProfileErrorMessage}</section>
-          ) : !defaultPaymentProfile ? (
-            <section className="dashboard-feedback">
-              Belum ada payment profile default. Tambahkan dulu di{" "}
-              <Link href="/dashboard/payment-profile">halaman Profil Pembayaran</Link>
-              {" "}agar konfirmasi pembayaran bisa dikirim.
-            </section>
-          ) : (
-            <section className="dashboard-feedback tenant-invoice-summary">
-              <strong>Profile default: {defaultPaymentProfile.displayName}</strong>
-              <p>
-                Data awal diambil dari profile default dan masih bisa Anda ubah saat mengirim konfirmasi pembayaran.
-              </p>
-            </section>
-          )}
 
           {invoiceErrorMessage ? (
             <section className="dashboard-feedback">{invoiceErrorMessage}</section>

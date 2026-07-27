@@ -9,6 +9,7 @@ import {
   type ListPaymentProfilesResponse,
   listPaymentProfiles,
 } from "../../../lib/landlord/list-payment-profiles";
+import { listLandlordTenants } from "../../../lib/landlord/list-tenants";
 import { PaymentProfileCard } from "./payment-profile-card";
 import { PaymentProfileForm } from "./payment-profile-form";
 
@@ -44,6 +45,16 @@ export default async function PaymentProfilePage() {
       error instanceof ListPaymentProfilesError
         ? error.message
         : "Payment profile tidak dapat dimuat saat ini.";
+  }
+
+  let tenantId: number | null = null;
+
+  try {
+    const { tenants } = await listLandlordTenants(authorizationHeader);
+
+    tenantId = tenants[0]?.id ?? null;
+  } catch {
+    tenantId = null;
   }
 
   const currentProfile = paymentProfileData.paymentProfiles[0] ?? null;
@@ -151,6 +162,14 @@ export default async function PaymentProfilePage() {
                     proses konfirmasi pembayaran invoice tenant.
                   </p>
                 </div>
+                {tenantId ? (
+                  <Link
+                    href={`/dashboard/tenants/${tenantId}/subscription-invoices`}
+                    className="ghost-button"
+                  >
+                    Kembali ke Invoice
+                  </Link>
+                ) : null}
               </div>
 
               <div className="tenant-list">

@@ -1709,8 +1709,24 @@ input {
   margin: 0;
 }
 
+.tenant-invoice-amount-highlight {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
 .tenant-invoice-meta {
   grid-template-columns: repeat(4, 1fr);
+}
+
+.tenant-payment-options .tenant-actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.tenant-payment-options .tenant-actions:first-of-type {
+  border-top: 0;
 }
 
 .tenant-transfer-meta {
