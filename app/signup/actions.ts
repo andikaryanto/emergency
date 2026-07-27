@@ -1,6 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { setLandlordSession } from "../../lib/landlord/auth-session";
+import { loginLandlordUser } from "../../lib/landlord/login-user";
 import {
   RegisterUserError,
   registerLandlordUser,
@@ -130,5 +132,16 @@ export async function registerUserAction(
     return createErrorState("Terjadi kesalahan tak terduga. Silakan coba lagi.");
   }
 
-  redirect("/login?registered=1");
+  try {
+    const session = await loginLandlordUser({
+      email: validation.payload.email,
+      password: validation.payload.password,
+    });
+
+    await setLandlordSession(session);
+  } catch {
+    redirect("/login?registered=1");
+  }
+
+  redirect("/dashboard/create-tenant");
 }
