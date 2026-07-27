@@ -925,8 +925,73 @@ input {
 }
 
 .auth-form button.password-toggle:hover {
-  color: var(--ink);
+  color: var(--text);
   background: rgba(16, 38, 31, 0.06);
+}
+
+.signup-method-accordion {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.accordion-item {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.auth-form button.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  font-weight: inherit;
+  color: var(--text);
+}
+
+.auth-form button.accordion-header[aria-expanded="true"] {
+  background: rgba(12, 139, 107, 0.08);
+}
+
+.accordion-header-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.accordion-header-copy .field-hint {
+  margin: 0;
+}
+
+.accordion-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  transition: transform 160ms ease;
+}
+
+.accordion-chevron-open {
+  transform: rotate(180deg);
+  color: var(--text);
+}
+
+.accordion-panel {
+  display: grid;
+  gap: 12px;
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--line);
 }
 
 .auth-divider {
@@ -957,7 +1022,7 @@ input {
   border-radius: 16px;
   padding: 14px 16px;
   background: rgba(255, 255, 255, 0.92);
-  color: var(--ink);
+  color: var(--text);
   font-weight: 800;
   text-decoration: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);

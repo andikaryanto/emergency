@@ -6,14 +6,12 @@ import {
   registerLandlordUser,
 } from "../../lib/landlord/register-user";
 import { validateTenantFields } from "../../lib/landlord/tenant-field-validation";
+import { validatePasswordStrength } from "../../lib/password-validation";
 import {
   type RegisterActionState,
 } from "./form-state";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_NO_SPACE_PATTERN = /^\S+$/;
-const PASSWORD_HAS_NUMBER_PATTERN = /\d/;
-const PASSWORD_HAS_SPECIAL_CHAR_PATTERN = /[^A-Za-z0-9]/;
 
 function createErrorState(
   message: string,
@@ -55,39 +53,12 @@ async function validateRegisterPayload(formData: FormData) {
     };
   }
 
-  if (password.length < 8) {
-    return {
-      success: false as const,
-      state: createErrorState("Password minimal 8 karakter.", {
-        password: "Gunakan minimal 8 karakter.",
-      }),
-    };
-  }
+  const passwordError = validatePasswordStrength(password);
 
-  if (!PASSWORD_NO_SPACE_PATTERN.test(password)) {
+  if (passwordError) {
     return {
       success: false as const,
-      state: createErrorState("Password tidak boleh mengandung spasi.", {
-        password: "Hapus spasi pada password Anda.",
-      }),
-    };
-  }
-
-  if (!PASSWORD_HAS_NUMBER_PATTERN.test(password)) {
-    return {
-      success: false as const,
-      state: createErrorState("Password harus mengandung angka.", {
-        password: "Tambahkan minimal 1 angka.",
-      }),
-    };
-  }
-
-  if (!PASSWORD_HAS_SPECIAL_CHAR_PATTERN.test(password)) {
-    return {
-      success: false as const,
-      state: createErrorState("Password harus mengandung karakter spesial.", {
-        password: "Tambahkan minimal 1 karakter selain huruf dan angka.",
-      }),
+      state: createErrorState(passwordError, { password: passwordError }),
     };
   }
 

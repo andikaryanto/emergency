@@ -9,6 +9,7 @@ import {
   formatRupiah,
   pricingDescriptions,
 } from "../../lib/format-tenant-plan";
+import { type LoginGoogleFieldErrors } from "../../lib/landlord/login-google";
 import { type SubscriptionPricing } from "../../lib/landlord/list-subscription-pricings";
 import { registerUserAction } from "./actions";
 import { initialRegisterActionState } from "./form-state";
@@ -27,6 +28,48 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
   );
 }
 
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className={`accordion-chevron${open ? " accordion-chevron-open" : ""}`}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function AccordionHeader({
+  title,
+  description,
+  open,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  open: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="accordion-header"
+      aria-expanded={open}
+      onClick={onClick}
+    >
+      <span className="accordion-header-copy">
+        <strong>{title}</strong>
+        <span className="field-hint">{description}</span>
+      </span>
+      <ChevronIcon open={open} />
+    </button>
+  );
+}
+
 type SignupFormProps = {
   googleSignIn: {
     clientId?: string;
@@ -40,7 +83,9 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
     registerUserAction,
     initialRegisterActionState,
   );
+  const [googleFieldErrors, setGoogleFieldErrors] = useState<LoginGoogleFieldErrors>({});
   const [isAuthBusy, setIsAuthBusy] = useState(false);
+  const [activeMethod, setActiveMethod] = useState<"email" | "google">("email");
   const [tenantName, setTenantName] = useState("");
   const [nameAvailability, setNameAvailability] = useState<
     "idle" | "checking" | "available" | "unavailable" | "error"
@@ -130,6 +175,10 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
   }, [tenantName]);
 
   const firstPlanId = pricings[0]?.subscription_pricing_plans[0]?.id;
+  const tenantNameError = state.fieldErrors.tenantName ?? googleFieldErrors.tenantName;
+  const usernameError = state.fieldErrors.username ?? googleFieldErrors.username;
+  const planError =
+    state.fieldErrors.subscriptionPricingPlanId ?? googleFieldErrors.subscriptionPricingPlanId;
 
   return (
     <>
@@ -144,64 +193,12 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
         className="auth-form"
         action={formAction}
         noValidate
-        onSubmitCapture={() => setIsAuthBusy(true)}
+        onSubmitCapture={() => {
+          setIsAuthBusy(true);
+          setGoogleFieldErrors({});
+        }}
       >
-        <label htmlFor="name">Nama</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          readOnly={isAuthBusy}
-          aria-disabled={isAuthBusy}
-          placeholder="Nama lengkap Anda"
-          aria-invalid={Boolean(state.fieldErrors.name)}
-          aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
-        />
-        {state.fieldErrors.name ? (
-          <p id="name-error" className="field-error">
-            {state.fieldErrors.name}
-          </p>
-        ) : null}
-
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          readOnly={isAuthBusy}
-          aria-disabled={isAuthBusy}
-          placeholder="nama@klinikanda.com"
-          aria-invalid={Boolean(state.fieldErrors.email)}
-          aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
-        />
-        {state.fieldErrors.email ? (
-          <p id="email-error" className="field-error">
-            {state.fieldErrors.email}
-          </p>
-        ) : null}
-
-        <PasswordField
-          id="password"
-          name="password"
-          label="Password"
-          placeholder="Minimal 8 karakter"
-          disabled={isAuthBusy}
-          fieldError={state.fieldErrors.password}
-          hint={
-            <p className="field-hint">
-              Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
-            </p>
-          }
-        />
-
-        <PasswordField
-          id="confirm-password"
-          name="confirmPassword"
-          label="Konfirmasi password"
-          placeholder="Ulangi password Anda"
-          disabled={isAuthBusy}
-          fieldError={state.fieldErrors.confirmPassword}
-        />
+        <span className="eyebrow">Detail klinik</span>
 
         <label htmlFor="tenant-name">Nama klinik</label>
         <input
@@ -230,8 +227,8 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
           onBlur={(event) => {
             void checkTenantNameAvailability(event.currentTarget.value, true);
           }}
-          aria-invalid={Boolean(state.fieldErrors.tenantName)}
-          aria-describedby={state.fieldErrors.tenantName ? "tenant-name-error" : undefined}
+          aria-invalid={Boolean(tenantNameError)}
+          aria-describedby={tenantNameError ? "tenant-name-error" : undefined}
         />
         <p className="field-hint">
           Gunakan huruf kecil dan angka saja tanpa spasi atau karakter spesial.
@@ -250,9 +247,9 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
             {nameAvailabilityMessage}
           </p>
         ) : null}
-        {state.fieldErrors.tenantName ? (
+        {tenantNameError ? (
           <p id="tenant-name-error" className="field-error">
-            {state.fieldErrors.tenantName}
+            {tenantNameError}
           </p>
         ) : null}
 
@@ -264,13 +261,15 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
           readOnly={isAuthBusy}
           aria-disabled={isAuthBusy}
           placeholder="Contoh: admin.klinik"
-          aria-invalid={Boolean(state.fieldErrors.username)}
-          aria-describedby={state.fieldErrors.username ? "username-error" : undefined}
+          aria-invalid={Boolean(usernameError)}
+          aria-describedby={usernameError ? "username-error" : undefined}
         />
-        <p className="field-hint">Gunakan username tanpa spasi.</p>
-        {state.fieldErrors.username ? (
+        <p className="field-hint">
+          Username ini dipakai untuk login ke aplikasi klinik Anda (bukan akun portal ini).
+        </p>
+        {usernameError ? (
           <p id="username-error" className="field-error">
-            {state.fieldErrors.username}
+            {usernameError}
           </p>
         ) : null}
 
@@ -279,12 +278,8 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
           className="pricing-choice-grid"
           role="radiogroup"
           aria-label="Pilih paket langganan"
-          aria-invalid={Boolean(state.fieldErrors.subscriptionPricingPlanId)}
-          aria-describedby={
-            state.fieldErrors.subscriptionPricingPlanId
-              ? "subscription-pricing-plan-id-error"
-              : undefined
-          }
+          aria-invalid={Boolean(planError)}
+          aria-describedby={planError ? "subscription-pricing-plan-id-error" : undefined}
         >
           {pricings.map((pricing) => (
             <section className="pricing-group-card" key={pricing.id}>
@@ -315,27 +310,121 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
             </section>
           ))}
         </div>
-        {state.fieldErrors.subscriptionPricingPlanId ? (
+        {planError ? (
           <p id="subscription-pricing-plan-id-error" className="field-error">
-            {state.fieldErrors.subscriptionPricingPlanId}
+            {planError}
           </p>
         ) : null}
 
-        <SubmitButton disabled={isAuthBusy} />
+        <p className="field-hint">Pilih cara mendaftar</p>
+
+        <div className="signup-method-accordion">
+          <div className="accordion-item">
+            <AccordionHeader
+              title="Daftar dengan Email"
+              description="Buat password sendiri untuk akun portal & aplikasi klinik."
+              open={activeMethod === "email"}
+              onClick={() => setActiveMethod("email")}
+            />
+
+            {activeMethod === "email" ? (
+              <div className="accordion-panel">
+                <label htmlFor="name">Nama</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  readOnly={isAuthBusy}
+                  aria-disabled={isAuthBusy}
+                  placeholder="Nama lengkap Anda"
+                  aria-invalid={Boolean(state.fieldErrors.name)}
+                  aria-describedby={state.fieldErrors.name ? "name-error" : undefined}
+                />
+                {state.fieldErrors.name ? (
+                  <p id="name-error" className="field-error">
+                    {state.fieldErrors.name}
+                  </p>
+                ) : null}
+
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  readOnly={isAuthBusy}
+                  aria-disabled={isAuthBusy}
+                  placeholder="nama@klinikanda.com"
+                  aria-invalid={Boolean(state.fieldErrors.email)}
+                  aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
+                />
+                {state.fieldErrors.email ? (
+                  <p id="email-error" className="field-error">
+                    {state.fieldErrors.email}
+                  </p>
+                ) : null}
+
+                <PasswordField
+                  id="password"
+                  name="password"
+                  label="Password"
+                  placeholder="Minimal 8 karakter"
+                  disabled={isAuthBusy}
+                  fieldError={state.fieldErrors.password}
+                  hint={
+                    <p className="field-hint">
+                      Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
+                      Password ini juga akan jadi password login ke aplikasi klinik Anda.
+                    </p>
+                  }
+                />
+
+                <PasswordField
+                  id="confirm-password"
+                  name="confirmPassword"
+                  label="Konfirmasi password"
+                  placeholder="Ulangi password Anda"
+                  disabled={isAuthBusy}
+                  fieldError={state.fieldErrors.confirmPassword}
+                />
+
+                <SubmitButton disabled={isAuthBusy} />
+              </div>
+            ) : null}
+          </div>
+
+          <div className="accordion-item">
+            <AccordionHeader
+              title="Daftar dengan Google"
+              description="Google hanya untuk masuk ke akun portal. Aplikasi klinik tetap butuh password sendiri."
+              open={activeMethod === "google"}
+              onClick={() => setActiveMethod("google")}
+            />
+
+            {activeMethod === "google" ? (
+              <div className="accordion-panel">
+                <PasswordField
+                  id="tenant-password"
+                  name="tenant_password"
+                  label="Password aplikasi klinik"
+                  placeholder="Minimal 8 karakter"
+                  disabled={isAuthBusy}
+                  fieldError={googleFieldErrors.tenantPassword}
+                />
+
+                <GoogleSignInButton
+                  clientId={googleSignIn.clientId}
+                  disabled={isAuthBusy}
+                  enabled={googleSignIn.enabled}
+                  formId={SIGNUP_FORM_ID}
+                  mode="signup"
+                  onFieldErrors={setGoogleFieldErrors}
+                  onPendingChange={setIsAuthBusy}
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
       </form>
-
-      <div className="auth-divider" aria-hidden="true">
-        <span>atau</span>
-      </div>
-
-      <GoogleSignInButton
-        clientId={googleSignIn.clientId}
-        disabled={isAuthBusy}
-        enabled={googleSignIn.enabled}
-        formId={SIGNUP_FORM_ID}
-        mode="signup"
-        onPendingChange={setIsAuthBusy}
-      />
     </>
   );
 }

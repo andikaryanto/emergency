@@ -9,6 +9,7 @@ import {
   loginLandlordUserWithGoogle,
 } from "../lib/landlord/login-google";
 import { validateTenantFields } from "../lib/landlord/tenant-field-validation";
+import { validatePasswordStrength } from "../lib/password-validation";
 
 export type GoogleLoginActionState = {
   status: "idle" | "error";
@@ -61,16 +62,35 @@ export async function loginWithGoogleAction(
     });
   }
 
+  const tenantPassword = isRegister ? String(formData.get("tenant_password") ?? "") : "";
+
+  if (tenantFields && tenantFields.success) {
+    if (!tenantPassword) {
+      return createGoogleLoginErrorState("Password aplikasi klinik wajib diisi.", {
+        tenantPassword: "Password aplikasi klinik wajib diisi.",
+      });
+    }
+
+    const tenantPasswordError = validatePasswordStrength(tenantPassword);
+
+    if (tenantPasswordError) {
+      return createGoogleLoginErrorState(tenantPasswordError, {
+        tenantPassword: tenantPasswordError,
+      });
+    }
+  }
+
   let redirectTarget: string;
 
   try {
     const result = await loginLandlordUserWithGoogle(
-      tenantFields
+      tenantFields && tenantFields.success
         ? {
             id_token: idToken,
             is_register: true,
             tenant_name: tenantFields.payload.name,
             username: tenantFields.payload.username,
+            password: tenantPassword,
             pricing_id: tenantFields.payload.pricing_id,
             pricing: tenantFields.payload.pricing,
             subscription_pricing_plan_id: tenantFields.payload.subscription_pricing_plan_id,

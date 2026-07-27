@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { loginWithGoogleAction } from "../../app/auth-actions";
+import { type LoginGoogleFieldErrors } from "../../lib/landlord/login-google";
 
 type GoogleSignInButtonProps = {
   clientId?: string;
@@ -10,6 +11,7 @@ type GoogleSignInButtonProps = {
   enabled: boolean;
   formId?: string;
   mode: "login" | "signup";
+  onFieldErrors?: (fieldErrors: LoginGoogleFieldErrors) => void;
   onPendingChange?: (pending: boolean) => void;
 };
 
@@ -30,6 +32,7 @@ export function GoogleSignInButton({
   enabled,
   formId,
   mode,
+  onFieldErrors,
   onPendingChange,
 }: GoogleSignInButtonProps) {
   const label = buttonCopy[mode];
@@ -53,8 +56,9 @@ export function GoogleSignInButton({
   useEffect(() => {
     if (state.status === "error") {
       onPendingChange?.(false);
+      onFieldErrors?.(state.fieldErrors);
     }
-  }, [onPendingChange, state.status]);
+  }, [onFieldErrors, onPendingChange, state.fieldErrors, state.status]);
 
   useEffect(() => {
     if (!buttonContainerRef.current) {

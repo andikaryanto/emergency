@@ -14,6 +14,7 @@ export type LoginGoogleRequest =
       is_register: true;
       tenant_name: string;
       username: string;
+      password: string;
       pricing_id: number;
       pricing: "Basic" | "Advance" | "Pro";
       subscription_pricing_plan_id: number;
@@ -25,7 +26,7 @@ type LoginGoogleErrorPayload = {
 };
 
 export type LoginGoogleFieldErrors = Partial<
-  Record<"tenantName" | "username" | "subscriptionPricingPlanId", string>
+  Record<"tenantName" | "username" | "tenantPassword" | "subscriptionPricingPlanId", string>
 >;
 
 export class LoginGoogleError extends Error {
@@ -67,6 +68,7 @@ function mapLoginGoogleError(error: ApiError) {
   const payload = error.payload as LoginGoogleErrorPayload | undefined;
   const tenantNameError = extractFirstError(payload?.errors?.tenant_name);
   const usernameError = extractFirstError(payload?.errors?.username);
+  const tenantPasswordError = extractFirstError(payload?.errors?.password);
   const subscriptionPricingPlanIdError =
     extractFirstError(payload?.errors?.subscription_pricing_plan_id) ??
     extractFirstError(payload?.errors?.pricing_id);
@@ -79,6 +81,7 @@ function mapLoginGoogleError(error: ApiError) {
     fieldErrors: {
       ...(tenantNameError ? { tenantName: tenantNameError } : {}),
       ...(usernameError ? { username: usernameError } : {}),
+      ...(tenantPasswordError ? { tenantPassword: tenantPasswordError } : {}),
       ...(subscriptionPricingPlanIdError
         ? { subscriptionPricingPlanId: subscriptionPricingPlanIdError }
         : {}),
