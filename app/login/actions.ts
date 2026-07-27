@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { setLandlordSession } from "../../lib/landlord/auth-session";
 import { LoginUserError, loginLandlordUser } from "../../lib/landlord/login-user";
+import { listLandlordTenants } from "../../lib/landlord/list-tenants";
 import { type LoginActionState } from "./form-state";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,13 +61,23 @@ export async function loginUserAction(
     return validation.state;
   }
 
+  let redirectTarget: string;
+
   try {
     const session = await loginLandlordUser(validation.payload);
 
     await setLandlordSession(session);
 
     if (session.user.role === "admin") {
-      redirect("/admin/subscription-invoices");
+      redirectTarget = "/admin/subscription-invoices";
+    } else {
+      const hasNoTenants = await listLandlordTenants({
+        Authorization: `Bearer ${session.token}`,
+      })
+        .then(({ tenants }) => tenants.length === 0)
+        .catch(() => false);
+
+      redirectTarget = hasNoTenants ? "/dashboard/create-tenant" : "/dashboard";
     }
   } catch (error) {
     if (error instanceof LoginUserError) {
@@ -76,5 +87,5 @@ export async function loginUserAction(
     return createErrorState("Terjadi kesalahan tak terduga. Silakan coba lagi.");
   }
 
-  redirect("/dashboard");
+  redirect(redirectTarget);
 }

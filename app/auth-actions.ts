@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { setLandlordSession } from "../lib/landlord/auth-session";
+import { listLandlordTenants } from "../lib/landlord/list-tenants";
 import {
   LoginGoogleError,
   loginLandlordUserWithGoogle,
@@ -37,33 +38,35 @@ export async function loginWithGoogleAction(
     );
   }
 
+  let redirectTarget: string;
+
   try {
     const result = await loginLandlordUserWithGoogle({
       id_token: idToken,
     });
 
     if (result.status === "needs_manual_link") {
-      redirect(
-        buildLoginRedirectUrl({
-          google: result.status,
-          ...(result.email ? { email: result.email } : {}),
-        }),
-      );
-    }
-
-    if (result.status === "error") {
+      redirectTarget = buildLoginRedirectUrl({
+        google: result.status,
+        ...(result.email ? { email: result.email } : {}),
+      });
+    } else if (!("session" in result)) {
       return createGoogleLoginErrorState(result.message);
-    }
+    } else {
+      const session = result.session;
 
-    if (
-      result.status === "success" ||
-      result.status === "auto_registered" ||
-      result.status === "already_linked"
-    ) {
-      await setLandlordSession(result.session);
+      await setLandlordSession(session);
 
-      if (result.session.user.role === "admin") {
-        redirect("/admin/subscription-invoices");
+      if (session.user.role === "admin") {
+        redirectTarget = "/admin/subscription-invoices";
+      } else {
+        const hasNoTenants = await listLandlordTenants({
+          Authorization: `Bearer ${session.token}`,
+        })
+          .then(({ tenants }) => tenants.length === 0)
+          .catch(() => false);
+
+        redirectTarget = hasNoTenants ? "/dashboard/create-tenant" : "/dashboard";
       }
     }
   } catch (error) {
@@ -76,5 +79,5 @@ export async function loginWithGoogleAction(
     );
   }
 
-  redirect("/dashboard");
+  redirect(redirectTarget);
 }
