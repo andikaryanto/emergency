@@ -5,18 +5,25 @@ import { setLandlordSession } from "../lib/landlord/auth-session";
 import { listLandlordTenants } from "../lib/landlord/list-tenants";
 import {
   LoginGoogleError,
+  type LoginGoogleFieldErrors,
   loginLandlordUserWithGoogle,
 } from "../lib/landlord/login-google";
+import { validateTenantFields } from "../lib/landlord/tenant-field-validation";
 
 export type GoogleLoginActionState = {
   status: "idle" | "error";
   message: string | null;
+  fieldErrors: LoginGoogleFieldErrors;
 };
 
-function createGoogleLoginErrorState(message: string): GoogleLoginActionState {
+function createGoogleLoginErrorState(
+  message: string,
+  fieldErrors: LoginGoogleFieldErrors = {},
+): GoogleLoginActionState {
   return {
     status: "error",
     message,
+    fieldErrors,
   };
 }
 
@@ -38,12 +45,38 @@ export async function loginWithGoogleAction(
     );
   }
 
+  const isRegister = formData.get("is_register") === "true";
+
+  const tenantFields = isRegister ? await validateTenantFields(formData) : null;
+
+  if (tenantFields && !tenantFields.success) {
+    return createGoogleLoginErrorState(tenantFields.message, {
+      ...(tenantFields.fieldErrors.name ? { tenantName: tenantFields.fieldErrors.name } : {}),
+      ...(tenantFields.fieldErrors.username
+        ? { username: tenantFields.fieldErrors.username }
+        : {}),
+      ...(tenantFields.fieldErrors.subscriptionPricingPlanId
+        ? { subscriptionPricingPlanId: tenantFields.fieldErrors.subscriptionPricingPlanId }
+        : {}),
+    });
+  }
+
   let redirectTarget: string;
 
   try {
-    const result = await loginLandlordUserWithGoogle({
-      id_token: idToken,
-    });
+    const result = await loginLandlordUserWithGoogle(
+      tenantFields
+        ? {
+            id_token: idToken,
+            is_register: true,
+            tenant_name: tenantFields.payload.name,
+            username: tenantFields.payload.username,
+            pricing_id: tenantFields.payload.pricing_id,
+            pricing: tenantFields.payload.pricing,
+            subscription_pricing_plan_id: tenantFields.payload.subscription_pricing_plan_id,
+          }
+        : { id_token: idToken },
+    );
 
     if (result.status === "needs_manual_link") {
       redirectTarget = buildLoginRedirectUrl({
@@ -59,6 +92,8 @@ export async function loginWithGoogleAction(
 
       if (session.user.role === "admin") {
         redirectTarget = "/admin/subscription-invoices";
+      } else if (isRegister) {
+        redirectTarget = "/dashboard?created=1";
       } else {
         const hasNoTenants = await listLandlordTenants({
           Authorization: `Bearer ${session.token}`,
@@ -71,7 +106,7 @@ export async function loginWithGoogleAction(
     }
   } catch (error) {
     if (error instanceof LoginGoogleError) {
-      return createGoogleLoginErrorState(error.message);
+      return createGoogleLoginErrorState(error.message, error.fieldErrors);
     }
 
     return createGoogleLoginErrorState(

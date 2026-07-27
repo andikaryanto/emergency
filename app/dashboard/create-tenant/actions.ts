@@ -9,13 +9,10 @@ import {
   CreateTenantError,
   createLandlordTenant,
 } from "../../../lib/landlord/create-tenant";
-import { listSubscriptionPricings } from "../../../lib/landlord/list-subscription-pricings";
+import { validateTenantFields } from "../../../lib/landlord/tenant-field-validation";
 import { type CreateTenantActionState } from "./form-state";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const USERNAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
-const USERNAME_NO_SPACE_PATTERN = /^\S+$/;
-const NAME_PATTERN = /^[a-z0-9]+$/;
 const PASSWORD_NO_SPACE_PATTERN = /^\S+$/;
 const PASSWORD_HAS_NUMBER_PATTERN = /\d/;
 const PASSWORD_HAS_SPECIAL_CHAR_PATTERN = /[^A-Za-z0-9]/;
@@ -31,91 +28,16 @@ function createErrorState(
   };
 }
 
-async function resolvePricingSelection(subscriptionPricingPlanId: number) {
-  const pricings = await listSubscriptionPricings();
-  const matchedPricing = pricings.find((pricing) =>
-    pricing.subscription_pricing_plans.some((plan) => plan.id === subscriptionPricingPlanId),
-  );
-
-  if (matchedPricing) {
-    return {
-      pricing_id: matchedPricing.id,
-      pricing: matchedPricing.name,
-    };
-  }
-
-  if (subscriptionPricingPlanId === 1 || subscriptionPricingPlanId === 2) {
-    return { pricing_id: 1, pricing: "Basic" as const };
-  }
-
-  if (subscriptionPricingPlanId === 3 || subscriptionPricingPlanId === 4) {
-    return { pricing_id: 2, pricing: "Advance" as const };
-  }
-
-  if (subscriptionPricingPlanId === 5 || subscriptionPricingPlanId === 6) {
-    return { pricing_id: 3, pricing: "Pro" as const };
-  }
-
-  return null;
-}
-
 async function validateCreateTenantPayload(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  const username = String(formData.get("username") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const subscriptionPricingPlanIdRaw = String(
-    formData.get("subscription_pricing_plan_id") ?? "",
-  ).trim();
-  const subscriptionPricingPlanId = Number(subscriptionPricingPlanIdRaw);
 
-  if (!name || !username || !email || !password || !subscriptionPricingPlanIdRaw) {
+  if (!email || !password) {
     return {
       success: false as const,
       state: createErrorState("Semua field wajib diisi.", {
-        ...(!name ? { name: "Nama tenant wajib diisi." } : {}),
-        ...(!username ? { username: "Username admin wajib diisi." } : {}),
         ...(!email ? { email: "Email admin wajib diisi." } : {}),
         ...(!password ? { password: "Password admin wajib diisi." } : {}),
-        ...(!subscriptionPricingPlanIdRaw
-          ? { subscriptionPricingPlanId: "Pilih paket langganan terlebih dahulu." }
-          : {}),
-      }),
-    };
-  }
-
-  if (!Number.isInteger(subscriptionPricingPlanId) || subscriptionPricingPlanId <= 0) {
-    return {
-      success: false as const,
-      state: createErrorState("Pilihan paket langganan tidak valid.", {
-        subscriptionPricingPlanId: "Pilih opsi Basic, Advance, atau Pro yang tersedia.",
-      }),
-    };
-  }
-
-  if (!NAME_PATTERN.test(name)) {
-    return {
-      success: false as const,
-      state: createErrorState("Format nama klinik tidak valid.", {
-        name: "Gunakan huruf kecil dan angka saja, tanpa spasi atau karakter spesial.",
-      }),
-    };
-  }
-
-  if (!USERNAME_PATTERN.test(username)) {
-    if (!USERNAME_NO_SPACE_PATTERN.test(username)) {
-      return {
-        success: false as const,
-        state: createErrorState("Username tidak boleh mengandung spasi.", {
-          username: "Gunakan username tanpa spasi.",
-        }),
-      };
-    }
-
-    return {
-      success: false as const,
-      state: createErrorState("Format username tidak valid.", {
-        username: "Gunakan huruf, angka, titik, strip, atau underscore.",
       }),
     };
   }
@@ -165,27 +87,25 @@ async function validateCreateTenantPayload(formData: FormData) {
     };
   }
 
-  const pricingSelection = await resolvePricingSelection(subscriptionPricingPlanId);
+  const tenantFields = await validateTenantFields(formData);
 
-  if (!pricingSelection) {
+  if (!tenantFields.success) {
     return {
       success: false as const,
-      state: createErrorState("Pilihan paket langganan tidak ditemukan.", {
-        subscriptionPricingPlanId: "Pilih paket langganan yang tersedia lalu coba lagi.",
-      }),
+      state: createErrorState(tenantFields.message, tenantFields.fieldErrors),
     };
   }
 
   return {
     success: true as const,
     payload: {
-      name,
-      username,
+      name: tenantFields.payload.name,
+      username: tenantFields.payload.username,
       email,
       password,
-      pricing_id: pricingSelection.pricing_id,
-      pricing: pricingSelection.pricing,
-      subscription_pricing_plan_id: subscriptionPricingPlanId,
+      pricing_id: tenantFields.payload.pricing_id,
+      pricing: tenantFields.payload.pricing,
+      subscription_pricing_plan_id: tenantFields.payload.subscription_pricing_plan_id,
     },
   };
 }

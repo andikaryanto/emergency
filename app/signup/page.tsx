@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { env } from "../../lib/env";
 import { getGoogleAuthFeedbackMessage } from "../../lib/landlord/google-auth";
 import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
+import { listSubscriptionPricings } from "../../lib/landlord/list-subscription-pricings";
+import { mapTenantPricingOptions } from "../../lib/landlord/tenant-pricing-options";
 import { SignupForm } from "./signup-form";
 
 export const metadata: Metadata = {
@@ -32,6 +34,9 @@ export default async function SignupPage() {
     google: "auto_registered",
   });
 
+  const subscriptionPricings = await listSubscriptionPricings();
+  const pricings = mapTenantPricingOptions(subscriptionPricings);
+
   return (
     <main className="auth-shell">
       <section className="auth-card">
@@ -59,6 +64,7 @@ export default async function SignupPage() {
             enabled: env.googleAuth.enabled,
             clientId: env.googleAuth.clientId,
           }}
+          pricings={pricings}
         />
 
         {env.googleAuth.enabled && !env.googleAuth.clientId ? (

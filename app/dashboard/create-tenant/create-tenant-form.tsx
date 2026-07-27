@@ -2,27 +2,15 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { PasswordField } from "../../../components/auth/password-field";
+import {
+  billingCycleLabel,
+  formatRupiah,
+  pricingDescriptions,
+} from "../../../lib/format-tenant-plan";
 import { type SubscriptionPricing } from "../../../lib/landlord/list-subscription-pricings";
 import { createTenantAction } from "./actions";
 import { initialCreateTenantActionState } from "./form-state";
-
-const pricingDescriptions: Record<"Basic" | "Advance" | "Pro", string> = {
-  Basic: "Cocok untuk mulai digitalisasi operasional.",
-  Advance: "Untuk fitur analitik dan operasional lanjutan.",
-  Pro: "Semua fitur Advance plus integrasi Satu Sehat.",
-};
-
-function formatRupiah(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-function billingCycleLabel(billingCycle: "monthly" | "yearly") {
-  return billingCycle === "monthly" ? "Bulanan" : "Tahunan";
-}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -139,7 +127,7 @@ export function CreateTenantForm({
         <label htmlFor="name">Nama klinik</label>
         <input
           id="name"
-          name="name"
+          name="tenant_name"
           type="text"
           placeholder="Contoh: sejahtera"
           onChange={(event) => {
@@ -218,23 +206,18 @@ export function CreateTenantForm({
           </p>
         ) : null}
 
-        <label htmlFor="password">Password akun utama</label>
-        <input
+        <PasswordField
           id="password"
           name="password"
-          type="password"
+          label="Password akun utama"
           placeholder="Buat password minimal 8 karakter"
-          aria-invalid={Boolean(state.fieldErrors.password)}
-          aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
+          fieldError={state.fieldErrors.password}
+          hint={
+            <p className="field-hint">
+              Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
+            </p>
+          }
         />
-        <p className="field-hint">
-          Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
-        </p>
-        {state.fieldErrors.password ? (
-          <p id="password-error" className="field-error">
-            {state.fieldErrors.password}
-          </p>
-        ) : null}
 
         <label>Pilih paket langganan</label>
         <div

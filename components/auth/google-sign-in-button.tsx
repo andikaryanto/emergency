@@ -8,6 +8,7 @@ type GoogleSignInButtonProps = {
   clientId?: string;
   disabled?: boolean;
   enabled: boolean;
+  formId?: string;
   mode: "login" | "signup";
   onPendingChange?: (pending: boolean) => void;
 };
@@ -20,12 +21,14 @@ const buttonCopy = {
 const initialGoogleLoginActionState = {
   status: "idle",
   message: null,
+  fieldErrors: {},
 } as const;
 
 export function GoogleSignInButton({
   clientId,
   disabled = false,
   enabled,
+  formId,
   mode,
   onPendingChange,
 }: GoogleSignInButtonProps) {
@@ -33,6 +36,7 @@ export function GoogleSignInButton({
   const buttonContainerRef = useRef<HTMLDivElement | null>(null);
   const credentialInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenFormRef = useRef<HTMLFormElement | null>(null);
+  const hiddenSubmitButtonRef = useRef<HTMLButtonElement | null>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [state, formAction] = useActionState(
     loginWithGoogleAction,
@@ -67,13 +71,18 @@ export function GoogleSignInButton({
     }
 
     const handleCredentialResponse = (response: GoogleCredentialResponse) => {
-      if (!response.credential || !credentialInputRef.current || !hiddenFormRef.current) {
+      if (!response.credential || !credentialInputRef.current) {
         return;
       }
 
       onPendingChange?.(true);
       credentialInputRef.current.value = response.credential;
-      hiddenFormRef.current.requestSubmit();
+
+      if (formId) {
+        hiddenSubmitButtonRef.current?.click();
+      } else {
+        hiddenFormRef.current?.requestSubmit();
+      }
     };
 
     buttonContainerRef.current.innerHTML = "";
@@ -88,7 +97,7 @@ export function GoogleSignInButton({
       text: "signin_with",
       width: 360,
     });
-  }, [clientId, disabled, isReady, isScriptLoaded, onPendingChange]);
+  }, [clientId, disabled, formId, isReady, isScriptLoaded, onPendingChange]);
 
   if (!enabled || !clientId) {
     return (
@@ -121,9 +130,30 @@ export function GoogleSignInButton({
         </p>
       ) : null}
 
-      <form ref={hiddenFormRef} action={formAction} className="social-auth-hidden-form">
-        <input ref={credentialInputRef} type="hidden" name="id_token" />
-      </form>
+      {formId ? (
+        <>
+          <input ref={credentialInputRef} type="hidden" name="id_token" form={formId} />
+          <input
+            type="hidden"
+            name="is_register"
+            value={mode === "signup" ? "true" : "false"}
+            form={formId}
+          />
+          <button
+            ref={hiddenSubmitButtonRef}
+            type="submit"
+            formAction={formAction}
+            form={formId}
+            className="social-auth-hidden-form"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        </>
+      ) : (
+        <form ref={hiddenFormRef} action={formAction} className="social-auth-hidden-form">
+          <input ref={credentialInputRef} type="hidden" name="id_token" />
+        </form>
+      )}
 
       <div
         ref={buttonContainerRef}

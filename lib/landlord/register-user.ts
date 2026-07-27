@@ -5,6 +5,12 @@ export type RegisterUserRequest = {
   email: string;
   password: string;
   password_confirmation: string;
+  is_register: true;
+  tenant_name: string;
+  username: string;
+  pricing_id: number;
+  pricing: "Basic" | "Advance" | "Pro";
+  subscription_pricing_plan_id: number;
 };
 
 type RegisterUserErrorPayload = {
@@ -16,11 +22,22 @@ export type RegisterUserResponse = {
   message?: string;
 };
 
+export type RegisterUserFieldErrors = Partial<
+  Record<
+    | "name"
+    | "email"
+    | "password"
+    | "confirmPassword"
+    | "tenantName"
+    | "username"
+    | "subscriptionPricingPlanId",
+    string
+  >
+>;
+
 export class RegisterUserError extends Error {
   readonly status: number | null;
-  readonly fieldErrors: Partial<
-    Record<"name" | "email" | "password" | "confirmPassword", string>
-  >;
+  readonly fieldErrors: RegisterUserFieldErrors;
 
   constructor({
     message,
@@ -29,9 +46,7 @@ export class RegisterUserError extends Error {
   }: {
     message: string;
     status?: number | null;
-    fieldErrors?: Partial<
-      Record<"name" | "email" | "password" | "confirmPassword", string>
-    >;
+    fieldErrors?: RegisterUserFieldErrors;
   }) {
     super(message);
     this.name = "RegisterUserError";
@@ -62,6 +77,11 @@ function mapRegisterError(error: ApiError) {
   const confirmPasswordError = extractFirstError(
     payload?.errors?.password_confirmation,
   );
+  const tenantNameError = extractFirstError(payload?.errors?.tenant_name);
+  const usernameError = extractFirstError(payload?.errors?.username);
+  const subscriptionPricingPlanIdError =
+    extractFirstError(payload?.errors?.subscription_pricing_plan_id) ??
+    extractFirstError(payload?.errors?.pricing_id);
 
   return new RegisterUserError({
     message:
@@ -73,6 +93,11 @@ function mapRegisterError(error: ApiError) {
       ...(nameError ? { name: nameError } : {}),
       ...(emailError ? { email: emailError } : {}),
       ...(passwordError ? { password: passwordError } : {}),
+      ...(tenantNameError ? { tenantName: tenantNameError } : {}),
+      ...(usernameError ? { username: usernameError } : {}),
+      ...(subscriptionPricingPlanIdError
+        ? { subscriptionPricingPlanId: subscriptionPricingPlanIdError }
+        : {}),
       ...(confirmPasswordError
         ? { confirmPassword: confirmPasswordError }
         : {}),

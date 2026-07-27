@@ -5,6 +5,7 @@ import {
   RegisterUserError,
   registerLandlordUser,
 } from "../../lib/landlord/register-user";
+import { validateTenantFields } from "../../lib/landlord/tenant-field-validation";
 import {
   type RegisterActionState,
 } from "./form-state";
@@ -25,7 +26,7 @@ function createErrorState(
   };
 }
 
-function validateRegisterPayload(formData: FormData) {
+async function validateRegisterPayload(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
@@ -99,6 +100,23 @@ function validateRegisterPayload(formData: FormData) {
     };
   }
 
+  const tenantFields = await validateTenantFields(formData);
+
+  if (!tenantFields.success) {
+    return {
+      success: false as const,
+      state: createErrorState(tenantFields.message, {
+        ...(tenantFields.fieldErrors.name ? { tenantName: tenantFields.fieldErrors.name } : {}),
+        ...(tenantFields.fieldErrors.username
+          ? { username: tenantFields.fieldErrors.username }
+          : {}),
+        ...(tenantFields.fieldErrors.subscriptionPricingPlanId
+          ? { subscriptionPricingPlanId: tenantFields.fieldErrors.subscriptionPricingPlanId }
+          : {}),
+      }),
+    };
+  }
+
   return {
     success: true as const,
     payload: {
@@ -106,6 +124,12 @@ function validateRegisterPayload(formData: FormData) {
       email,
       password,
       password_confirmation: confirmPassword,
+      is_register: true as const,
+      tenant_name: tenantFields.payload.name,
+      username: tenantFields.payload.username,
+      pricing_id: tenantFields.payload.pricing_id,
+      pricing: tenantFields.payload.pricing,
+      subscription_pricing_plan_id: tenantFields.payload.subscription_pricing_plan_id,
     },
   };
 }
@@ -114,7 +138,7 @@ export async function registerUserAction(
   _previousState: RegisterActionState,
   formData: FormData,
 ): Promise<RegisterActionState> {
-  const validation = validateRegisterPayload(formData);
+  const validation = await validateRegisterPayload(formData);
 
   if (!validation.success) {
     return validation.state;
