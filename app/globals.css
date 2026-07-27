@@ -889,6 +889,46 @@ input {
   cursor: pointer;
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+}
+
+.password-field input {
+  flex: 1;
+  padding-right: 44px;
+}
+
+.auth-form button.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-top: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-form button.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-form button.password-toggle:hover {
+  color: var(--ink);
+  background: rgba(16, 38, 31, 0.06);
+}
+
 .auth-divider {
   display: flex;
   align-items: center;
