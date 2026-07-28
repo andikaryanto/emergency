@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { loginWithGoogleAction, registerWithGoogleAction } from "../../app/auth-actions";
+import { PasswordInput } from "./password-input";
 
 type GoogleSignInButtonProps = {
   clientId?: string;
@@ -138,10 +139,9 @@ export function GoogleSignInButton({
             ))}
 
             <label htmlFor="google-tenant-password">Password aplikasi klinik</label>
-            <input
+            <PasswordInput
               id="google-tenant-password"
               name="password"
-              type="password"
               value={tenantPassword}
               onChange={(event) => setTenantPassword(event.currentTarget.value)}
               readOnly={disabled}

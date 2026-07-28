@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GoogleSignInButton } from "../../components/auth/google-sign-in-button";
+import { PasswordInput } from "../../components/auth/password-input";
 import { type SubscriptionPricing } from "../../lib/landlord/list-subscription-pricings";
 import { registerUserAction } from "./actions";
 import { initialRegisterActionState } from "./form-state";
@@ -154,7 +155,7 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
         </p>
       ) : null}
 
-      <div className="auth-form tenant-section">
+      <div className="auth-form signup-tenant-section">
         <label htmlFor="tenant-name">Nama klinik</label>
         <input
           id="tenant-name"
@@ -333,10 +334,9 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
             ) : null}
 
             <label htmlFor="password">Password</label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               readOnly={isAuthBusy}
               aria-disabled={isAuthBusy}
               placeholder="Minimal 8 karakter"
@@ -354,10 +354,9 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
             ) : null}
 
             <label htmlFor="confirm-password">Konfirmasi password</label>
-            <input
+            <PasswordInput
               id="confirm-password"
               name="confirmPassword"
-              type="password"
               readOnly={isAuthBusy}
               aria-disabled={isAuthBusy}
               placeholder="Ulangi password Anda"
