@@ -28,7 +28,7 @@ function billingCycleLabel(billingCycle: "monthly" | "yearly") {
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
   const isDisabled = pending || disabled;
-  const label = isDisabled ? "Sedang membuat akun..." : "Buat Akun";
+  const label = pending ? "Sedang membuat akun..." : "Buat Akun";
 
   return (
     <button type="submit" disabled={isDisabled}>
@@ -63,6 +63,7 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
   const [subscriptionPricingPlanId, setSubscriptionPricingPlanId] = useState(
     firstPlanId ? String(firstPlanId) : "",
   );
+  const [tenantUsername, setTenantUsername] = useState("");
 
   useEffect(() => {
     if (state.status === "error") {
@@ -145,8 +146,6 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenantName]);
 
-  const isTenantDataReady = Boolean(tenantName.trim()) && Boolean(subscriptionPricingPlanId);
-
   return (
     <>
       {state.message ? (
@@ -206,6 +205,28 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
         {state.fieldErrors.tenantName ? (
           <p id="tenant-name-error" className="field-error">
             {state.fieldErrors.tenantName}
+          </p>
+        ) : null}
+
+        <label htmlFor="tenant-username">Username aplikasi klinik</label>
+        <input
+          id="tenant-username"
+          type="text"
+          value={tenantUsername}
+          placeholder="Contoh: admin.klinik"
+          readOnly={isAuthBusy}
+          aria-disabled={isAuthBusy}
+          onChange={(event) => setTenantUsername(event.currentTarget.value)}
+          aria-invalid={Boolean(state.fieldErrors.username)}
+          aria-describedby={state.fieldErrors.username ? "tenant-username-error" : undefined}
+        />
+        <p className="field-hint">
+          Username ini dipakai untuk login ke aplikasi klinik Anda, baik daftar dengan email
+          maupun Google.
+        </p>
+        {state.fieldErrors.username ? (
+          <p id="tenant-username-error" className="field-error">
+            {state.fieldErrors.username}
           </p>
         ) : null}
 
@@ -275,6 +296,7 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
               name="subscription_pricing_plan_id"
               value={subscriptionPricingPlanId}
             />
+            <input type="hidden" name="username" value={tenantUsername} />
 
             <label htmlFor="name">Nama</label>
             <input
@@ -307,26 +329,6 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
             {state.fieldErrors.email ? (
               <p id="email-error" className="field-error">
                 {state.fieldErrors.email}
-              </p>
-            ) : null}
-
-            <label htmlFor="username">Username aplikasi klinik</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              readOnly={isAuthBusy}
-              aria-disabled={isAuthBusy}
-              placeholder="Contoh: admin.klinik"
-              aria-invalid={Boolean(state.fieldErrors.username)}
-              aria-describedby={state.fieldErrors.username ? "username-error" : undefined}
-            />
-            <p className="field-hint">
-              Username ini dipakai untuk login ke aplikasi klinik Anda.
-            </p>
-            {state.fieldErrors.username ? (
-              <p id="username-error" className="field-error">
-                {state.fieldErrors.username}
               </p>
             ) : null}
 
@@ -370,7 +372,7 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
               </p>
             ) : null}
 
-            <SubmitButton disabled={isAuthBusy || !isTenantDataReady} />
+            <SubmitButton disabled={isAuthBusy} />
           </form>
         </details>
 
@@ -379,18 +381,20 @@ export function SignupForm({ googleSignIn, pricings }: SignupFormProps) {
 
           <div className="google-signup-panel">
             <p className="field-hint">
-              Login dengan akun Google untuk akun utama Anda. Username dan password di
-              bawah ini akan dipakai khusus untuk login ke aplikasi klinik.
+              Login dengan akun Google untuk akun utama Anda. Password di bawah ini akan
+              dipakai khusus untuk login ke aplikasi klinik (username memakai yang sudah
+              Anda isi di atas).
             </p>
 
             <GoogleSignInButton
               clientId={googleSignIn.clientId}
-              disabled={isAuthBusy || !isTenantDataReady}
+              disabled={isAuthBusy}
               enabled={googleSignIn.enabled}
               mode="signup"
               extraFields={{
                 tenant_name: tenantName,
                 subscription_pricing_plan_id: subscriptionPricingPlanId,
+                username: tenantUsername,
               }}
               onPendingChange={setIsAuthBusy}
             />

@@ -36,15 +36,12 @@ export function GoogleSignInButton({
   const credentialInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenFormRef = useRef<HTMLFormElement | null>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const [tenantUsername, setTenantUsername] = useState("");
   const [tenantPassword, setTenantPassword] = useState("");
   const [state, formAction] = useActionState(
     mode === "signup" ? registerWithGoogleAction : loginWithGoogleAction,
     initialGoogleLoginActionState,
   );
-  const hasMissingTenantCredentials =
-    mode === "signup" && (!tenantUsername.trim() || !tenantPassword.trim());
-  const isReady = enabled && Boolean(clientId) && !disabled && !hasMissingTenantCredentials;
+  const isReady = enabled && Boolean(clientId) && !disabled;
 
   useEffect(() => {
     if (window.google) {
@@ -63,7 +60,7 @@ export function GoogleSignInButton({
       return;
     }
 
-    if (disabled || hasMissingTenantCredentials) {
+    if (disabled) {
       buttonContainerRef.current.innerHTML = "";
       return;
     }
@@ -94,7 +91,7 @@ export function GoogleSignInButton({
       text: "signin_with",
       width: 360,
     });
-  }, [clientId, disabled, hasMissingTenantCredentials, isReady, isScriptLoaded, onPendingChange]);
+  }, [clientId, disabled, isReady, isScriptLoaded, onPendingChange]);
 
   if (!enabled || !clientId) {
     return (
@@ -139,27 +136,6 @@ export function GoogleSignInButton({
             {Object.entries(extraFields ?? {}).map(([name, value]) => (
               <input key={name} type="hidden" name={name} value={value} />
             ))}
-
-            <label htmlFor="google-tenant-username">Username aplikasi klinik</label>
-            <input
-              id="google-tenant-username"
-              name="username"
-              type="text"
-              value={tenantUsername}
-              onChange={(event) => setTenantUsername(event.currentTarget.value)}
-              readOnly={disabled}
-              aria-disabled={disabled}
-              placeholder="Contoh: admin.klinik"
-              aria-invalid={Boolean(state.fieldErrors?.username)}
-              aria-describedby={
-                state.fieldErrors?.username ? "google-tenant-username-error" : undefined
-              }
-            />
-            {state.fieldErrors?.username ? (
-              <p id="google-tenant-username-error" className="field-error">
-                {state.fieldErrors.username}
-              </p>
-            ) : null}
 
             <label htmlFor="google-tenant-password">Password aplikasi klinik</label>
             <input
