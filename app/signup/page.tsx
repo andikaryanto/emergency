@@ -4,21 +4,22 @@ import { redirect } from "next/navigation";
 import { env } from "../../lib/env";
 import { getGoogleAuthFeedbackMessage } from "../../lib/landlord/google-auth";
 import { getLandlordAccessToken } from "../../lib/landlord/auth-session";
+import { listActiveSignupPricings } from "../../lib/landlord/pricing-selection";
 import { SignupForm } from "./signup-form";
 
 export const metadata: Metadata = {
   title: "Buat Akun",
   description:
-    "Buat akun untuk mulai menggunakan Klinik RME. Tenant klinik dapat dibuat setelah Anda masuk ke dashboard.",
+    "Buat akun sekaligus klinik Anda untuk mulai menggunakan Klinik RME.",
   alternates: {
     canonical: "/signup",
   },
 };
 
 const signupBenefits = [
-  "Pendaftaran akun cepat dan sederhana",
-  "Tenant klinik bisa dibuat setelah login",
-  "Satu akun untuk mulai mengatur operasional klinik Anda",
+  "Pendaftaran akun dan klinik dalam satu langkah",
+  "Daftar dengan email atau akun Google",
+  "Langsung siap dipakai setelah proses selesai",
 ];
 
 export default async function SignupPage() {
@@ -27,6 +28,8 @@ export default async function SignupPage() {
   if (accessToken) {
     redirect("/dashboard");
   }
+
+  const pricings = await listActiveSignupPricings();
 
   const googleSignupHint = getGoogleAuthFeedbackMessage({
     google: "auto_registered",
@@ -39,8 +42,8 @@ export default async function SignupPage() {
           <span className="eyebrow">Buat Akun</span>
           <h1>Buat akun Anda dan mulai gunakan Klinik RME.</h1>
           <p>
-            Cukup daftar dengan email dan password. Setelah berhasil masuk,
-            Anda bisa membuat tenant klinik sendiri dari dalam dashboard.
+            Isi data klinik Anda, lalu pilih daftar dengan email atau akun
+            Google. Klinik Anda akan langsung disiapkan bersamaan dengan akun.
           </p>
 
           {env.googleAuth.enabled && googleSignupHint ? (
@@ -59,6 +62,7 @@ export default async function SignupPage() {
             enabled: env.googleAuth.enabled,
             clientId: env.googleAuth.clientId,
           }}
+          pricings={pricings}
         />
 
         {env.googleAuth.enabled && !env.googleAuth.clientId ? (
