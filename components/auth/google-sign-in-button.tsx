@@ -2,12 +2,14 @@
 
 import Script from "next/script";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { loginWithGoogleAction } from "../../app/auth-actions";
+import { loginWithGoogleAction, registerWithGoogleAction } from "../../app/auth-actions";
+import { PasswordInput } from "./password-input";
 
 type GoogleSignInButtonProps = {
   clientId?: string;
   disabled?: boolean;
   enabled: boolean;
+  extraFields?: Record<string, string>;
   mode: "login" | "signup";
   onPendingChange?: (pending: boolean) => void;
 };
@@ -26,6 +28,7 @@ export function GoogleSignInButton({
   clientId,
   disabled = false,
   enabled,
+  extraFields,
   mode,
   onPendingChange,
 }: GoogleSignInButtonProps) {
@@ -34,8 +37,9 @@ export function GoogleSignInButton({
   const credentialInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenFormRef = useRef<HTMLFormElement | null>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [tenantPassword, setTenantPassword] = useState("");
   const [state, formAction] = useActionState(
-    loginWithGoogleAction,
+    mode === "signup" ? registerWithGoogleAction : loginWithGoogleAction,
     initialGoogleLoginActionState,
   );
   const isReady = enabled && Boolean(clientId) && !disabled;
@@ -121,8 +125,43 @@ export function GoogleSignInButton({
         </p>
       ) : null}
 
-      <form ref={hiddenFormRef} action={formAction} className="social-auth-hidden-form">
+      <form
+        ref={hiddenFormRef}
+        action={formAction}
+        className={mode === "signup" ? "auth-form google-signup-form" : "social-auth-hidden-form"}
+      >
         <input ref={credentialInputRef} type="hidden" name="id_token" />
+
+        {mode === "signup" ? (
+          <>
+            {Object.entries(extraFields ?? {}).map(([name, value]) => (
+              <input key={name} type="hidden" name={name} value={value} />
+            ))}
+
+            <label htmlFor="google-tenant-password">Password aplikasi klinik</label>
+            <PasswordInput
+              id="google-tenant-password"
+              name="password"
+              value={tenantPassword}
+              onChange={(event) => setTenantPassword(event.currentTarget.value)}
+              readOnly={disabled}
+              aria-disabled={disabled}
+              placeholder="Buat password minimal 8 karakter"
+              aria-invalid={Boolean(state.fieldErrors?.password)}
+              aria-describedby={
+                state.fieldErrors?.password ? "google-tenant-password-error" : undefined
+              }
+            />
+            <p className="field-hint">
+              Minimal 8 karakter, wajib ada angka dan karakter spesial, tanpa spasi.
+            </p>
+            {state.fieldErrors?.password ? (
+              <p id="google-tenant-password-error" className="field-error">
+                {state.fieldErrors.password}
+              </p>
+            ) : null}
+          </>
+        ) : null}
       </form>
 
       <div

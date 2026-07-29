@@ -275,6 +275,42 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div>
           </header>
 
+          {!isAdmin && accessToken && !tenantErrorMessage && tenantData.tenants.length > 0 ? (
+            <section className="tenant-hero" aria-label="Akses cepat klinik Anda">
+              <div className="tenant-hero-head">
+                <span className="eyebrow">Klinik Anda</span>
+                <h2>
+                  {tenantData.tenants.length === 1
+                    ? "Klinik Anda sudah siap, langsung buka aplikasinya."
+                    : "Pilih klinik yang ingin Anda buka."}
+                </h2>
+              </div>
+
+              <div className="tenant-hero-grid">
+                {tenantData.tenants.map((tenant) => {
+                  const clinicStatus = getClinicStatusLabel(tenant);
+
+                  return (
+                    <a
+                      key={tenant.id}
+                      href={`https://${tenant.domain}`}
+                      className="tenant-hero-card"
+                    >
+                      <div className="tenant-hero-card-info">
+                        <span className={`tenant-status ${clinicStatus.className}`}>
+                          {clinicStatus.label}
+                        </span>
+                        <h3>{tenant.name}</h3>
+                        <p>{tenant.domain}</p>
+                      </div>
+                      <span className="tenant-hero-cta">Buka Aplikasi Klinik →</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+
           <section className="dashboard-notice" aria-label="Informasi akun">
             <div>
               <span className="eyebrow">Info Penting</span>

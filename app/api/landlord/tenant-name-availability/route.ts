@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApiError, apiEndpointUrls, requestJson } from "../../../../lib/api";
-import {
-  getLandlordAccessToken,
-  getLandlordAuthorizationHeader,
-} from "../../../../lib/landlord/auth-session";
+import { getLandlordAuthorizationHeader } from "../../../../lib/landlord/auth-session";
 
 type TenantNameAvailabilityApiResponse = {
   message?: string;
@@ -38,18 +35,6 @@ export async function GET(request: Request) {
         message: "Nama klinik wajib diisi.",
       },
       { status: 200 },
-    );
-  }
-
-  const accessToken = await getLandlordAccessToken();
-
-  if (!accessToken) {
-    return NextResponse.json(
-      {
-        available: false,
-        message: "Sesi login tidak ditemukan. Silakan login ulang.",
-      },
-      { status: 401 },
     );
   }
 
