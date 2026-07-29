@@ -165,7 +165,7 @@ export default async function HomePage() {
       <section className="dashboard-notice landing-notice" aria-label="Informasi promo">
         <div>
           <span className="eyebrow">Info Penting</span>
-          <h2>Coba gratis 7 hari untuk mulai lebih tenang.</h2>
+          <h2>Coba gratis 3 hari untuk mulai lebih tenang.</h2>
           <p>
             Gunakan masa coba gratis ini untuk menyiapkan klinik Anda,
             mencoba alur kerja harian, dan memastikan tim Anda nyaman sebelum
