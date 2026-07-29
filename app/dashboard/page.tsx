@@ -103,7 +103,7 @@ function getDemoExpiryNotice(tenant: ListLandlordTenantsResponse["tenants"][numb
       : "Masa coba gratis sudah mendekati batas akhir. Segera lanjutkan paket berbayar agar klinik tidak dinonaktifkan.";
   }
 
-  return "Mode demo aktif. Gunakan masa coba gratis 7 hari ini untuk mencoba alur kerja klinik Anda.";
+  return "Mode demo aktif. Gunakan masa coba gratis 3 hari ini untuk mencoba alur kerja klinik Anda.";
 }
 
 function formatBillingCycleLabel(
@@ -314,7 +314,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <section className="dashboard-notice" aria-label="Informasi akun">
             <div>
               <span className="eyebrow">Info Penting</span>
-              <h2>Coba gratis 7 hari sudah aktif.</h2>
+              <h2>Coba gratis 3 hari sudah aktif.</h2>
               <p>
                 Gunakan masa coba gratis ini untuk menyiapkan klinik Anda,
                 mencoba alur kerja, dan memastikan tim Anda nyaman sebelum
