@@ -7,6 +7,7 @@ export type LandlordAuthUser = {
   authProviders: string[];
   id: number;
   name: string;
+  username: string | null;
   email: string;
   isActive: boolean;
   role: string | null;
@@ -95,6 +96,7 @@ export async function getLandlordAuthUser() {
     return {
       id: parsedValue.id,
       name: parsedValue.name,
+      username: typeof parsedValue.username === "string" ? parsedValue.username : null,
       email: parsedValue.email,
       isActive: Boolean(parsedValue.isActive),
       role: typeof parsedValue.role === "string" ? parsedValue.role : null,

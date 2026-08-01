@@ -15,15 +15,94 @@ import {
   connectLandlordGoogle,
 } from "../../lib/landlord/connect-google";
 import {
+  ChangeTenantMasterUserPasswordError,
+  changeTenantMasterUserPassword,
+} from "../../lib/landlord/change-tenant-master-user-password";
+import {
   ApiError,
   apiEndpointUrls,
   requestJson,
 } from "../../lib/api";
 import { env } from "../../lib/env";
 
+const TENANT_MASTER_USER_MIN_PASSWORD_LENGTH = 8;
+
 export async function logoutUserAction() {
   await clearLandlordSession();
   redirect("/login");
+}
+
+export type ChangeTenantMasterUserPasswordActionState = {
+  status: "idle" | "error" | "success";
+  message: string | null;
+};
+
+export async function changeTenantMasterUserPasswordAction(
+  _previousState: ChangeTenantMasterUserPasswordActionState,
+  input: {
+    tenantId: number;
+    password: string;
+    passwordConfirmation: string;
+  },
+): Promise<ChangeTenantMasterUserPasswordActionState> {
+  const tenantId = input?.tenantId;
+  const password = input?.password ?? "";
+  const passwordConfirmation = input?.passwordConfirmation ?? "";
+
+  if (!Number.isInteger(tenantId) || tenantId <= 0) {
+    return {
+      status: "error",
+      message: "Data klinik tidak valid untuk mengubah password.",
+    };
+  }
+
+  if (password.length < TENANT_MASTER_USER_MIN_PASSWORD_LENGTH) {
+    return {
+      status: "error",
+      message: `Password baru minimal ${TENANT_MASTER_USER_MIN_PASSWORD_LENGTH} karakter.`,
+    };
+  }
+
+  if (password !== passwordConfirmation) {
+    return {
+      status: "error",
+      message: "Konfirmasi password tidak sama dengan password baru.",
+    };
+  }
+
+  const accessToken = await getLandlordAccessToken();
+
+  if (!accessToken) {
+    redirect("/login");
+  }
+
+  const authorizationHeader = await getLandlordAuthorizationHeader();
+
+  try {
+    await changeTenantMasterUserPassword(
+      tenantId,
+      password,
+      passwordConfirmation,
+      authorizationHeader,
+    );
+
+    return {
+      status: "success",
+      message: "Password akun utama klinik berhasil diperbarui.",
+    };
+  } catch (error) {
+    if (error instanceof ChangeTenantMasterUserPasswordError) {
+      return {
+        status: "error",
+        message: error.message,
+      };
+    }
+
+    return {
+      status: "error",
+      message: "Terjadi kesalahan tak terduga saat mengubah password.",
+    };
+  }
 }
 
 type CreateTenantSnapPaymentTransactionResponse = {
