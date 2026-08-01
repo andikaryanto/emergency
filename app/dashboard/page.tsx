@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConnectGoogleButton } from "../../components/dashboard/connect-google-button";
+import { TenantChangePasswordForm } from "../../components/dashboard/tenant-change-password-form";
 import { TenantSnapPaymentButton } from "../../components/dashboard/tenant-snap-payment-button";
 import { env } from "../../lib/env";
 import { logoutUserAction } from "./actions";
@@ -155,6 +156,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     getLandlordAuthorizationHeader(),
   ]);
   const currentUserName = currentUser?.name ?? "dr. Amanda Pratama";
+  const currentUserUsername = currentUser?.username ?? null;
   const isAdmin = isLandlordAdmin(currentUser);
   const isGoogleConnected = hasLandlordAuthProvider(currentUser, "google");
   let tenantErrorMessage: string | null = null;
@@ -291,20 +293,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   const clinicStatus = getClinicStatusLabel(tenant);
 
                   return (
-                    <a
-                      key={tenant.id}
-                      href={`https://${tenant.domain}`}
-                      className="tenant-hero-card"
-                    >
+                    <div key={tenant.id} className="tenant-hero-card">
                       <div className="tenant-hero-card-info">
                         <span className={`tenant-status ${clinicStatus.className}`}>
                           {clinicStatus.label}
                         </span>
                         <h3>{tenant.name}</h3>
                         <p>{tenant.domain}</p>
+                        {currentUserUsername ? (
+                          <p className="tenant-hero-card-username">
+                            Username akun utama: <strong>{currentUserUsername}</strong>
+                          </p>
+                        ) : null}
                       </div>
-                      <span className="tenant-hero-cta">Buka Aplikasi Klinik →</span>
-                    </a>
+
+                      <div className="tenant-hero-card-actions">
+                        <a href={`https://${tenant.domain}`} className="tenant-hero-cta">
+                          Buka Aplikasi Klinik →
+                        </a>
+                        <TenantChangePasswordForm tenantId={tenant.id} />
+                      </div>
+                    </div>
                   );
                 })}
               </div>

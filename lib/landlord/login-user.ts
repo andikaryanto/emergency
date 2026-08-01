@@ -27,6 +27,7 @@ type LoginUserApiResponse = {
           | null;
         id?: number;
         name?: string;
+        username?: string;
         email?: string;
         is_active?: boolean;
         role?: string;
@@ -42,6 +43,7 @@ export type LoginUserResponse = {
     authProviders: string[];
     id: number;
     name: string;
+    username: string | null;
     email: string;
     isActive: boolean;
     role: string | null;
@@ -125,6 +127,7 @@ function normalizeLoginResponse(payload: LoginUserApiResponse) {
       authProviders: normalizeAuthProviders(user.auth_providers),
       id: user.id,
       name: user.name,
+      username: typeof user.username === "string" ? user.username : null,
       email: user.email,
       isActive: Boolean(user.is_active),
       role: typeof user.role === "string" ? user.role : null,

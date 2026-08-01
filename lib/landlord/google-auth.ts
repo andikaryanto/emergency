@@ -41,6 +41,7 @@ type RawGoogleAuthUser = {
   id?: number;
   is_active?: boolean;
   name?: string;
+  username?: string;
   role?: string;
 };
 
@@ -109,6 +110,7 @@ function normalizeGoogleAuthSession(rawSession: RawGoogleAuthSession) {
       authProviders: normalizeAuthProviders(user.auth_providers),
       id: user.id,
       name: user.name,
+      username: typeof user.username === "string" ? user.username : null,
       email: user.email,
       isActive: Boolean(user.is_active),
       role: typeof user.role === "string" ? user.role : null,
